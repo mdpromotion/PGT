@@ -1,28 +1,38 @@
+using _Project.Features.TerrainGeneration.Domain;
 using UnityEngine;
 
-namespace _Project.Features.TerrainGeneration.Domain
+namespace _Project.Features.TerrainGeneration.Infrastructure
 {
     public class PerlinHeightmapGenerator : IHeightmapGenerator
     {
-        public float[,] Generate(int resolution, NoiseSettings settings, Vector2 worldOffset)
+        public float[,] Generate(
+            int resolution,
+            Vector2 terrainSize,
+            NoiseSettings settings,
+            Vector2 worldOffset)
         {
-            var heights = new float[resolution, resolution];
-            var random = new System.Random(settings.Seed);
-            
-            var octaveOffsets = new Vector2[settings.Octaves];
+            float[,] heights = new float[resolution, resolution];
+
+            float stepX = terrainSize.x / (resolution - 1);
+            float stepY = terrainSize.y / (resolution - 1);
+
+            System.Random random = new System.Random(settings.Seed);
+
+            Vector2[] octaveOffsets = new Vector2[settings.Octaves];
+
             for (int i = 0; i < settings.Octaves; i++)
             {
                 octaveOffsets[i] = new Vector2(
-                    random.Next(-100000, 100000) + worldOffset.x,
-                    random.Next(-100000, 100000) + worldOffset.y
-                );
+                    random.Next(-100000,100000),
+                    random.Next(-100000,100000));
             }
 
-            float maxPossibleHeight = 0f;
-            float amplitude = 1f;
+            float maxHeight = 0;
+            float amplitude = 1;
+
             for (int i = 0; i < settings.Octaves; i++)
             {
-                maxPossibleHeight += amplitude;
+                maxHeight += amplitude;
                 amplitude *= settings.Persistence;
             }
 
@@ -30,24 +40,40 @@ namespace _Project.Features.TerrainGeneration.Domain
             {
                 for (int x = 0; x < resolution; x++)
                 {
-                    amplitude = 1f;
-                    float frequency = 1f;
-                    float noiseHeight = 0f;
+                    float worldX = worldOffset.x + x * stepX;
+                    float worldY = worldOffset.y + y * stepY;
+
+                    float noiseHeight = 0;
+
+                    amplitude = 1;
+                    float frequency = 1;
 
                     for (int o = 0; o < settings.Octaves; o++)
                     {
-                        float sampleX = (x + octaveOffsets[o].x) / settings.Scale * frequency;
-                        float sampleY = (y + octaveOffsets[o].y) / settings.Scale * frequency;
+                        float sampleX =
+                            (worldX + octaveOffsets[o].x)
+                            * frequency
+                            / settings.Scale;
 
-                        float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
-                        noiseHeight += perlinValue * amplitude;
+                        float sampleY =
+                            (worldY + octaveOffsets[o].y)
+                            * frequency
+                            / settings.Scale;
+
+                        float value =
+                            Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
+
+                        noiseHeight += value * amplitude;
 
                         amplitude *= settings.Persistence;
                         frequency *= settings.Lacunarity;
                     }
-                    
-                    float normalized = (noiseHeight / maxPossibleHeight + 1f) / 2f;
-                    heights[y, x] = normalized;
+
+                    heights[y, x] =
+                        Mathf.InverseLerp(
+                            -maxHeight,
+                            maxHeight,
+                            noiseHeight);
                 }
             }
 

@@ -15,11 +15,23 @@ namespace _Project.Features.TerrainGeneration.Application
             _terrainWriter = terrainWriter;
         }
 
-        public void Execute(TerrainData terrainData, NoiseSettings settings, Vector2 worldOffset)
+        public void Execute(
+            TerrainData terrainData,
+            NoiseSettings settings,
+            Vector2 worldOffset)
         {
-            int resolution = terrainData.heightmapResolution;
-            float[,] heights = _heightmapGenerator.Generate(resolution, settings, worldOffset);
-            _terrainWriter.Apply(terrainData, heights);
+            float[,] heights =
+                _heightmapGenerator.Generate(
+                    terrainData.heightmapResolution,
+                    new Vector2(
+                        terrainData.size.x,
+                        terrainData.size.z),
+                    settings,
+                    worldOffset);
+
+            _terrainWriter.Apply(
+                terrainData,
+                heights);
         }
     }
 }

@@ -4,6 +4,10 @@ namespace _Project.Features.TerrainGeneration.Domain
 {
     public interface IHeightmapGenerator
     {
-        float[,] Generate(int resolution, NoiseSettings settings, Vector2 worldOffset);
+        float[,] Generate(
+            int resolution,
+            Vector2 terrainSize,
+            NoiseSettings settings,
+            Vector2 worldOffset);
     }
 }
