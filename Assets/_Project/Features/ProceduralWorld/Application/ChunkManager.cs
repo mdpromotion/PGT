@@ -9,54 +9,47 @@ namespace _Project.Features.ProceduralWorld.Application
     {
         private readonly TerrainChunkFactory _factory;
         private readonly GenerateTerrainUseCase _generator;
+        private readonly Transform _parent;
 
-
-        private readonly Dictionary<ChunkCoordinate,Terrain> _chunks = new();
-
+        private readonly Dictionary<ChunkCoordinate, Terrain> _chunks = new();
 
         public ChunkManager(
             TerrainChunkFactory factory,
-            GenerateTerrainUseCase generator)
+            GenerateTerrainUseCase generator,
+            Transform parent)
         {
             _factory = factory;
             _generator = generator;
+            _parent = parent;
         }
 
-
-
-        public void Generate(
-            ChunkCoordinate coordinate,
-            NoiseSettings settings,
-            Transform parent)
+        public bool IsLoaded(ChunkCoordinate coordinate)
         {
-            if (_chunks.ContainsKey(coordinate))
+            return _chunks.TryGetValue(coordinate, out var terrain)
+                   && terrain.gameObject.activeSelf;
+        }
+
+        public void Load(ChunkCoordinate coordinate, NoiseSettings settings)
+        {
+            if (_chunks.TryGetValue(coordinate, out Terrain existing))
+            {
+                if (!existing.gameObject.activeSelf)
+                    existing.gameObject.SetActive(true);
                 return;
+            }
 
+            Terrain terrain = _factory.Create(coordinate, _parent);
 
-            Terrain terrain =
-                _factory.Create(
-                    coordinate,
-                    parent);
+            _generator.Execute(terrain.terrainData, settings, coordinate);
+            terrain.Flush();
 
+            _chunks.Add(coordinate, terrain);
+        }
 
-            Vector2 worldOffset =
-                new Vector2(
-                    coordinate.X *
-                    terrain.terrainData.size.x,
-
-                    coordinate.Y *
-                    terrain.terrainData.size.z);
-
-
-            _generator.Execute(
-                terrain.terrainData,
-                settings,
-                worldOffset);
-
-
-            _chunks.Add(
-                coordinate,
-                terrain);
+        public void Unload(ChunkCoordinate coordinate)
+        {
+            if (_chunks.TryGetValue(coordinate, out Terrain terrain))
+                terrain.gameObject.SetActive(false);
         }
     }
 }

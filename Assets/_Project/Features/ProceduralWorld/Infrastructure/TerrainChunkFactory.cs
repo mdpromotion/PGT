@@ -1,5 +1,5 @@
 using _Project.Features.ProceduralWorld.Domain;
-using _Project.Features.TerrainGeneration.Presentation;
+using _Project.Features.ProceduralWorld.Presentation;
 using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure
@@ -7,122 +7,52 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
     public class TerrainChunkFactory
     {
         private readonly Terrain _prefab;
-        private readonly IHeightmapGenerator _heightmapGenerator;
-        private readonly NoiseSettings _noiseSettings;
+        private readonly ChunkGrid _grid;
 
-
-        public TerrainChunkFactory(
-            Terrain prefab,
-            IHeightmapGenerator heightmapGenerator,
-            NoiseSettings noiseSettings)
+        public TerrainChunkFactory(Terrain prefab, ChunkGrid grid)
         {
             _prefab = prefab;
-            _heightmapGenerator = heightmapGenerator;
-            _noiseSettings = noiseSettings;
+            _grid = grid;
         }
 
-
-        public Terrain Create(
-            ChunkCoordinate coordinate,
-            Transform parent)
+        public Terrain Create(ChunkCoordinate coordinate, Transform parent)
         {
-            TerrainData data =
-                CreateTerrainData();
+            TerrainData data = CreateTerrainData();
 
+            Vector2 worldOffset = _grid.ToWorldOffset(coordinate);
 
-            Vector2 worldOffset =
-                new Vector2(
-                    coordinate.X * data.size.x,
-                    coordinate.Y * data.size.z);
+            Terrain terrain = Object.Instantiate(
+                _prefab,
+                new Vector3(worldOffset.x, 0, worldOffset.y),
+                Quaternion.identity,
+                parent);
 
+            terrain.name = $"Chunk [{coordinate.X},{coordinate.Y}]";
+            terrain.terrainData = data;
 
-            data.SetHeights(
-                0,
-                0,
-                _heightmapGenerator.Generate(
-                    data.heightmapResolution,
-                    new Vector2(
-                        data.size.x,
-                        data.size.z),
-                    _noiseSettings,
-                    worldOffset));
-
-
-            Terrain terrain =
-                Object.Instantiate(
-                    _prefab,
-                    new Vector3(
-                        worldOffset.x,
-                        0,
-                        worldOffset.y),
-                    Quaternion.identity,
-                    parent);
-
-
-            terrain.name =
-                $"Chunk [{coordinate.X},{coordinate.Y}]";
-
-
-            terrain.terrainData =
-                data;
-
-
-            TerrainCollider collider =
-                terrain.GetComponent<TerrainCollider>();
-
-
+            TerrainCollider collider = terrain.GetComponent<TerrainCollider>();
             if (collider != null)
-            {
-                collider.terrainData =
-                    data;
-            }
+                collider.terrainData = data;
 
-
-            TerrainChunkOffset offset =
-                terrain.GetComponent<TerrainChunkOffset>();
-
-
-            if (offset == null)
-            {
-                offset =
-                    terrain.gameObject
-                        .AddComponent<TerrainChunkOffset>();
-            }
-
-
-            offset.Initialize(worldOffset);
-
-
-            terrain.Flush();
-
+            TerrainChunkCoordinate marker = terrain.GetComponent<TerrainChunkCoordinate>();
+            if (marker == null)
+                marker = terrain.gameObject.AddComponent<TerrainChunkCoordinate>();
+            marker.Initialize(coordinate);
 
             return terrain;
         }
 
-
-
         private TerrainData CreateTerrainData()
         {
-            TerrainData source =
-                _prefab.terrainData;
-
+            TerrainData source = _prefab.terrainData;
 
             return new TerrainData
             {
-                heightmapResolution =
-                    source.heightmapResolution,
-
-                alphamapResolution =
-                    source.alphamapResolution,
-
-                baseMapResolution =
-                    source.baseMapResolution,
-
-                size =
-                    source.size,
-
-                terrainLayers =
-                    source.terrainLayers
+                heightmapResolution = source.heightmapResolution,
+                alphamapResolution = source.alphamapResolution,
+                baseMapResolution = source.baseMapResolution,
+                size = source.size,
+                terrainLayers = source.terrainLayers
             };
         }
     }

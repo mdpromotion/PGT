@@ -5,12 +5,21 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 {
     public class PerlinHeightmapGenerator : IHeightmapGenerator
     {
+        private readonly ChunkGrid _grid;
+
+        public PerlinHeightmapGenerator(ChunkGrid grid)
+        {
+            _grid = grid;
+        }
+
         public float[,] Generate(
             int resolution,
             Vector2 terrainSize,
             NoiseSettings settings,
-            Vector2 worldOffset)
+            ChunkCoordinate coordinate)
         {
+            Vector2 worldOffset = _grid.ToWorldOffset(coordinate);
+
             float[,] heights = new float[resolution, resolution];
 
             float stepX = terrainSize.x / (resolution - 1);
@@ -26,9 +35,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
                     random.Next(-100000, 100000) + settings.Offset.y);
             }
 
-            // Теоретический максимум суммы амплитуд — ОДИНАКОВЫЙ для всех чанков,
-            // не зависит от того, что реально попало в этот кусок карты.
-            // Это критично для бесшовной стыковки.
             float maxAmplitude = 0f;
             float amp = 1f;
             for (int i = 0; i < settings.Octaves; i++)
@@ -52,10 +58,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
                     for (int o = 0; o < settings.Octaves; o++)
                     {
-                        float sampleX =
-                            (worldX + octaveOffsets[o].x) * frequency / scale;
-                        float sampleY =
-                            (worldY + octaveOffsets[o].y) * frequency / scale;
+                        float sampleX = (worldX + octaveOffsets[o].x) * frequency / scale;
+                        float sampleY = (worldY + octaveOffsets[o].y) * frequency / scale;
 
                         float value = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
 
@@ -65,20 +69,13 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
                         frequency *= settings.Lacunarity;
                     }
 
-                    // Нормализация по ФИКСИРОВАННОМУ теоретическому диапазону —
-                    // одинаковому для любого чанка при данных Octaves/Persistence.
-                    // Это гарантирует отсутствие швов.
                     float normalized = (noiseHeight / maxAmplitude + 1f) * 0.5f;
                     normalized = Mathf.Clamp01(normalized);
 
-                    // Redistribution — убирает лишние горы, но формула
-                    // одинакова для всех чанков, поэтому швов не создаёт.
                     float redistributed = Mathf.Pow(normalized, settings.RedistributionPower);
 
                     if (redistributed < settings.SeaLevel)
-                    {
                         redistributed = settings.SeaLevel;
-                    }
 
                     heights[y, x] = settings.HeightCurve.Evaluate(redistributed);
                 }

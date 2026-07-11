@@ -8,6 +8,6 @@ namespace _Project.Features.ProceduralWorld.Domain
             int resolution,
             Vector2 terrainSize,
             NoiseSettings settings,
-            Vector2 worldOffset);
+            ChunkCoordinate coordinate);
     }
 }

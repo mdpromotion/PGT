@@ -9,7 +9,9 @@ namespace _Project.Features.ProceduralWorld.Application
         private readonly IHeightmapGenerator _heightmapGenerator;
         private readonly UnityTerrainWriter _terrainWriter;
 
-        public GenerateTerrainUseCase(IHeightmapGenerator heightmapGenerator, UnityTerrainWriter terrainWriter)
+        public GenerateTerrainUseCase(
+            IHeightmapGenerator heightmapGenerator,
+            UnityTerrainWriter terrainWriter)
         {
             _heightmapGenerator = heightmapGenerator;
             _terrainWriter = terrainWriter;
@@ -18,20 +20,16 @@ namespace _Project.Features.ProceduralWorld.Application
         public void Execute(
             TerrainData terrainData,
             NoiseSettings settings,
-            Vector2 worldOffset)
+            ChunkCoordinate coordinate)
         {
             float[,] heights =
                 _heightmapGenerator.Generate(
                     terrainData.heightmapResolution,
-                    new Vector2(
-                        terrainData.size.x,
-                        terrainData.size.z),
+                    new Vector2(terrainData.size.x, terrainData.size.z),
                     settings,
-                    worldOffset);
+                    coordinate);
 
-            _terrainWriter.Apply(
-                terrainData,
-                heights);
+            _terrainWriter.Apply(terrainData, heights);
         }
     }
 }
