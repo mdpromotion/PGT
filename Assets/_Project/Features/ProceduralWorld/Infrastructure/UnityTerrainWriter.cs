@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace _Project.Features.TerrainGeneration.Infrastructure
+namespace _Project.Features.ProceduralWorld.Infrastructure
 {
     public class UnityTerrainWriter
     {

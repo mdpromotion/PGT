@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace _Project.Features.TerrainGeneration.Domain
+namespace _Project.Features.ProceduralWorld.Domain
 {
     public interface IHeightmapGenerator
     {
