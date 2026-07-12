@@ -72,19 +72,16 @@ namespace _Project.Features.Core.Bootstrap
                     chunkPrefab.terrainData.size.x,
                     chunkPrefab.terrainData.size.z),
                 Lifetime.Singleton);
-
-
-            builder.Register<IHeightmapGenerator,
-                    PerlinHeightmapGenerator>(
-                Lifetime.Singleton);
-
+            
 
             builder.Register<UnityTerrainWriter>(
                 Lifetime.Singleton);
 
 
-            builder.Register<GenerateTerrainUseCase>(
-                Lifetime.Singleton);
+            builder.Register<
+                    BurstChunkGenerator>(
+                    Lifetime.Singleton)
+                .As<IChunkGenerator>();
 
 
             builder.Register(
@@ -93,11 +90,15 @@ namespace _Project.Features.Core.Bootstrap
                     container.Resolve<ChunkGrid>()),
                 Lifetime.Singleton);
 
-
+            builder.Register<UnityTerrainWriter>(
+                    Lifetime.Singleton)
+                .As<ITerrainWriter>();
+            
             builder.Register(
                 container => new ChunkManager(
                     container.Resolve<TerrainChunkFactory>(),
-                    container.Resolve<GenerateTerrainUseCase>(),
+                    container.Resolve<IChunkGenerator>(),
+                    container.Resolve<ITerrainWriter>(),
                     chunksParent),
                 Lifetime.Singleton);
 
