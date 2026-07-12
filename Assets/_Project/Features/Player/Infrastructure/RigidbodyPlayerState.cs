@@ -16,20 +16,7 @@ namespace _Project.Features.Player.Infrastructure
         {
             if (_rb == null)
                 _rb = GetComponent<Rigidbody>();
-
-            Debug.Log($"[RigidbodyPlayerState] Awake on '{gameObject.name}', parent scope should find me here.", this);
         }
-
-
-        private void Update()
-        {
-            if (Time.frameCount % 60 == 0)
-            {
-                Debug.Log(
-                    $"[PlayerState] Position={Position}, Velocity={Velocity}",
-                    this
-                );
-            }
-        }
+        
     }
 }

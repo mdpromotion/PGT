@@ -29,7 +29,6 @@ namespace _Project.Features.Player.Presentation
         {
             _input = input;
             _useCase = useCase;
-            Debug.Log($"[FpsPlayerMotor] Injected. Input={(input != null)}, UseCase={(useCase != null)}", this);
         }
         
         public void SetLookYaw(float yaw)

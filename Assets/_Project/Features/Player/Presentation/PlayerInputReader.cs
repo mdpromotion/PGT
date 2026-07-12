@@ -28,13 +28,11 @@ namespace _Project.Features.Player.Presentation
 
         public void Initialize()
         {
-            Debug.Log("[PlayerInputReader] Initialize");
             _inputActions.Enable();
         }
 
         public void Dispose()
         {
-            Debug.Log("[PlayerInputReader] Dispose");
             _inputActions.Disable();
             _inputActions.Dispose();
         }
