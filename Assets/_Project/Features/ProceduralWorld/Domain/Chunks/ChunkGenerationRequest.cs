@@ -1,19 +1,24 @@
-namespace _Project.Features.ProceduralWorld.Domain
+using _Project.Features.ProceduralWorld.Domain.Biomes;
+
+namespace _Project.Features.ProceduralWorld.Domain.Chunks
 {
     public readonly struct ChunkGenerationRequest
     {
         public readonly ChunkCoordinate Coordinate;
-        public readonly NoiseSettings Settings;
+
         public readonly int Resolution;
+
+        public readonly BiomeDefinition Biome;
+
 
         public ChunkGenerationRequest(
             ChunkCoordinate coordinate,
-            NoiseSettings settings,
-            int resolution)
+            int resolution,
+            BiomeDefinition biome)
         {
             Coordinate = coordinate;
-            Settings = settings;
             Resolution = resolution;
+            Biome = biome;
         }
     }
 }

@@ -5,23 +5,34 @@ using _Project.Features.Player.Domain;
 using _Project.Features.Player.Infrastructure;
 using _Project.Features.Player.Presentation;
 using _Project.Features.ProceduralWorld.Application;
+using _Project.Features.ProceduralWorld.Application.Chunks;
+using _Project.Features.ProceduralWorld.Application.Interfaces;
+using _Project.Features.ProceduralWorld.Application.World;
 using _Project.Features.ProceduralWorld.Domain;
+using _Project.Features.ProceduralWorld.Domain.Biomes;
+using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure;
+using _Project.Features.ProceduralWorld.Infrastructure.World;
 using _Project.Features.ProceduralWorld.Presentation;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
+
 
 namespace _Project.Features.Core.Bootstrap
 {
     public class GameLifetimeScope : LifetimeScope
     {
         [Header("Procedural World")]
+
         [SerializeField]
         private Terrain chunkPrefab;
 
         [SerializeField]
-        private NoiseSettings noiseSettings;
+        private WorldSettings worldSettings;
+
+        [SerializeField]
+        private BiomeDatabase biomeDatabase;
 
         [SerializeField]
         private Transform chunksParent;
@@ -30,92 +41,175 @@ namespace _Project.Features.Core.Bootstrap
         private int viewDistance = 3;
 
 
+
         protected override void Configure(
             IContainerBuilder builder)
         {
             RegisterPlayer(builder);
+
             RegisterProceduralWorld(builder);
         }
+
 
 
         private void RegisterPlayer(
             IContainerBuilder builder)
         {
-            
-            builder.Register<InputSystem_Actions>(Lifetime.Singleton); 
-            
-            builder.Register<PlayerInputReader>(Lifetime.Singleton) 
-                .As<IPlayerInputReader>() 
-                .As<IInitializable>() 
+            builder.Register<InputSystem_Actions>(
+                Lifetime.Singleton);
+
+
+            builder.Register<PlayerInputReader>(
+                    Lifetime.Singleton)
+                .As<IPlayerInputReader>()
+                .As<IInitializable>()
                 .As<IDisposable>();
-            
+
+
             builder.RegisterComponentInHierarchy<FpsCameraController>();
-            
-            builder.Register<FpsMovementUseCase>(Lifetime.Singleton);
-            
-            builder.RegisterComponentInHierarchy<FpsPlayerMotor>() 
+
+
+            builder.Register<FpsMovementUseCase>(
+                Lifetime.Singleton);
+
+
+            builder.RegisterComponentInHierarchy<FpsPlayerMotor>()
                 .As<IFpsPlayerMotor>();
-            
+
+
             builder.RegisterComponentInHierarchy<RigidbodyPlayerState>()
                 .As<IPlayerReadOnly>();
         }
 
 
+
         private void RegisterProceduralWorld(
             IContainerBuilder builder)
         {
-            builder.RegisterInstance(noiseSettings);
+            builder.RegisterInstance(
+                worldSettings);
+
+
+            builder.RegisterInstance(
+                biomeDatabase);
+
 
 
             builder.Register(
-                container => new ChunkGrid(
-                    chunkPrefab.terrainData.size.x,
-                    chunkPrefab.terrainData.size.z),
-                Lifetime.Singleton);
-            
-
-            builder.Register<UnityTerrainWriter>(
+                container =>
+                    new ChunkGrid(
+                        chunkPrefab.terrainData.size.x,
+                        chunkPrefab.terrainData.size.z),
                 Lifetime.Singleton);
 
 
-            builder.Register<
-                    BurstChunkGenerator>(
+
+            //
+            // World generation
+            //
+
+            builder.Register<ClimateGenerator>(
+                Lifetime.Singleton);
+
+
+            builder.Register<BiomeResolver>(
                     Lifetime.Singleton)
-                .As<IChunkGenerator>();
+                .As<IBiomeResolver>();
+
+
+            builder.Register<WorldGenerator>(
+                Lifetime.Singleton);
+
+
+
+            //
+            // Terrain generation
+            //
+
+            builder.Register<IChunkGenerator>(
+                container =>
+                    new BurstChunkGenerator(
+                        container.Resolve<ChunkGrid>(),
+                        container.Resolve<WorldSettings>()),
+                Lifetime.Singleton);
+
 
 
             builder.Register(
-                    container => new TerrainChunkFactory(
-                        chunkPrefab,
-                        container.Resolve<ChunkGrid>()),
+                    container =>
+                        new TerrainChunkFactory(
+                            chunkPrefab,
+                            container.Resolve<ChunkGrid>()),
                     Lifetime.Singleton)
                 .As<ITerrainFactory>();
+
+
+
+            builder.Register<ChunkNeighborConnector>(
+                    Lifetime.Singleton)
+                .As<IChunkNeighborConnector>();
+
+
 
             builder.Register<UnityTerrainWriter>(
                     Lifetime.Singleton)
                 .As<ITerrainWriter>();
-            
+
+
+
+            builder.Register<ChunkRepository>(
+                    Lifetime.Singleton)
+                .AsSelf()
+                .As<IChunkLookup>();
+
+
+
             builder.Register(
-                container => new ChunkManager(
-                    container.Resolve<ITerrainFactory>(),
-                    container.Resolve<IChunkGenerator>(),
-                    container.Resolve<ITerrainWriter>(),
-                    chunksParent),
-                Lifetime.Singleton);
+                    container =>
+                        new ChunkGenerationScheduler(
+                            container.Resolve<IChunkGenerator>()),
+                    Lifetime.Singleton);
+
 
 
             builder.Register(
-                container => new WorldStreamer(
-                    container.Resolve<ChunkManager>(),
-                    container.Resolve<ChunkGrid>(),
-                    container.Resolve<NoiseSettings>(),
-                    container.Resolve<IPlayerReadOnly>(),
-                    viewDistance),
-                Lifetime.Singleton);
+                    container =>
+                        new ChunkApplier(
+                            container.Resolve<ITerrainFactory>(),
+                            container.Resolve<ITerrainWriter>(),
+                            container.Resolve<IChunkNeighborConnector>(),
+                            container.Resolve<ChunkRepository>(),
+                            chunksParent),
+                    Lifetime.Singleton);
 
 
-            builder.RegisterComponentInHierarchy
-                <ProceduralWorldPresenter>();
+
+            builder.Register(
+                    container =>
+                        new ChunkManager(
+                            container.Resolve<ChunkGrid>(),
+                            container.Resolve<ChunkGenerationScheduler>(),
+                            container.Resolve<ChunkRepository>(),
+                            container.Resolve<ChunkApplier>(),
+                            container.Resolve<ITerrainFactory>(),
+                            container.Resolve<IChunkNeighborConnector>(),
+                            container.Resolve<WorldGenerator>()),
+                    Lifetime.Singleton);
+
+
+
+            builder.Register(
+                    container =>
+                        new WorldStreamer(
+                            container.Resolve<ChunkManager>(),
+                            container.Resolve<ChunkGrid>(),
+                            container.Resolve<IPlayerReadOnly>(),
+                            viewDistance),
+                    Lifetime.Singleton);
+
+
+
+            builder.RegisterComponentInHierarchy<ProceduralWorldPresenter>();
         }
     }
 }

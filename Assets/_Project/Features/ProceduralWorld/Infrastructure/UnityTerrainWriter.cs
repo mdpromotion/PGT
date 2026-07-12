@@ -1,5 +1,7 @@
-using _Project.Features.ProceduralWorld.Application;
+using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
+using _Project.Features.ProceduralWorld.Domain.Chunks;
+using Unity.Collections;
 using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure
@@ -47,17 +49,16 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
         private void FillBuffer(
             ChunkGenerationResult result)
         {
-            int resolution =
-                result.Resolution;
+            int resolution = result.Resolution;
+            NativeArray<float> heights = result.Heights;
 
-
-            for(int y = 0; y < resolution; y++)
+            for (int y = 0; y < resolution; y++)
             {
-                for(int x = 0; x < resolution; x++)
+                int row = y * resolution;
+
+                for (int x = 0; x < resolution; x++)
                 {
-                    _buffer[y,x] =
-                        result.Heights[
-                            y * result.Resolution + x];
+                    _buffer[y, x] = heights[row + x];
                 }
             }
         }

@@ -1,6 +1,6 @@
 using Unity.Collections;
 
-namespace _Project.Features.ProceduralWorld.Domain
+namespace _Project.Features.ProceduralWorld.Domain.Chunks
 {
     public struct ChunkGenerationResult
     {

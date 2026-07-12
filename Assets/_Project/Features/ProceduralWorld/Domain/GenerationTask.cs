@@ -1,3 +1,4 @@
+using _Project.Features.ProceduralWorld.Domain.Chunks;
 using Unity.Jobs;
 
 namespace _Project.Features.ProceduralWorld.Domain

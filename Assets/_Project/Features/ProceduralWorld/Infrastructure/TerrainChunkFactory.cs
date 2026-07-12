@@ -9,15 +9,27 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
     {
         private readonly Terrain _prefab;
         private readonly ChunkGrid _grid;
+        
+        private readonly Dictionary<Terrain, ChunkHandle> _handles = new();
 
-        private readonly Queue<Terrain> _pool = new();
+        private readonly Queue<Terrain> _pool;
 
         public TerrainChunkFactory(
             Terrain prefab,
-            ChunkGrid grid)
+            ChunkGrid grid,
+            int expectedPoolCapacity = 32)
         {
             _prefab = prefab;
             _grid = grid;
+            _pool = new Queue<Terrain>(expectedPoolCapacity);
+        }
+        
+        public void Connect(Terrain terrain, Terrain left, Terrain top, Terrain right, Terrain bottom)
+        {
+            if (!terrain)
+                return;
+
+            terrain.SetNeighbors(left, top, right, bottom);
         }
 
         public Terrain Create(
@@ -25,71 +37,77 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
             Transform parent)
         {
             Terrain terrain;
+            ChunkHandle handle;
 
             if (_pool.Count > 0)
             {
                 terrain = _pool.Dequeue();
+                handle = _handles[terrain];
 
-                terrain.transform.SetParent(parent, false);
-                terrain.gameObject.SetActive(true);
+                Show(terrain, handle);
             }
             else
             {
-                terrain = Object.Instantiate(
-                    _prefab,
-                    parent);
+                terrain = Object.Instantiate(_prefab, parent);
 
                 TerrainData data = CreateTerrainData();
-
                 terrain.terrainData = data;
 
-                TerrainCollider collider =
-                    terrain.GetComponent<TerrainCollider>();
-
-                if (collider != null)
+                TerrainCollider collider = terrain.GetComponent<TerrainCollider>();
+                if (collider)
                     collider.terrainData = data;
 
                 terrain.drawInstanced = true;
                 terrain.heightmapPixelError = 20;
 
-                TerrainChunkCoordinate marker =
-                    terrain.GetComponent<TerrainChunkCoordinate>();
-
-                if (marker == null)
+                TerrainChunkCoordinate marker = terrain.GetComponent<TerrainChunkCoordinate>();
+                if (!marker)
                     marker = terrain.gameObject.AddComponent<TerrainChunkCoordinate>();
+
+                handle = new ChunkHandle(collider, marker);
+                _handles.Add(terrain, handle);
             }
 
-            Vector2 worldOffset =
-                _grid.ToWorldOffset(coordinate);
+            Vector2 worldOffset = _grid.ToWorldOffset(coordinate);
 
-            terrain.transform.position =
-                new Vector3(
-                    worldOffset.x,
-                    0,
-                    worldOffset.y);
+            terrain.transform.position = new Vector3(worldOffset.x, 0, worldOffset.y);
 
-            terrain.name =
-                $"Chunk [{coordinate.X},{coordinate.Y}]";
-
-            terrain
-                .GetComponent<TerrainChunkCoordinate>()
-                .Initialize(coordinate);
+            handle.Marker.Initialize(coordinate);
 
             return terrain;
         }
 
-        public void Release(
-            Terrain terrain)
+        public void Show(Terrain terrain)
         {
-            terrain.gameObject.SetActive(false);
+            if (!_handles.TryGetValue(terrain, out ChunkHandle handle))
+                return;
+
+            Show(terrain, handle);
+        }
+
+        private void Show(Terrain terrain, ChunkHandle handle)
+        {
+            terrain.drawHeightmap = true;
+            terrain.drawTreesAndFoliage = true;
+
+            if (handle.Collider)
+                handle.Collider.enabled = true;
+        }
+
+        public void Release(Terrain terrain)
+        {
+            terrain.drawHeightmap = false;
+            terrain.drawTreesAndFoliage = false;
+
+            if (_handles.TryGetValue(terrain, out ChunkHandle handle) && handle.Collider)
+                handle.Collider.enabled = false;
 
             _pool.Enqueue(terrain);
         }
 
         private TerrainData CreateTerrainData()
         {
-            TerrainData source =
-                _prefab.terrainData;
+            TerrainData source = _prefab.terrainData;
 
             return new TerrainData
             {

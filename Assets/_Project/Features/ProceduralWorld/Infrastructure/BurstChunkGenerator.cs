@@ -1,24 +1,28 @@
-using _Project.Features.ProceduralWorld.Application;
+using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
+using _Project.Features.ProceduralWorld.Domain.Biomes;
+using _Project.Features.ProceduralWorld.Domain.Chunks;
+using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure
 {
     public class BurstChunkGenerator : IChunkGenerator
     {
-        
         private readonly ChunkGrid _grid;
+        private readonly WorldSettings _worldSettings;
 
         public BurstChunkGenerator(
-            ChunkGrid grid)
+            ChunkGrid grid,
+            WorldSettings worldSettings)
         {
             _grid = grid;
+            _worldSettings = worldSettings;
         }
-        
+
         public GenerationTask Schedule(
             ChunkGenerationRequest request)
         {
@@ -26,12 +30,14 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
                 request.Resolution *
                 request.Resolution;
 
-
             NativeArray<float> heights =
                 new NativeArray<float>(
                     count,
-                    Allocator.Persistent);
-
+                    Allocator.TempJob);
+            
+            NativeArray<float2> octaveOffsets =
+                CreateOctaveOffsets(
+                    request.Biome.Generation.Octaves);
 
             TerrainGenerationJob job =
                 new TerrainGenerationJob(
@@ -42,13 +48,18 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
                     new int2(
                         request.Coordinate.X,
                         request.Coordinate.Y),
-                    CreateSettings(request.Settings));
-
+                    CreateSettings(
+                        request.Biome.Generation),
+                    octaveOffsets);
 
             JobHandle handle =
                 job.Schedule(
                     count,
                     64);
+
+            // Освобождаем временный массив офсетов,
+            // как только job завершится (не нужен в результате).
+            octaveOffsets.Dispose(handle);
 
             return new GenerationTask(
                 handle,
@@ -57,53 +68,45 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
                     heights,
                     request.Resolution));
         }
-        private NoiseJobSettings CreateSettings(
-            NoiseSettings settings)
+
+        private NativeArray<float2> CreateOctaveOffsets(int octaves)
         {
-            Unity.Mathematics.Random random =
-                new Unity.Mathematics.Random(
-                    (uint)math.max(settings.Seed,1));
+            NativeArray<float2> offsets =
+                new NativeArray<float2>(
+                    octaves,
+                    Allocator.TempJob);
 
+            Random random =
+                new Random(
+                    (uint)math.max(
+                        _worldSettings.Seed,
+                        1));
 
-            NoiseJobSettings result =
-                new NoiseJobSettings();
-
-
-            result.Scale =
-                settings.Scale;
-
-            result.Octaves =
-                settings.Octaves;
-
-            result.Persistence =
-                settings.Persistence;
-
-            result.Lacunarity =
-                settings.Lacunarity;
-
-            result.RedistributionPower =
-                settings.RedistributionPower;
-
-            result.SeaLevel =
-                settings.SeaLevel;
-
-            result.HeightMultiplier =
-                settings.HeightMultiplier;
-
-
-            result.Offset =
-                settings.Offset;
-
-
-
-            for(int i = 0; i < settings.Octaves; i++)
+            for (int i = 0; i < octaves; i++)
             {
-                result.OctaveOffsets.Add(
+                offsets[i] =
                     new float2(
-                        random.NextFloat(-100000,100000),
-                        random.NextFloat(-100000,100000)));
+                        random.NextFloat(-100000f, 100000f),
+                        random.NextFloat(-100000f, 100000f));
             }
 
+            return offsets;
+        }
+
+        private TerrainNoiseSettings CreateSettings(
+            BiomeGenerationSettings settings)
+        {
+            TerrainNoiseSettings result = new TerrainNoiseSettings();
+
+            result.Scale = settings.Scale;
+            result.Octaves = settings.Octaves;
+            result.Persistence = settings.Persistence;
+            result.Lacunarity = settings.Lacunarity;
+            result.RedistributionPower = settings.RedistributionPower;
+            result.HeightMultiplier = settings.HeightMultiplier;
+            result.Offset = float2.zero;
+            
+            result.RiverOffset = float2.zero;
 
             return result;
         }

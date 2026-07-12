@@ -1,7 +1,8 @@
 using _Project.Features.ProceduralWorld.Domain;
+using _Project.Features.ProceduralWorld.Domain.Chunks;
 using UnityEngine;
 
-namespace _Project.Features.ProceduralWorld.Application
+namespace _Project.Features.ProceduralWorld.Application.Interfaces
 {
     public interface ITerrainWriter
     {

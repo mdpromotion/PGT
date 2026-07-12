@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using _Project.Features.ProceduralWorld.Application;
+using _Project.Features.ProceduralWorld.Application.Interfaces;
 using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure

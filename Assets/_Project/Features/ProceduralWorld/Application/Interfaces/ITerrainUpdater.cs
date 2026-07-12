@@ -1,4 +1,4 @@
-namespace _Project.Features.ProceduralWorld.Application
+namespace _Project.Features.ProceduralWorld.Application.Interfaces
 {
     public interface ITerrainUpdater
     {
