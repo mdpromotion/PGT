@@ -29,7 +29,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
             terrain.name = $"Chunk [{coordinate.X},{coordinate.Y}]";
             terrain.terrainData = data;
-
+            terrain.drawInstanced = true;
+            terrain.heightmapPixelError = 20;
+            
             TerrainCollider collider = terrain.GetComponent<TerrainCollider>();
             if (collider != null)
                 collider.terrainData = data;
@@ -38,14 +40,17 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
             if (marker == null)
                 marker = terrain.gameObject.AddComponent<TerrainChunkCoordinate>();
             marker.Initialize(coordinate);
-
+            
             return terrain;
         }
 
         private TerrainData CreateTerrainData()
         {
             TerrainData source = _prefab.terrainData;
-
+            
+            Debug.Log(
+                $"Terrain resolution: {source.heightmapResolution}");
+            
             return new TerrainData
             {
                 heightmapResolution = source.heightmapResolution,

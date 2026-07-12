@@ -14,41 +14,48 @@ namespace _Project.Features.ProceduralWorld.Presentation
         private WorldStreamer _worldStreamer;
 
         [Inject]
-        public void Construct(ChunkManager chunkManager,  WorldStreamer worldStreamer)
+        public void Construct(
+            ChunkManager chunkManager,
+            WorldStreamer worldStreamer)
         {
             _chunkManager = chunkManager;
             _worldStreamer = worldStreamer;
-            Debug.Log(_worldStreamer);
         }
-        
+
         private void Update()
         {
             _worldStreamer.Update();
+
+            _chunkManager.Tick();
         }
-        
+
         [ContextMenu("Generate Center")]
         private void Generate()
         {
-            _chunkManager.Load(
+            _chunkManager.QueueLoad(
                 new ChunkCoordinate(0, 0),
                 noiseSettings);
+
+            _chunkManager.Tick();
         }
 
         [ContextMenu("Generate Neighbors")]
         private void GenerateAround()
         {
-            ChunkCoordinate center = new ChunkCoordinate(0, 0);
+            ChunkCoordinate center = new(0, 0);
 
-            _chunkManager.Load(center + new ChunkCoordinate(1, 0), noiseSettings);
-            _chunkManager.Load(center + new ChunkCoordinate(-1, 0), noiseSettings);
-            _chunkManager.Load(center + new ChunkCoordinate(0, 1), noiseSettings);
-            _chunkManager.Load(center + new ChunkCoordinate(0, -1), noiseSettings);
+            _chunkManager.QueueLoad(center + new ChunkCoordinate(1, 0), noiseSettings);
+            _chunkManager.QueueLoad(center + new ChunkCoordinate(-1, 0), noiseSettings);
+            _chunkManager.QueueLoad(center + new ChunkCoordinate(0, 1), noiseSettings);
+            _chunkManager.QueueLoad(center + new ChunkCoordinate(0, -1), noiseSettings);
+
+            //_chunkManager.FlushQueue();
         }
 
         [ContextMenu("Unload Neighbors")]
         private void UnloadAround()
         {
-            ChunkCoordinate center = new ChunkCoordinate(0, 0);
+            ChunkCoordinate center = new(0, 0);
 
             _chunkManager.Unload(center + new ChunkCoordinate(1, 0));
             _chunkManager.Unload(center + new ChunkCoordinate(-1, 0));

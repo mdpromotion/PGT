@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using _Project.Features.Player.Domain;
 using _Project.Features.ProceduralWorld.Domain;
 
@@ -34,6 +36,8 @@ namespace _Project.Features.ProceduralWorld.Application
 
         public void Update()
         {
+            _chunkManager.Tick();
+
             ChunkCoordinate center =
                 _chunkGrid.ToChunkCoordinate(_player.Position);
 
@@ -50,6 +54,8 @@ namespace _Project.Features.ProceduralWorld.Application
         {
             _requiredChunks.Clear();
 
+            List<ChunkCoordinate> ordered = new();
+
             for (int x = -_viewDistance; x <= _viewDistance; x++)
             {
                 for (int y = -_viewDistance; y <= _viewDistance; y++)
@@ -58,30 +64,43 @@ namespace _Project.Features.ProceduralWorld.Application
                         new(center.X + x, center.Y + y);
 
                     _requiredChunks.Add(coordinate);
-
-                    if (!_activeChunks.Contains(coordinate))
-                    {
-                        _chunkManager.Load(
-                            coordinate,
-                            _noiseSettings);
-                    }
+                    ordered.Add(coordinate);
                 }
             }
 
-            foreach (ChunkCoordinate coordinate in _activeChunks)
+            ordered.Sort((a, b) =>
+            {
+                int da =
+                    (a.X - center.X) * (a.X - center.X) +
+                    (a.Y - center.Y) * (a.Y - center.Y);
+
+                int db =
+                    (b.X - center.X) * (b.X - center.X) +
+                    (b.Y - center.Y) * (b.Y - center.Y);
+
+                return da.CompareTo(db);
+            });
+
+            foreach (var coordinate in ordered)
+            {
+                if (!_activeChunks.Contains(coordinate))
+                {
+                    _chunkManager.QueueLoad(
+                        coordinate,
+                        _noiseSettings);
+                }
+            }
+
+            foreach (var coordinate in _activeChunks)
             {
                 if (!_requiredChunks.Contains(coordinate))
-                {
                     _chunkManager.Unload(coordinate);
-                }
             }
 
             _activeChunks.Clear();
 
-            foreach (ChunkCoordinate coordinate in _requiredChunks)
-            {
+            foreach (var coordinate in _requiredChunks)
                 _activeChunks.Add(coordinate);
-            }
         }
     }
 }
