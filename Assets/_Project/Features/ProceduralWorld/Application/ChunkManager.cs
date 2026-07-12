@@ -10,7 +10,7 @@ namespace _Project.Features.ProceduralWorld.Application
 {
     public class ChunkManager
     {
-        private readonly TerrainChunkFactory _factory;
+        private readonly ITerrainFactory _factory;
         private readonly IChunkGenerator _generator;
         private readonly Transform _parent;
 
@@ -29,7 +29,7 @@ namespace _Project.Features.ProceduralWorld.Application
 
 
         public ChunkManager(
-            TerrainChunkFactory factory,
+            ITerrainFactory factory,
             IChunkGenerator generator,
             ITerrainWriter writer,
             Transform parent)
@@ -51,26 +51,19 @@ namespace _Project.Features.ProceduralWorld.Application
 
 
 
-        public void QueueLoad(
-            ChunkCoordinate coordinate,
-            NoiseSettings settings)
+        public void QueueLoad(ChunkCoordinate coordinate, NoiseSettings settings)
         {
-            if (_chunks.ContainsKey(coordinate))
+            if (_chunks.TryGetValue(coordinate, out Terrain terrain))
+            {
+                if (!terrain.gameObject.activeSelf)
+                    terrain.gameObject.SetActive(true);
+                return;
+            }
+
+            if (!_loading.Add(coordinate))
                 return;
 
-
-            if (_loading.Contains(coordinate))
-                return;
-
-
-            _loading.Add(coordinate);
-
-
-            _queue.Enqueue(
-                new ChunkGenerationRequest(
-                    coordinate,
-                    settings,
-                    513));
+            _queue.Enqueue(new ChunkGenerationRequest(coordinate, settings, 513));
         }
 
 
@@ -148,8 +141,6 @@ namespace _Project.Features.ProceduralWorld.Application
                 terrain,
                 result);
             
-            terrain.Flush();
-
             terrain.terrainData.SyncHeightmap();
 
 
@@ -160,9 +151,6 @@ namespace _Project.Features.ProceduralWorld.Application
 
             _loading.Remove(
                 result.Coordinate);
-            
-            Debug.Log(
-                $"CREATE CHUNK {result.Coordinate}");
         }
 
         public void Unload(
@@ -172,7 +160,11 @@ namespace _Project.Features.ProceduralWorld.Application
                 coordinate,
                 out Terrain terrain))
             {
-                terrain.gameObject.SetActive(false);
+                _chunks.Remove(coordinate);
+
+                _loading.Remove(coordinate);
+
+                _factory.Release(terrain);
             }
         }
     }

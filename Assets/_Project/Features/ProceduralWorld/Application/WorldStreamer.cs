@@ -16,6 +16,9 @@ namespace _Project.Features.ProceduralWorld.Application
 
         private readonly HashSet<ChunkCoordinate> _activeChunks = new();
         private readonly HashSet<ChunkCoordinate> _requiredChunks = new();
+        
+        private readonly List<ChunkCoordinate> _ordered = new();
+        private ChunkCoordinateDistanceComparer _distanceComparer = new();
 
         private ChunkCoordinate _currentCenter;
         private bool _initialized;
@@ -54,34 +57,28 @@ namespace _Project.Features.ProceduralWorld.Application
         {
             _requiredChunks.Clear();
 
-            List<ChunkCoordinate> ordered = new();
+            _ordered.Clear();
 
             for (int x = -_viewDistance; x <= _viewDistance; x++)
             {
                 for (int y = -_viewDistance; y <= _viewDistance; y++)
                 {
-                    ChunkCoordinate coordinate =
-                        new(center.X + x, center.Y + y);
-
+                    ChunkCoordinate coordinate = new(center.X + x, center.Y + y);
                     _requiredChunks.Add(coordinate);
-                    ordered.Add(coordinate);
+                    _ordered.Add(coordinate);
                 }
             }
 
-            ordered.Sort((a, b) =>
+            _distanceComparer.Center = center;
+            _ordered.Sort(_distanceComparer);
+
+            foreach (var coordinate in _ordered)
             {
-                int da =
-                    (a.X - center.X) * (a.X - center.X) +
-                    (a.Y - center.Y) * (a.Y - center.Y);
+                if (!_activeChunks.Contains(coordinate))
+                    _chunkManager.QueueLoad(coordinate, _noiseSettings);
+            }
 
-                int db =
-                    (b.X - center.X) * (b.X - center.X) +
-                    (b.Y - center.Y) * (b.Y - center.Y);
-
-                return da.CompareTo(db);
-            });
-
-            foreach (var coordinate in ordered)
+            foreach (var coordinate in _ordered)
             {
                 if (!_activeChunks.Contains(coordinate))
                 {

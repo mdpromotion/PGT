@@ -60,8 +60,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
         private NoiseJobSettings CreateSettings(
             NoiseSettings settings)
         {
-            var random =
-                new System.Random(settings.Seed);
+            Unity.Mathematics.Random random =
+                new Unity.Mathematics.Random(
+                    (uint)math.max(settings.Seed,1));
 
 
             NoiseJobSettings result =
@@ -99,8 +100,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
             {
                 result.OctaveOffsets.Add(
                     new float2(
-                        random.Next(-100000,100000),
-                        random.Next(-100000,100000)));
+                        random.NextFloat(-100000,100000),
+                        random.NextFloat(-100000,100000)));
             }
 
 

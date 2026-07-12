@@ -85,10 +85,11 @@ namespace _Project.Features.Core.Bootstrap
 
 
             builder.Register(
-                container => new TerrainChunkFactory(
-                    chunkPrefab,
-                    container.Resolve<ChunkGrid>()),
-                Lifetime.Singleton);
+                    container => new TerrainChunkFactory(
+                        chunkPrefab,
+                        container.Resolve<ChunkGrid>()),
+                    Lifetime.Singleton)
+                .As<ITerrainFactory>();
 
             builder.Register<UnityTerrainWriter>(
                     Lifetime.Singleton)
@@ -96,7 +97,7 @@ namespace _Project.Features.Core.Bootstrap
             
             builder.Register(
                 container => new ChunkManager(
-                    container.Resolve<TerrainChunkFactory>(),
+                    container.Resolve<ITerrainFactory>(),
                     container.Resolve<IChunkGenerator>(),
                     container.Resolve<ITerrainWriter>(),
                     chunksParent),

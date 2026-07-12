@@ -2,7 +2,7 @@ using System;
 
 namespace _Project.Features.ProceduralWorld.Domain
 {
-    public readonly struct ChunkCoordinate
+    public readonly struct ChunkCoordinate : IEquatable<ChunkCoordinate>
     {
         public readonly int X;
         public readonly int Y;
@@ -15,11 +15,16 @@ namespace _Project.Features.ProceduralWorld.Domain
         }
 
 
+        public bool Equals(ChunkCoordinate other)
+        {
+            return X == other.X &&
+                   Y == other.Y;
+        }
+
         public override bool Equals(object obj)
         {
             return obj is ChunkCoordinate other &&
-                   X == other.X &&
-                   Y == other.Y;
+                   Equals(other);
         }
 
 

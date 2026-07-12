@@ -18,9 +18,6 @@ namespace _Project.Features.ProceduralWorld.Presentation
         {
             x = value.X;
             y = value.Y;
-
-            Debug.Log(
-                $"[{name}] Initialized coordinate {x},{y}");
         }
     }
 }
