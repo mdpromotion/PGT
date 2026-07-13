@@ -16,7 +16,7 @@ MonoBehaviour:
   Id: 1
   DisplayName: River
   Generation:
-    Scale: 1000
+    Scale: 1
     Octaves: 4
     Persistence: 0.5
     Lacunarity: 2
