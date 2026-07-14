@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: River
   m_EditorClassIdentifier: 
   Type: 1
-  Id: 1
+  Id: 2
   DisplayName: River
   Generation:
-    Scale: 2000
+    Scale: 4000
     Octaves: 4
     Persistence: 0.5
     Lacunarity: 2
@@ -24,4 +24,4 @@ MonoBehaviour:
     HeightMultiplier: 1
   Climate:
     Temperature: 0.5
-    Moisture: 0.5
+    Moisture: 0.8

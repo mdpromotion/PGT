@@ -974,7 +974,7 @@ MonoBehaviour:
   _groundMask:
     serializedVersion: 2
     m_Bits: 1
-  _groundCheckDistance: 0.15
+  _groundCheckDistance: 1
 --- !u!114 &1508698447
 MonoBehaviour:
   m_ObjectHideFlags: 0

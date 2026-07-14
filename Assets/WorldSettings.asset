@@ -12,5 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 838f247eb95b5ec4cac04e3c95f61077, type: 3}
   m_Name: WorldSettings
   m_EditorClassIdentifier: 
-  Seed: 1
-  DefaultBiome: {fileID: 11400000, guid: 95f31cade660dbaa88671a0613818b1b, type: 2}
+  Seed: 0
+  Noise:
+    TemperatureScale: 5000
+    TemperatureOctaves: 3
+    TemperaturePersistence: 0.5
+    MoistureScale: 5000
+    MoistureOctaves: 3
+    MoisturePersistence: 0.5
