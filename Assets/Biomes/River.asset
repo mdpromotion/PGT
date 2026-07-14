@@ -16,12 +16,12 @@ MonoBehaviour:
   Id: 1
   DisplayName: River
   Generation:
-    Scale: 1
+    Scale: 2000
     Octaves: 4
     Persistence: 0.5
     Lacunarity: 2
     RedistributionPower: 0.6
     HeightMultiplier: 1
   Climate:
-    Temperature: 0
-    Moisture: 0
+    Temperature: 0.5
+    Moisture: 0.5
