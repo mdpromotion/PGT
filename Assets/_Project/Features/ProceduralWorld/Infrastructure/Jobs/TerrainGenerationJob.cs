@@ -55,8 +55,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
 
             float worldX = _chunk.x * _chunkSizeX + x * stepX + _settings.Offset.x;
             float worldZ = _chunk.y * _chunkSizeZ + z * stepZ + _settings.Offset.y;
-
-            // ---- базовый рельеф (не искажается настройками рек) ----
+            
             float amplitude = 1f;
             float frequency = 1f;
             float height = 0f;

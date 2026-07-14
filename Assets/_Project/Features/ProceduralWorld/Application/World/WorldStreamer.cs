@@ -101,7 +101,13 @@ namespace _Project.Features.ProceduralWorld.Application.World
                 if (_requiredChunks.Contains(coordinate))
                     continue;
 
-                _chunkManager.Unload(coordinate);
+
+                _chunkManager.CancelLoad(
+                    coordinate);
+
+
+                _chunkManager.Unload(
+                    coordinate);
             }
 
             _activeChunks.Clear();

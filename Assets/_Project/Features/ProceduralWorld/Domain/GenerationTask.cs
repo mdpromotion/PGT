@@ -3,11 +3,13 @@ using Unity.Jobs;
 
 namespace _Project.Features.ProceduralWorld.Domain
 {
-    public readonly struct GenerationTask
+    public class GenerationTask
     {
-        public readonly JobHandle Handle;
+        public JobHandle Handle;
 
-        public readonly ChunkGenerationResult Result;
+        public ChunkGenerationResult Result;
+
+        public bool Cancelled;
 
 
         public GenerationTask(
@@ -16,6 +18,7 @@ namespace _Project.Features.ProceduralWorld.Domain
         {
             Handle = handle;
             Result = result;
+            Cancelled = false;
         }
     }
 }

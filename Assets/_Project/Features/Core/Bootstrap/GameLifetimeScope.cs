@@ -101,12 +101,7 @@ namespace _Project.Features.Core.Bootstrap
                         chunkPrefab.terrainData.size.x,
                         chunkPrefab.terrainData.size.z),
                 Lifetime.Singleton);
-
-
-
-            //
-            // World generation
-            //
+            
 
             builder.Register<ClimateGenerator>(
                 Lifetime.Singleton);
@@ -119,13 +114,7 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.Register<WorldGenerator>(
                 Lifetime.Singleton);
-
-
-
-            //
-            // Terrain generation
-            //
-
+            
             builder.Register<IChunkGenerator>(
                 container =>
                     new BurstChunkGenerator(
@@ -133,8 +122,7 @@ namespace _Project.Features.Core.Bootstrap
                         container.Resolve<WorldSettings>()),
                 Lifetime.Singleton);
 
-
-
+            
             builder.Register(
                     container =>
                         new TerrainChunkFactory(

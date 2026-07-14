@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Biomes;
@@ -8,7 +10,7 @@ using _Project.Features.ProceduralWorld.Infrastructure.World;
 
 namespace _Project.Features.ProceduralWorld.Application.Chunks
 {
-    public class ChunkManager
+    public class ChunkManager : IDisposable
     {
         private readonly ChunkGrid _grid;
 
@@ -20,6 +22,8 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
         private readonly IChunkNeighborConnector _neighborConnector;
 
         private readonly WorldGenerator _generator;
+        
+        private readonly HashSet<ChunkCoordinate> _loading = new();
 
 
 
@@ -48,10 +52,14 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
         public void Tick()
         {
             _scheduler.Tick(
-                _applier.Apply);
+                _applier.Apply,
+                FinishLoading);
         }
-
-
+        
+        public void Dispose()
+        {
+            _scheduler.CompleteAll();
+        }
 
         public void QueueLoad(
             ChunkCoordinate coordinate)
@@ -59,16 +67,19 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             if (_repository.Contains(coordinate))
                 return;
 
+            if (_loading.Contains(coordinate))
+                return;
 
             WorldPosition position =
                 new WorldPosition(
                     coordinate.X * _grid.ChunkSizeX,
                     coordinate.Y * _grid.ChunkSizeZ);
-            
+
             BiomeDefinition biome =
-                _generator.ResolveBiome(
-                    position);
-            
+                _generator.ResolveBiome(position);
+
+            _loading.Add(coordinate);
+
             _scheduler.Enqueue(
                 new ChunkGenerationRequest(
                     coordinate,
@@ -76,7 +87,19 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
                     biome));
         }
 
+        public void CancelLoad(
+            ChunkCoordinate coordinate)
+        {
+            _loading.Remove(coordinate);
 
+            _scheduler.Cancel(coordinate);
+        }
+        
+        public void FinishLoading(
+            ChunkCoordinate coordinate)
+        {
+            _loading.Remove(coordinate);
+        }
 
         public void Unload(
             ChunkCoordinate coordinate)
