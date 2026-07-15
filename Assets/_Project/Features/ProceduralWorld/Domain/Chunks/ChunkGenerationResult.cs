@@ -1,14 +1,13 @@
+using System;
 using Unity.Collections;
 
 namespace _Project.Features.ProceduralWorld.Domain.Chunks
 {
-    public struct ChunkGenerationResult
+    public class ChunkGenerationResult : IDisposable
     {
-        public ChunkCoordinate Coordinate;
-
-        public NativeArray<float> Heights;
-
-        public int Resolution;
+        public ChunkCoordinate Coordinate { get; }
+        public NativeArray<float> Heights { get; }
+        public int Resolution { get; }
 
         public ChunkGenerationResult(
             ChunkCoordinate coordinate,
@@ -18,6 +17,13 @@ namespace _Project.Features.ProceduralWorld.Domain.Chunks
             Coordinate = coordinate;
             Heights = heights;
             Resolution = resolution;
+        }
+
+        public void Dispose()
+        {
+            if (Heights.IsCreated)
+                Heights.Dispose();
+            
         }
     }
 }

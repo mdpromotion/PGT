@@ -56,6 +56,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             _neighborConnector.Connect(
                 _repository,
                 result.Coordinate);
+            
         }
     }
 }

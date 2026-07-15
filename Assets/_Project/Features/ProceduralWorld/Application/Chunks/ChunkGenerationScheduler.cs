@@ -17,10 +17,16 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             ChunkCoordinate,
             LinkedListNode<ChunkGenerationRequest>> _queued = new();
 
+
         private readonly List<GenerationTask> _running = new();
 
 
         private readonly ChunkCoordinateDistanceComparer _comparer = new();
+
+        private readonly Comparison<GenerationTask> _comparison;
+
+
+        private bool _needsSort;
 
 
         private const int MaxJobs = 10;
@@ -32,6 +38,12 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             IChunkGenerator generator)
         {
             _generator = generator;
+
+            _comparison =
+                (a, b) =>
+                    _comparer.Compare(
+                        a.Result.Coordinate,
+                        b.Result.Coordinate);
         }
 
 
@@ -42,8 +54,10 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             if (_queued.ContainsKey(request.Coordinate))
                 return;
 
+
             LinkedListNode<ChunkGenerationRequest> node =
                 _queue.AddLast(request);
+
 
             _queued.Add(
                 request.Coordinate,
@@ -58,7 +72,9 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
         {
             Schedule();
 
-            Complete(apply, completed);
+            Complete(
+                apply,
+                completed);
         }
 
 
@@ -71,14 +87,28 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
                 LinkedListNode<ChunkGenerationRequest> node =
                     _queue.First;
 
+
                 _queue.RemoveFirst();
+
 
                 _queued.Remove(
                     node.Value.Coordinate);
+                
 
                 _running.Add(
                     _generator.Schedule(
                         node.Value));
+                
+                _needsSort = true;
+            }
+
+
+            if(_needsSort)
+            {
+                _running.Sort(
+                    _comparison);
+
+                _needsSort = false;
             }
         }
 
@@ -91,20 +121,14 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             int applied = 0;
 
 
-            _running.Sort(
-                (a,b)=>
-                    _comparer.Compare(
-                        a.Result.Coordinate,
-                        b.Result.Coordinate));
-
-
             for(int i = 0; i < _running.Count;)
             {
                 if(applied >= MaxApplyPerFrame)
                     break;
 
 
-                var task = _running[i];
+                GenerationTask task =
+                    _running[i];
 
 
                 if(!task.Handle.IsCompleted)
@@ -112,33 +136,47 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
                     i++;
                     continue;
                 }
-
-
+                
                 task.Handle.Complete();
 
                 if(task.Cancelled)
                 {
-                    task.Result.Heights.Dispose();
+                    task.Result.Dispose();
 
                     completed(task.Result.Coordinate);
-
-                    _running.RemoveAt(i);
-
+                    RemoveTask(i);
                     continue;
                 }
 
+
                 apply(task.Result);
 
-                task.Result.Heights.Dispose();
+                task.Result.Dispose();
 
                 completed(task.Result.Coordinate);
-
-                _running.RemoveAt(i);
-
+                RemoveTask(i);
                 applied++;
             }
         }
-        
+
+
+
+        private void RemoveTask(
+            int index)
+        {
+            int last =
+                _running.Count - 1;
+
+
+            _running[index] =
+                _running[last];
+
+
+            _running.RemoveAt(last);
+        }
+
+
+
         public void Cancel(
             ChunkCoordinate coordinate)
         {
@@ -153,23 +191,28 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
                 return;
             }
 
+
             foreach (GenerationTask task in _running)
             {
-                if (task.Result.Coordinate.Equals(coordinate))
+                if(task.Result.Coordinate.Equals(coordinate))
                 {
                     task.Cancelled = true;
                     return;
                 }
             }
-        }   
+        }
+
+
+
         public void CompleteAll()
         {
-            foreach (GenerationTask task in _running)
+            foreach(GenerationTask task in _running)
             {
                 task.Handle.Complete();
-
-                task.Result.Heights.Dispose();
+                task.Result.Dispose();
             }
+            _running.Clear();
+
 
             _running.Clear();
         }

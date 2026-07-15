@@ -50,6 +50,10 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
             {
                 terrain = Object.Instantiate(_prefab, parent);
 
+                terrain.drawHeightmap = true;
+                terrain.drawTreesAndFoliage = true;
+                terrain.drawInstanced = true;
+
                 TerrainData data = CreateTerrainData();
                 terrain.terrainData = data;
 
