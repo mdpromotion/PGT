@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 838f247eb95b5ec4cac04e3c95f61077, type: 3}
   m_Name: WorldSettings
   m_EditorClassIdentifier: 
-  Seed: 0
+  Seed: 1
   Noise:
     TemperatureScale: 5000
     TemperatureOctaves: 3
