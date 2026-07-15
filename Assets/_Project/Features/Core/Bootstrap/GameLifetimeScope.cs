@@ -4,14 +4,17 @@ using _Project.Features.Player.Application;
 using _Project.Features.Player.Domain;
 using _Project.Features.Player.Infrastructure;
 using _Project.Features.Player.Presentation;
-using _Project.Features.ProceduralWorld.Application;
 using _Project.Features.ProceduralWorld.Application.Chunks;
+using _Project.Features.ProceduralWorld.Application.Chunks.Modifiers;
+using _Project.Features.ProceduralWorld.Application.Hydrology;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Application.World;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Biomes;
+using _Project.Features.ProceduralWorld.Domain.Hydrology;
 using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure;
+using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.World;
 using _Project.Features.ProceduralWorld.Presentation;
 using UnityEngine;
@@ -33,6 +36,9 @@ namespace _Project.Features.Core.Bootstrap
 
         [SerializeField]
         private BiomeDatabase biomeDatabase;
+
+        [SerializeField]
+        private HydrologySettings hydrologySettings;
 
         [SerializeField]
         private Transform chunksParent;
@@ -94,6 +100,10 @@ namespace _Project.Features.Core.Bootstrap
                 biomeDatabase);
 
 
+            builder.RegisterInstance(
+                hydrologySettings);
+
+
 
             builder.Register(
                 container =>
@@ -101,7 +111,8 @@ namespace _Project.Features.Core.Bootstrap
                         chunkPrefab.terrainData.size.x,
                         chunkPrefab.terrainData.size.z),
                 Lifetime.Singleton);
-            
+
+
 
             builder.Register<ClimateGenerator>(
                 Lifetime.Singleton);
@@ -114,15 +125,54 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.Register<WorldGenerator>(
                 Lifetime.Singleton);
+
             
+            builder.Register<HydrologyRegionCache>(
+                Lifetime.Singleton);
+
+
+            builder.Register<HydrologyService>(
+                    Lifetime.Singleton)
+                .As<IHydrologyProvider>()
+                .AsSelf();
+
+            builder.Register<HydrologyOrchestrator>(Lifetime.Singleton).AsSelf();
+            
+
+            builder.Register<HeightModifierPipeline>(
+                Lifetime.Singleton);
+
+
+            builder.Register(
+                    container =>
+                        new RiverHeightModifier(
+                            container.Resolve<IHydrologyProvider>(),
+                            hydrologySettings.Enabled),
+                    Lifetime.Singleton)
+                .As<IHeightModifier>();
+            
+            builder.RegisterComponentInHierarchy<HydrologyRegionVisualizer>();
+            
+            builder.RegisterBuildCallback(
+                container =>
+                {
+                    container.Resolve<HeightModifierPipeline>()
+                        .Add(
+                            container.Resolve<IHeightModifier>());
+                });
+
+
+
             builder.Register<IChunkGenerator>(
                 container =>
                     new BurstChunkGenerator(
                         container.Resolve<ChunkGrid>(),
-                        container.Resolve<WorldSettings>()),
+                        container.Resolve<WorldSettings>(),
+                        container.Resolve<HeightModifierPipeline>()),
                 Lifetime.Singleton);
 
-            
+
+
             builder.Register(
                     container =>
                         new TerrainChunkFactory(
@@ -136,9 +186,7 @@ namespace _Project.Features.Core.Bootstrap
             builder.Register<ChunkNeighborConnector>(
                     Lifetime.Singleton)
                 .As<IChunkNeighborConnector>();
-
-
-
+            
             builder.Register<UnityTerrainWriter>(
                     Lifetime.Singleton)
                 .As<ITerrainWriter>();
