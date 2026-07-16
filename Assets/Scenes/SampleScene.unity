@@ -612,7 +612,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1448567561}
-  - component: {fileID: 1448567560}
+  - component: {fileID: 1448567562}
   m_Layer: 0
   m_Name: Core
   m_TagString: Untagged
@@ -620,18 +620,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1448567560
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1448567559}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 895ca48c27662d2038eb4642593a9807, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1448567561
 Transform:
   m_ObjectHideFlags: 0
@@ -647,6 +635,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1448567562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1448567559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 895ca48c27662d2038eb4642593a9807, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.ProceduralWorld.Presentation.HydrologyRegionVisualizer
 --- !u!1 &1483479283
 GameObject:
   m_ObjectHideFlags: 0
@@ -810,7 +810,6 @@ MonoBehaviour:
   chunkPrefab: {fileID: 5116074535957847417, guid: 2ff94efd95661ba7789a898e4249b4c1, type: 3}
   worldSettings: {fileID: 11400000, guid: dbe12bdf8867feb4880810240955aec2, type: 2}
   biomeDatabase: {fileID: 11400000, guid: d38fb67540b9813a18085937a84d5b76, type: 2}
-  hydrologySettings: {fileID: 11400000, guid: f6df60c75f690574fa25460f8d2389d0, type: 2}
   chunksParent: {fileID: 758205965}
   viewDistance: 5
 --- !u!1 &1508698440
@@ -953,7 +952,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
@@ -970,12 +969,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c69b48f406de21869e31882342f076f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 55
+  _moveSpeed: 5555
   _jumpVelocity: 5
   _groundMask:
     serializedVersion: 2
-    m_Bits: 1
-  _groundCheckDistance: 1
+    m_Bits: 0
+  _groundCheckDistance: 0.15
 --- !u!114 &1508698447
 MonoBehaviour:
   m_ObjectHideFlags: 0

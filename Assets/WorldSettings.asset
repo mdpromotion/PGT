@@ -13,10 +13,8 @@ MonoBehaviour:
   m_Name: WorldSettings
   m_EditorClassIdentifier: 
   Seed: 1
-  Noise:
-    TemperatureScale: 5000
-    TemperatureOctaves: 3
-    TemperaturePersistence: 0.5
-    MoistureScale: 5000
-    MoistureOctaves: 3
-    MoisturePersistence: 0.5
+  Octaves: 3
+  Scale: 3000
+  Persistence: 1
+  Lacunarity: 1.5
+  RedistributionPower: 0.5
