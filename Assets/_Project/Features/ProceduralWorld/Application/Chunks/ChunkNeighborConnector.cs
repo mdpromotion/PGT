@@ -1,5 +1,6 @@
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
+using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Infrastructure;
 using UnityEngine;
 
@@ -143,7 +144,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             IChunkLookup chunks,
             ChunkCoordinate coordinate)
         {
-            return chunks.Get(coordinate);
+            return chunks.Get(coordinate)?.Terrain;
         }
 
 
@@ -157,7 +158,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             return chunks.Get(
                 new ChunkCoordinate(
                     origin.X + dx,
-                    origin.Y + dy));
+                    origin.Y + dy))?.Terrain;
         }
     }
 }

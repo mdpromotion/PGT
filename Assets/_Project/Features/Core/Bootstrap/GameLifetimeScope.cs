@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using _Project.Features.Camera.Presentation;
 using _Project.Features.Player.Application;
 using _Project.Features.Player.Domain;
@@ -6,16 +7,12 @@ using _Project.Features.Player.Infrastructure;
 using _Project.Features.Player.Presentation;
 using _Project.Features.ProceduralWorld.Application.Chunks;
 using _Project.Features.ProceduralWorld.Application.Chunks.Modifiers;
-using _Project.Features.ProceduralWorld.Application.Hydrology;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Application.World;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Biomes;
-using _Project.Features.ProceduralWorld.Domain.Hydrology;
 using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure;
-using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
-using _Project.Features.ProceduralWorld.Infrastructure.World;
 using _Project.Features.ProceduralWorld.Presentation;
 using UnityEngine;
 using VContainer;
@@ -36,9 +33,6 @@ namespace _Project.Features.Core.Bootstrap
 
         [SerializeField]
         private BiomeDatabase biomeDatabase;
-
-        [SerializeField]
-        private HydrologySettings hydrologySettings;
 
         [SerializeField]
         private Transform chunksParent;
@@ -87,8 +81,6 @@ namespace _Project.Features.Core.Bootstrap
                 .As<IPlayerReadOnly>();
         }
 
-
-
         private void RegisterProceduralWorld(
             IContainerBuilder builder)
         {
@@ -98,10 +90,6 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.RegisterInstance(
                 biomeDatabase);
-
-
-            builder.RegisterInstance(
-                hydrologySettings);
 
 
 
@@ -114,63 +102,35 @@ namespace _Project.Features.Core.Bootstrap
 
 
 
-            builder.Register<ClimateGenerator>(
-                Lifetime.Singleton);
-
-
             builder.Register<BiomeResolver>(
                     Lifetime.Singleton)
                 .As<IBiomeResolver>();
 
 
-            builder.Register<WorldGenerator>(
-                Lifetime.Singleton);
-
-            
-            builder.Register<HydrologyRegionCache>(
-                Lifetime.Singleton);
-
-
-            builder.Register<HydrologyService>(
-                    Lifetime.Singleton)
-                .As<IHydrologyProvider>()
-                .AsSelf();
-
-            builder.Register<HydrologyOrchestrator>(Lifetime.Singleton).AsSelf();
-            
 
             builder.Register<HeightModifierPipeline>(
                 Lifetime.Singleton);
 
-
-            builder.Register(
-                    container =>
-                        new RiverHeightModifier(
-                            container.Resolve<IHydrologyProvider>(),
-                            hydrologySettings.Enabled),
-                    Lifetime.Singleton)
-                .As<IHeightModifier>();
-            
-            builder.RegisterComponentInHierarchy<HydrologyRegionVisualizer>();
-            
             builder.RegisterBuildCallback(
                 container =>
                 {
-                    container.Resolve<HeightModifierPipeline>()
-                        .Add(
-                            container.Resolve<IHeightModifier>());
+                    HeightModifierPipeline pipeline =
+                        container.Resolve<HeightModifierPipeline>();
+
+                    foreach(IHeightModifier modifier in 
+                            container.Resolve<IEnumerable<IHeightModifier>>())
+                    {
+                        pipeline.Add(modifier);
+                    }
                 });
-
-
-
-            builder.Register<IChunkGenerator>(
+            
+            builder.Register<ILandscapeGenerator>(
                 container =>
-                    new BurstChunkGenerator(
+                    new BurstLandscapeGenerator(
                         container.Resolve<ChunkGrid>(),
                         container.Resolve<WorldSettings>(),
                         container.Resolve<HeightModifierPipeline>()),
                 Lifetime.Singleton);
-
 
 
             builder.Register(
@@ -186,7 +146,9 @@ namespace _Project.Features.Core.Bootstrap
             builder.Register<ChunkNeighborConnector>(
                     Lifetime.Singleton)
                 .As<IChunkNeighborConnector>();
-            
+
+
+
             builder.Register<UnityTerrainWriter>(
                     Lifetime.Singleton)
                 .As<ITerrainWriter>();
@@ -203,14 +165,14 @@ namespace _Project.Features.Core.Bootstrap
             builder.Register(
                     container =>
                         new ChunkGenerationScheduler(
-                            container.Resolve<IChunkGenerator>()),
+                            container.Resolve<ILandscapeGenerator>()),
                     Lifetime.Singleton);
 
 
 
             builder.Register(
                     container =>
-                        new ChunkApplier(
+                        new LandscapeApplier(
                             container.Resolve<ITerrainFactory>(),
                             container.Resolve<ITerrainWriter>(),
                             container.Resolve<IChunkNeighborConnector>(),
@@ -223,13 +185,11 @@ namespace _Project.Features.Core.Bootstrap
             builder.Register(
                     container =>
                         new ChunkManager(
-                            container.Resolve<ChunkGrid>(),
                             container.Resolve<ChunkGenerationScheduler>(),
                             container.Resolve<ChunkRepository>(),
-                            container.Resolve<ChunkApplier>(),
+                            container.Resolve<LandscapeApplier>(),
                             container.Resolve<ITerrainFactory>(),
-                            container.Resolve<IChunkNeighborConnector>(),
-                            container.Resolve<WorldGenerator>()),
+                            container.Resolve<IChunkNeighborConnector>()),
                     Lifetime.Singleton);
 
 
@@ -247,5 +207,7 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.RegisterComponentInHierarchy<ProceduralWorldPresenter>();
         }
+
+        
     }
 }

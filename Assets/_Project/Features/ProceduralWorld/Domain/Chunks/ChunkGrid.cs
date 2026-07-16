@@ -1,3 +1,4 @@
+using _Project.Features.ProceduralWorld.Domain.Chunks;
 using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Domain

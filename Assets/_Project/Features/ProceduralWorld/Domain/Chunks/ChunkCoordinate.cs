@@ -1,6 +1,6 @@
 using System;
 
-namespace _Project.Features.ProceduralWorld.Domain
+namespace _Project.Features.ProceduralWorld.Domain.Chunks
 {
     public readonly struct ChunkCoordinate : IEquatable<ChunkCoordinate>
     {

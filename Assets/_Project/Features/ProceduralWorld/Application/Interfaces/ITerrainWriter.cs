@@ -1,5 +1,4 @@
-using _Project.Features.ProceduralWorld.Domain;
-using _Project.Features.ProceduralWorld.Domain.Chunks;
+using _Project.Features.ProceduralWorld.Domain.Landscape;
 using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Application.Interfaces
@@ -8,6 +7,6 @@ namespace _Project.Features.ProceduralWorld.Application.Interfaces
     {
         void Write(
             Terrain terrain,
-            ChunkGenerationResult result);
+            LandscapeData data);
     }
 }

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using _Project.Features.ProceduralWorld.Application.Chunks.Modifiers;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
-using _Project.Features.ProceduralWorld.Domain.Biomes.Settings;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
+using _Project.Features.ProceduralWorld.Domain.Landscape;
 using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
@@ -16,18 +16,20 @@ using Random = Unity.Mathematics.Random;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure
 {
-    public class BurstChunkGenerator : IChunkGenerator, IDisposable
+    public class BurstLandscapeGenerator : ILandscapeGenerator, IDisposable
     {
         private readonly ChunkGrid _grid;
+
         private readonly WorldSettings _worldSettings;
         private readonly HeightModifierPipeline _modifierPipeline;
+
 
         private readonly Dictionary<int, NativeArray<float2>>
             _octaveOffsetsCache = new();
 
 
 
-        public BurstChunkGenerator(
+        public BurstLandscapeGenerator(
             ChunkGrid grid,
             WorldSettings worldSettings,
             HeightModifierPipeline modifierPipeline)
@@ -36,9 +38,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
             _worldSettings = worldSettings;
 
-            _modifierPipeline =
-                modifierPipeline;
+            _modifierPipeline = modifierPipeline;
         }
+
 
 
         public GenerationTask Schedule(
@@ -59,17 +61,16 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
             NativeArray<float2> octaveOffsets =
                 GetOctaveOffsets(
-                    request.Biome.Generation.Octaves);
+                    _worldSettings.Octaves);
 
 
 
-            TerrainNoiseSettings terrainSettings =
-                CreateTerrainSettings(
-                    request.Biome.Generation);
+            TerrainNoiseSettings settings =
+                CreateTerrainSettings();
 
 
 
-            TerrainGenerationJob terrainJob =
+            TerrainGenerationJob job =
                 new TerrainGenerationJob(
                     heights,
                     request.Resolution,
@@ -78,27 +79,25 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
                     new int2(
                         request.Coordinate.X,
                         request.Coordinate.Y),
-                    terrainSettings,
+                    settings,
                     octaveOffsets);
 
 
 
             JobHandle handle =
-                terrainJob.Schedule(
+                job.Schedule(
                     count,
                     64);
-
-
+            
             ChunkGenerationContext context =
                 new ChunkGenerationContext(
                     request.Coordinate,
-                    new Unity.Mathematics.float2(
+                    new float2(
                         request.Coordinate.X * _grid.ChunkSizeX,
                         request.Coordinate.Y * _grid.ChunkSizeZ),
                     _grid.ChunkSizeX,
                     _grid.ChunkSizeZ,
                     request.Resolution);
-
 
 
             handle =
@@ -107,11 +106,10 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
                     heights,
                     handle);
 
-
-
+            
             return new GenerationTask(
                 handle,
-                new ChunkGenerationResult(
+                new LandscapeData(
                     request.Coordinate,
                     heights,
                     request.Resolution));
@@ -119,27 +117,24 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
 
 
-
-
-        private TerrainNoiseSettings CreateTerrainSettings(
-            BiomeGenerationSettings settings)
+        private TerrainNoiseSettings CreateTerrainSettings()
         {
             return new TerrainNoiseSettings
             {
                 Scale =
-                    settings.Scale,
+                    _worldSettings.Scale,
 
                 Octaves =
-                    settings.Octaves,
+                    _worldSettings.Octaves,
 
                 Persistence =
-                    settings.Persistence,
+                    _worldSettings.Persistence,
 
                 Lacunarity =
-                    settings.Lacunarity,
+                    _worldSettings.Lacunarity,
 
                 RedistributionPower =
-                    settings.RedistributionPower,
+                    _worldSettings.RedistributionPower,
 
                 Offset =
                     float2.zero
@@ -148,14 +143,12 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
 
 
-
-
         private NativeArray<float2> GetOctaveOffsets(
             int octaves)
         {
             if (_octaveOffsetsCache.TryGetValue(
                     octaves,
-                    out var offsets))
+                    out NativeArray<float2> offsets))
             {
                 return offsets;
             }
@@ -203,13 +196,12 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
 
 
-
-
         public void Dispose()
         {
-            foreach (var offsets in _octaveOffsetsCache.Values)
+            foreach (NativeArray<float2> offsets
+                     in _octaveOffsetsCache.Values)
             {
-                if (offsets.IsCreated)
+                if(offsets.IsCreated)
                     offsets.Dispose();
             }
 

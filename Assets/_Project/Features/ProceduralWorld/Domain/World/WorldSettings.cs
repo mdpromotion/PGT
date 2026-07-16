@@ -9,6 +9,10 @@ namespace _Project.Features.ProceduralWorld.Domain.World
     {
         public int Seed;
         
-        public WorldNoiseSettings Noise;
+        public int Octaves;
+        public float Scale;
+        public float Persistence;
+        public float Lacunarity;
+        public float RedistributionPower;
     }
 }

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
+using _Project.Features.ProceduralWorld.Domain.Landscape;
 
 namespace _Project.Features.ProceduralWorld.Application.Chunks
 {
     public class ChunkGenerationScheduler
     {
-        private readonly IChunkGenerator _generator;
+        private readonly ILandscapeGenerator _generator;
 
 
         private readonly LinkedList<ChunkGenerationRequest> _queue = new();
@@ -35,7 +36,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
 
         public ChunkGenerationScheduler(
-            IChunkGenerator generator)
+            ILandscapeGenerator generator)
         {
             _generator = generator;
 
@@ -67,7 +68,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
 
         public void Tick(
-            Action<ChunkGenerationResult> apply,
+            Action<LandscapeData> apply,
             Action<ChunkCoordinate> completed)
         {
             Schedule();
@@ -115,15 +116,15 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
 
         private void Complete(
-            Action<ChunkGenerationResult> apply,
+            Action<LandscapeData> apply,
             Action<ChunkCoordinate> completed)
         {
             int applied = 0;
 
 
-            for(int i = 0; i < _running.Count;)
+            for (int i = 0; i < _running.Count;)
             {
-                if(applied >= MaxApplyPerFrame)
+                if (applied >= MaxApplyPerFrame)
                     break;
 
 
@@ -131,30 +132,42 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
                     _running[i];
 
 
-                if(!task.Handle.IsCompleted)
+                if (!task.Handle.IsCompleted)
                 {
                     i++;
                     continue;
                 }
-                
+
+
                 task.Handle.Complete();
 
-                if(task.Cancelled)
+
+                if (task.Cancelled)
                 {
                     task.Result.Dispose();
 
-                    completed(task.Result.Coordinate);
+                    completed(
+                        task.Result.Coordinate);
+
                     RemoveTask(i);
+
                     continue;
                 }
 
 
-                apply(task.Result);
+                apply(
+                    task.Result);
+
 
                 task.Result.Dispose();
 
-                completed(task.Result.Coordinate);
+
+                completed(
+                    task.Result.Coordinate);
+
+
                 RemoveTask(i);
+
                 applied++;
             }
         }

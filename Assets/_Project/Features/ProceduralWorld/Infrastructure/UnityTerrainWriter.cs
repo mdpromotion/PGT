@@ -1,6 +1,7 @@
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
+using _Project.Features.ProceduralWorld.Domain.Landscape;
 using Unity.Collections;
 using UnityEngine;
 
@@ -13,12 +14,12 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
         public void Write(
             Terrain terrain,
-            ChunkGenerationResult result)
+            LandscapeData data)
         {
-            EnsureBuffer(result.Resolution);
+            EnsureBuffer(data.Resolution);
 
 
-            FillBuffer(result);
+            FillBuffer(data);
 
 
             terrain.terrainData
@@ -47,10 +48,13 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
 
         private void FillBuffer(
-            ChunkGenerationResult result)
+            LandscapeData data)
         {
-            int resolution = result.Resolution;
-            NativeArray<float> heights = result.Heights;
+            int resolution = data.Resolution;
+
+            NativeArray<float> heights =
+                data.Heights;
+
 
             for (int y = 0; y < resolution; y++)
             {
@@ -58,7 +62,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
                 for (int x = 0; x < resolution; x++)
                 {
-                    _buffer[y, x] = heights[row + x];
+                    _buffer[y, x] =
+                        heights[row + x];
                 }
             }
         }

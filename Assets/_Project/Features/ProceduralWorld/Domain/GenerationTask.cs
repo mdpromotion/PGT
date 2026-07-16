@@ -1,4 +1,4 @@
-using _Project.Features.ProceduralWorld.Domain.Chunks;
+using _Project.Features.ProceduralWorld.Domain.Landscape;
 using Unity.Jobs;
 
 namespace _Project.Features.ProceduralWorld.Domain
@@ -7,18 +7,18 @@ namespace _Project.Features.ProceduralWorld.Domain
     {
         public JobHandle Handle;
 
-        public ChunkGenerationResult Result;
+        public LandscapeData Result;
 
         public bool Cancelled;
 
 
         public GenerationTask(
             JobHandle handle,
-            ChunkGenerationResult result)
+            LandscapeData result)
         {
             Handle = handle;
+
             Result = result;
-            Cancelled = false;
         }
     }
 }

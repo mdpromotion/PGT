@@ -1,11 +1,12 @@
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
+using _Project.Features.ProceduralWorld.Domain.Landscape;
 using _Project.Features.ProceduralWorld.Infrastructure;
 using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Application.Chunks
 {
-    public class ChunkApplier
+    public class LandscapeApplier
     {
         private readonly ITerrainFactory _factory;
         private readonly ITerrainWriter _writer;
@@ -15,7 +16,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
 
 
-        public ChunkApplier(
+        public LandscapeApplier(
             ITerrainFactory factory,
             ITerrainWriter writer,
             IChunkNeighborConnector neighborConnector,
@@ -32,31 +33,36 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
 
         public void Apply(
-            ChunkGenerationResult result)
+            LandscapeData data)
         {
             Terrain terrain =
                 _factory.Create(
-                    result.Coordinate,
+                    data.Coordinate,
                     _parent);
 
 
             _writer.Write(
                 terrain,
-                result);
+                data);
 
 
             terrain.terrainData.SyncHeightmap();
 
 
+            ChunkInstance chunk =
+                new ChunkInstance(
+                    data.Coordinate,
+                    data,
+                    terrain);
+
+
             _repository.Add(
-                result.Coordinate,
-                terrain);
+                chunk);
 
 
             _neighborConnector.Connect(
                 _repository,
-                result.Coordinate);
-            
+                data.Coordinate);
         }
     }
 }

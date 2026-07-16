@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
-using _Project.Features.ProceduralWorld.Domain;
-using UnityEngine;
+using _Project.Features.ProceduralWorld.Domain.Chunks;
 
 namespace _Project.Features.ProceduralWorld.Application.Chunks
 {
@@ -9,7 +8,8 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
     {
         private readonly Dictionary<
             ChunkCoordinate,
-            Terrain> _chunks = new();
+            ChunkInstance> _chunks = new();
+
 
 
         public bool Contains(
@@ -19,35 +19,38 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
         }
 
 
+
         public bool TryGet(
             ChunkCoordinate coordinate,
-            out Terrain terrain)
+            out ChunkInstance chunk)
         {
             return _chunks.TryGetValue(
                 coordinate,
-                out terrain);
+                out chunk);
         }
 
 
-        public Terrain Get(
+
+        public ChunkInstance Get(
             ChunkCoordinate coordinate)
         {
             return _chunks.TryGetValue(
                 coordinate,
-                out Terrain terrain)
-                ? terrain
+                out ChunkInstance chunk)
+                ? chunk
                 : null;
         }
 
 
+
         public void Add(
-            ChunkCoordinate coordinate,
-            Terrain terrain)
+            ChunkInstance chunk)
         {
             _chunks.Add(
-                coordinate,
-                terrain);
+                chunk.Coordinate,
+                chunk);
         }
+
 
 
         public void Remove(

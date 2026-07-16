@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace _Project.Features.ProceduralWorld.Domain
+namespace _Project.Features.ProceduralWorld.Domain.Chunks
 {
     public sealed class ChunkCoordinateDistanceComparer : IComparer<ChunkCoordinate>
     {
