@@ -1,33 +1,38 @@
 using System;
 using System.Collections.Generic;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
-using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
-using _Project.Features.ProceduralWorld.Domain.Landscape;
+
 
 namespace _Project.Features.ProceduralWorld.Application.Chunks
 {
     public class ChunkGenerationScheduler
     {
-        private readonly ILandscapeGenerator _generator;
+        private readonly IChunkGenerator _generator;
 
 
         private readonly LinkedList<ChunkGenerationRequest> _queue = new();
+
 
         private readonly Dictionary<
             ChunkCoordinate,
             LinkedListNode<ChunkGenerationRequest>> _queued = new();
 
 
+
         private readonly List<GenerationTask> _running = new();
+
 
 
         private readonly ChunkCoordinateDistanceComparer _comparer = new();
 
+
         private readonly Comparison<GenerationTask> _comparison;
 
 
+
         private bool _needsSort;
+
 
 
         private const int MaxJobs = 10;
@@ -36,15 +41,16 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
 
         public ChunkGenerationScheduler(
-            ILandscapeGenerator generator)
+            IChunkGenerator generator)
         {
             _generator = generator;
+
 
             _comparison =
                 (a, b) =>
                     _comparer.Compare(
-                        a.Result.Coordinate,
-                        b.Result.Coordinate);
+                        a.State.Context.Coordinate,
+                        b.State.Context.Coordinate);
         }
 
 
@@ -52,12 +58,16 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
         public void Enqueue(
             ChunkGenerationRequest request)
         {
-            if (_queued.ContainsKey(request.Coordinate))
+            if (_queued.ContainsKey(
+                    request.Coordinate))
+            {
                 return;
+            }
 
 
             LinkedListNode<ChunkGenerationRequest> node =
                 _queue.AddLast(request);
+
 
 
             _queued.Add(
@@ -68,10 +78,11 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
 
         public void Tick(
-            Action<LandscapeData> apply,
+            Action<ChunkGenerationResult> apply,
             Action<ChunkCoordinate> completed)
         {
             Schedule();
+
 
             Complete(
                 apply,
@@ -89,25 +100,34 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
                     _queue.First;
 
 
+
                 _queue.RemoveFirst();
 
 
                 _queued.Remove(
                     node.Value.Coordinate);
-                
 
-                _running.Add(
+
+
+                GenerationTask task =
                     _generator.Schedule(
-                        node.Value));
-                
+                        node.Value);
+
+
+
+                _running.Add(task);
+
+
                 _needsSort = true;
             }
 
 
-            if(_needsSort)
+
+            if (_needsSort)
             {
                 _running.Sort(
                     _comparison);
+
 
                 _needsSort = false;
             }
@@ -116,57 +136,83 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
 
         private void Complete(
-            Action<LandscapeData> apply,
+            Action<ChunkGenerationResult> apply,
             Action<ChunkCoordinate> completed)
         {
             int applied = 0;
 
 
-            for (int i = 0; i < _running.Count;)
+
+            for(int i = 0; i < _running.Count;)
             {
-                if (applied >= MaxApplyPerFrame)
+                if(applied >= MaxApplyPerFrame)
                     break;
+
 
 
                 GenerationTask task =
                     _running[i];
 
 
-                if (!task.Handle.IsCompleted)
+
+                if(!task.Handle.IsCompleted)
                 {
                     i++;
                     continue;
                 }
 
 
+
                 task.Handle.Complete();
 
 
-                if (task.Cancelled)
+
+                ChunkCoordinate coordinate =
+                    task.State.Context.Coordinate;
+
+
+
+                if(task.Cancelled)
                 {
-                    task.Result.Dispose();
+                    task.State.Landscape.Dispose();
+
 
                     completed(
-                        task.Result.Coordinate);
+                        coordinate);
+
+
 
                     RemoveTask(i);
+
 
                     continue;
                 }
 
 
+
+                ChunkGenerationResult result =
+                    new ChunkGenerationResult(
+                        task.State);
+
+
+
                 apply(
-                    task.Result);
+                    result);
 
 
-                task.Result.Dispose();
+
+                task.State.Landscape.Dispose();
+
 
 
                 completed(
-                    task.Result.Coordinate);
+                    coordinate);
+
 
 
                 RemoveTask(i);
+
+
 
                 applied++;
             }
@@ -181,6 +227,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
                 _running.Count - 1;
 
 
+
             _running[index] =
                 _running[last];
 
@@ -193,23 +240,29 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
         public void Cancel(
             ChunkCoordinate coordinate)
         {
-            if (_queued.TryGetValue(
+            if(_queued.TryGetValue(
                     coordinate,
                     out LinkedListNode<ChunkGenerationRequest> node))
             {
                 _queue.Remove(node);
 
-                _queued.Remove(coordinate);
+
+                _queued.Remove(
+                    coordinate);
+
 
                 return;
             }
 
 
-            foreach (GenerationTask task in _running)
+
+            foreach(GenerationTask task in _running)
             {
-                if(task.Result.Coordinate.Equals(coordinate))
+                if(task.State.Context.Coordinate.Equals(
+                       coordinate))
                 {
                     task.Cancelled = true;
+
                     return;
                 }
             }
@@ -222,12 +275,15 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             foreach(GenerationTask task in _running)
             {
                 task.Handle.Complete();
-                task.Result.Dispose();
+
+
+                task.State.Landscape.Dispose();
             }
-            _running.Clear();
 
 
             _running.Clear();
+            _queue.Clear();
+            _queued.Clear();
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using _Project.Features.ProceduralWorld.Application.Chunks;
 using _Project.Features.ProceduralWorld.Application.Chunks.Modifiers;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
@@ -16,7 +17,7 @@ using Random = Unity.Mathematics.Random;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure
 {
-    public class BurstLandscapeGenerator : ILandscapeGenerator, IDisposable
+    public class BurstChunkGenerator : IChunkGenerator, IDisposable
     {
         private readonly ChunkGrid _grid;
 
@@ -29,7 +30,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
 
 
-        public BurstLandscapeGenerator(
+        public BurstChunkGenerator(
             ChunkGrid grid,
             WorldSettings worldSettings,
             HeightModifierPipeline modifierPipeline)
@@ -89,30 +90,34 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
                     count,
                     64);
             
-            ChunkGenerationContext context =
-                new ChunkGenerationContext(
+            LandscapeData landscape =
+                new LandscapeData(
                     request.Coordinate,
-                    new float2(
-                        request.Coordinate.X * _grid.ChunkSizeX,
-                        request.Coordinate.Y * _grid.ChunkSizeZ),
-                    _grid.ChunkSizeX,
-                    _grid.ChunkSizeZ,
+                    heights,
                     request.Resolution);
 
 
+
+            ChunkGenerationContext context =
+                new ChunkGenerationContext(
+                    request.Coordinate);
+            
             handle =
                 _modifierPipeline.Schedule(
                     context,
                     heights,
                     handle);
 
-            
+            ChunkGenerationState state =
+                new ChunkGenerationState(
+                    context,
+                    landscape);
+
+
+
             return new GenerationTask(
                 handle,
-                new LandscapeData(
-                    request.Coordinate,
-                    heights,
-                    request.Resolution));
+                state);
         }
 
 

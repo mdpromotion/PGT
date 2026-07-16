@@ -33,8 +33,12 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
 
         public void Apply(
-            LandscapeData data)
+            ChunkGenerationResult result)
         {
+            LandscapeData data =
+                result.State.Landscape;
+
+
             Terrain terrain =
                 _factory.Create(
                     data.Coordinate,
@@ -49,6 +53,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             terrain.terrainData.SyncHeightmap();
 
 
+
             ChunkInstance chunk =
                 new ChunkInstance(
                     data.Coordinate,
@@ -56,8 +61,10 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
                     terrain);
 
 
+
             _repository.Add(
                 chunk);
+
 
 
             _neighborConnector.Connect(

@@ -1,24 +1,26 @@
-using _Project.Features.ProceduralWorld.Domain.Landscape;
 using Unity.Jobs;
+using _Project.Features.ProceduralWorld.Domain.Chunks;
 
-namespace _Project.Features.ProceduralWorld.Domain
+
+namespace _Project.Features.ProceduralWorld.Application.Chunks
 {
-    public class GenerationTask
+    public sealed class GenerationTask
     {
-        public JobHandle Handle;
+        public JobHandle Handle { get; }
 
-        public LandscapeData Result;
+        public ChunkGenerationState State { get; }
+
 
         public bool Cancelled;
 
 
+
         public GenerationTask(
             JobHandle handle,
-            LandscapeData result)
+            ChunkGenerationState state)
         {
             Handle = handle;
-
-            Result = result;
+            State = state;
         }
     }
 }

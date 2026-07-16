@@ -124,9 +124,9 @@ namespace _Project.Features.Core.Bootstrap
                     }
                 });
             
-            builder.Register<ILandscapeGenerator>(
+            builder.Register<IChunkGenerator>(
                 container =>
-                    new BurstLandscapeGenerator(
+                    new BurstChunkGenerator(
                         container.Resolve<ChunkGrid>(),
                         container.Resolve<WorldSettings>(),
                         container.Resolve<HeightModifierPipeline>()),
@@ -165,7 +165,7 @@ namespace _Project.Features.Core.Bootstrap
             builder.Register(
                     container =>
                         new ChunkGenerationScheduler(
-                            container.Resolve<ILandscapeGenerator>()),
+                            container.Resolve<IChunkGenerator>()),
                     Lifetime.Singleton);
 
 
