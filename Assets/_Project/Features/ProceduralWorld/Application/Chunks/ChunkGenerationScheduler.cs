@@ -8,42 +8,29 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 {
     public class ChunkGenerationScheduler
     {
-        private readonly IChunkGenerator _generator;
-
-
+        private readonly IChunkGenerator _pipeline;
+        
         private readonly LinkedList<ChunkGenerationRequest> _queue = new();
-
-
+        
         private readonly Dictionary<
             ChunkCoordinate,
             LinkedListNode<ChunkGenerationRequest>> _queued = new();
-
-
-
+        
         private readonly List<GenerationTask> _running = new();
-
-
-
         private readonly ChunkCoordinateDistanceComparer _comparer = new();
-
-
         private readonly Comparison<GenerationTask> _comparison;
-
-
-
+        
         private bool _needsSort;
-
-
-
+        
         private const int MaxJobs = 10;
         private const int MaxApplyPerFrame = 1;
 
 
 
         public ChunkGenerationScheduler(
-            IChunkGenerator generator)
+            IChunkGenerator pipeline)
         {
-            _generator = generator;
+            _pipeline = pipeline;
 
 
             _comparison =
@@ -110,7 +97,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
 
                 GenerationTask task =
-                    _generator.Schedule(
+                    _pipeline.Schedule(
                         node.Value);
 
 

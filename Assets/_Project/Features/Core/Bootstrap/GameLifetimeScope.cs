@@ -6,17 +6,19 @@ using _Project.Features.Player.Domain;
 using _Project.Features.Player.Infrastructure;
 using _Project.Features.Player.Presentation;
 using _Project.Features.ProceduralWorld.Application.Chunks;
-using _Project.Features.ProceduralWorld.Application.Chunks.Modifiers;
+using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Application.World;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Biomes;
 using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure;
+using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
 using _Project.Features.ProceduralWorld.Presentation;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
+
 
 
 namespace _Project.Features.Core.Bootstrap
@@ -81,6 +83,8 @@ namespace _Project.Features.Core.Bootstrap
                 .As<IPlayerReadOnly>();
         }
 
+
+
         private void RegisterProceduralWorld(
             IContainerBuilder builder)
         {
@@ -94,11 +98,11 @@ namespace _Project.Features.Core.Bootstrap
 
 
             builder.Register(
-                container =>
-                    new ChunkGrid(
-                        chunkPrefab.terrainData.size.x,
-                        chunkPrefab.terrainData.size.z),
-                Lifetime.Singleton);
+                    container =>
+                        new ChunkGrid(
+                            chunkPrefab.terrainData.size.x,
+                            chunkPrefab.terrainData.size.z),
+                    Lifetime.Singleton);
 
 
 
@@ -106,32 +110,47 @@ namespace _Project.Features.Core.Bootstrap
                     Lifetime.Singleton)
                 .As<IBiomeResolver>();
 
+            builder.Register<LandscapeGenerator>(
+                    Lifetime.Singleton)
+                .As<IGenerationStage>()
+                .As<IDisposable>();
 
 
-            builder.Register<HeightModifierPipeline>(
+
+            builder.Register<ChunkGenerationPipeline>(
                 Lifetime.Singleton);
+
+
 
             builder.RegisterBuildCallback(
                 container =>
                 {
-                    HeightModifierPipeline pipeline =
-                        container.Resolve<HeightModifierPipeline>();
+                    ChunkGenerationPipeline pipeline =
+                        container.Resolve<ChunkGenerationPipeline>();
 
-                    foreach(IHeightModifier modifier in 
-                            container.Resolve<IEnumerable<IHeightModifier>>())
+
+                    foreach(IGenerationStage stage in 
+                            container.Resolve<
+                                IEnumerable<IGenerationStage>>())
                     {
-                        pipeline.Add(modifier);
+                        pipeline.Add(stage);
                     }
                 });
-            
-            builder.Register<IChunkGenerator>(
-                container =>
-                    new BurstChunkGenerator(
-                        container.Resolve<ChunkGrid>(),
-                        container.Resolve<WorldSettings>(),
-                        container.Resolve<HeightModifierPipeline>()),
-                Lifetime.Singleton);
 
+            builder.Register<IChunkGenerator>(
+                    container =>
+                        container.Resolve<
+                            ChunkGenerationPipeline>(),
+                    Lifetime.Singleton);
+
+
+
+            builder.Register(
+                    container =>
+                        new ChunkGenerationScheduler(
+                            container.Resolve<
+                                IChunkGenerator>()),
+                    Lifetime.Singleton);
 
             builder.Register(
                     container =>
@@ -159,14 +178,6 @@ namespace _Project.Features.Core.Bootstrap
                     Lifetime.Singleton)
                 .AsSelf()
                 .As<IChunkLookup>();
-
-
-
-            builder.Register(
-                    container =>
-                        new ChunkGenerationScheduler(
-                            container.Resolve<IChunkGenerator>()),
-                    Lifetime.Singleton);
 
 
 
@@ -207,7 +218,5 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.RegisterComponentInHierarchy<ProceduralWorldPresenter>();
         }
-
-        
     }
 }

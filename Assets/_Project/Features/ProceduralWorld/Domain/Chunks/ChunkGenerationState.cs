@@ -6,16 +6,14 @@ namespace _Project.Features.ProceduralWorld.Domain.Chunks
     {
         public ChunkGenerationContext Context { get; }
 
+        public LandscapeData Landscape { get; set; }
 
-        public LandscapeData Landscape { get; }
 
 
         public ChunkGenerationState(
-            ChunkGenerationContext context,
-            LandscapeData landscape)
+            ChunkGenerationContext context)
         {
             Context = context;
-            Landscape = landscape;
         }
     }
 }
