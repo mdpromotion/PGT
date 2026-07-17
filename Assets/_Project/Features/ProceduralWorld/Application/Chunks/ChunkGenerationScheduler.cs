@@ -163,15 +163,11 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
                 {
                     task.State.Landscape.Dispose();
 
-
                     completed(
                         coordinate);
-
-
-
+                    
                     RemoveTask(i);
-
-
+                    
                     continue;
                 }
 
@@ -180,27 +176,17 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
                 ChunkGenerationResult result =
                     new ChunkGenerationResult(
                         task.State);
-
-
-
+                
                 apply(
                     result);
-
-
-
+                
                 task.State.Landscape.Dispose();
-
-
-
+                
                 completed(
                     coordinate);
-
-
-
+                
                 RemoveTask(i);
-
-
-
+                
                 applied++;
             }
         }
@@ -262,8 +248,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             foreach(GenerationTask task in _running)
             {
                 task.Handle.Complete();
-
-
+                
                 task.State.Landscape.Dispose();
             }
 

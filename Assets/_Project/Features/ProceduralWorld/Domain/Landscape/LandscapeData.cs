@@ -9,8 +9,9 @@ namespace _Project.Features.ProceduralWorld.Domain.Landscape
 
         public NativeArray<float> Heights { get; }
 
-        public int Resolution { get; }
+        public NativeArray<float> RiverMask { get; private set; }
 
+        public int Resolution { get; }
 
         public LandscapeData(
             ChunkCoordinate coordinate,
@@ -25,11 +26,25 @@ namespace _Project.Features.ProceduralWorld.Domain.Landscape
         }
 
 
+
+        public void AttachRiverMask(
+            NativeArray<float> riverMask)
+        {
+            RiverMask = riverMask;
+        }
+
+
+
         public void Dispose()
         {
             if (Heights.IsCreated)
             {
                 Heights.Dispose();
+            }
+
+            if (RiverMask.IsCreated)
+            {
+                RiverMask.Dispose();
             }
         }
     }

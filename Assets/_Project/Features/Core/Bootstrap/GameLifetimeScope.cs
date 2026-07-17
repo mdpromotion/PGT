@@ -13,6 +13,8 @@ using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Biomes;
 using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure;
+using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
+using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
 using _Project.Features.ProceduralWorld.Presentation;
 using UnityEngine;
@@ -38,6 +40,9 @@ namespace _Project.Features.Core.Bootstrap
 
         [SerializeField]
         private Transform chunksParent;
+        
+        [SerializeField] 
+        private HydrologySettings hydrologySettings;
 
         [SerializeField]
         private int viewDistance = 3;
@@ -83,8 +88,6 @@ namespace _Project.Features.Core.Bootstrap
                 .As<IPlayerReadOnly>();
         }
 
-
-
         private void RegisterProceduralWorld(
             IContainerBuilder builder)
         {
@@ -94,6 +97,10 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.RegisterInstance(
                 biomeDatabase);
+
+
+            builder.RegisterInstance(
+                hydrologySettings);
 
 
 
@@ -110,7 +117,30 @@ namespace _Project.Features.Core.Bootstrap
                     Lifetime.Singleton)
                 .As<IBiomeResolver>();
 
+
+
+            builder.Register<TerrainNoiseSettingsProvider>(
+                    Lifetime.Singleton)
+                .AsSelf()
+                .As<IDisposable>();
+
+
+
             builder.Register<LandscapeGenerator>(
+                    Lifetime.Singleton)
+                .As<IGenerationStage>();
+
+
+
+            builder.Register<HydrologyRegionBuilder>(
+                    Lifetime.Singleton);
+
+
+            builder.Register<HydrologyRegionCache>(
+                    Lifetime.Singleton);
+            
+
+            builder.Register<HydrologyGenerator>(
                     Lifetime.Singleton)
                 .As<IGenerationStage>()
                 .As<IDisposable>();
@@ -137,6 +167,8 @@ namespace _Project.Features.Core.Bootstrap
                     }
                 });
 
+
+
             builder.Register<IChunkGenerator>(
                     container =>
                         container.Resolve<
@@ -151,6 +183,8 @@ namespace _Project.Features.Core.Bootstrap
                             container.Resolve<
                                 IChunkGenerator>()),
                     Lifetime.Singleton);
+
+
 
             builder.Register(
                     container =>
