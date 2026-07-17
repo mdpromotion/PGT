@@ -14,16 +14,29 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings
         public int MaxTraceSteps;
         public int Seed;
 
-        // --- Новое ---
-
         [Header("Water source (lake)")]
         public float LakeRadius;
         public float LakeDepth;
+        
+        public float SpringBasinFlatness;
 
         [Header("Continuous tracing / meander")]
-        public float StepDistance;      // длина одного шага реки в мировых единицах
-        public float TurnSmoothing;     // 0..1, чем ближе к 1 — тем плавнее повороты (инерция направления)
-        public float MeanderStrength;   // 0..1, случайное виляние поперёк направления течения
-        public float GradientEpsilon;   // шаг для численного градиента (обычно ~0.5–1 юнита)
+        public float StepDistance;
+        public float TurnSmoothing;
+        public float MeanderStrength;
+        public float GradientEpsilon;
+
+        public float BaseStrengthGrowth;
+        public float SlopeStrengthFactor;
+        public float MaxRiverStrength;
+        public float ConfluenceDistance;
+        public float LakeMergeDistance;
+        public float ConfluenceStrengthFactor;
+
+        [Header("Fade in/out")]
+        public int RiverStartFadeSteps;
+        public float InitialRiverStrength;
+        
+        public int RiverEndFadeSteps;
     }
 }

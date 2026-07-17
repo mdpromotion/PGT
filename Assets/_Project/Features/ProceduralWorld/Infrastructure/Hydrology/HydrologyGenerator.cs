@@ -68,9 +68,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 (viewDistance / _settings.RegionSizeInChunks) + 1;
 
             EvictMergedOutside(centerRegion, keepRegionRadius);
-
-            // regionCache должен хранить на 1 регион больше радиуса,
-            // т.к. merged-кэш на каждый регион тянет соседей 3x3
+            
             _regionCache.EvictOutside(centerRegion, keepRegionRadius + 1);
         }
         
