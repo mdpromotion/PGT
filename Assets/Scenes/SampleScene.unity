@@ -811,21 +811,6 @@ MonoBehaviour:
   worldSettings: {fileID: 11400000, guid: dbe12bdf8867feb4880810240955aec2, type: 2}
   chunksParent: {fileID: 758205965}
   hydrologySettings:
-<<<<<<< Updated upstream
-    RegionSizeInChunks: 32
-    RegionCoarseResolution: 64
-    RiverSourceCount: 3
-    CarveDepth: 0.1
-    RiverWidth: 32
-    MaxTraceSteps: 128
-    Seed: 0
-    LakeRadius: 45
-    LakeDepth: 0.05
-    StepDistance: 60
-    TurnSmoothing: 0.85
-    MeanderStrength: 0.2
-    GradientEpsilon: 1
-=======
     RegionSizeInChunks: 64
     RegionCoarseResolution: 256
     RiverSourceCount: 3
@@ -847,7 +832,6 @@ MonoBehaviour:
     RiverStartFadeSteps: 20
     InitialRiverStrength: 0.2
     InitialCarveDepthFactor: 0.15
->>>>>>> Stashed changes
   viewDistance: 5
 --- !u!1 &1508698440
 GameObject:

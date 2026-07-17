@@ -77,8 +77,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             NativeList<float2Point> points =
                 new NativeList<float2Point>(initialCapacity, Allocator.Persistent);
             
-            Debug.Log(_worldSettings.Seed);
-
             HydrologyRiverTraceJob traceJob = new HydrologyRiverTraceJob
             {
                 Heights = heights,
