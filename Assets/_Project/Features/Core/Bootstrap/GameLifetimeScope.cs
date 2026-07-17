@@ -143,6 +143,7 @@ namespace _Project.Features.Core.Bootstrap
             builder.Register<HydrologyGenerator>(
                     Lifetime.Singleton)
                 .As<IGenerationStage>()
+                .As<IGenerationCacheEvictor>()
                 .As<IDisposable>();
 
 
@@ -240,13 +241,14 @@ namespace _Project.Features.Core.Bootstrap
 
 
             builder.Register(
-                    container =>
-                        new WorldStreamer(
-                            container.Resolve<ChunkManager>(),
-                            container.Resolve<ChunkGrid>(),
-                            container.Resolve<IPlayerReadOnly>(),
-                            viewDistance),
-                    Lifetime.Singleton);
+                container =>
+                    new WorldStreamer(
+                        container.Resolve<ChunkManager>(),
+                        container.Resolve<ChunkGrid>(),
+                        container.Resolve<IPlayerReadOnly>(),
+                        viewDistance,
+                        container.Resolve<IEnumerable<IGenerationCacheEvictor>>()),
+                Lifetime.Singleton);
 
 
 

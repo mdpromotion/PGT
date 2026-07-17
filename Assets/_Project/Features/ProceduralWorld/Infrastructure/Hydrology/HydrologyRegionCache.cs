@@ -24,6 +24,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
         private readonly Dictionary<RegionCoordinate, CacheEntry> _regions = new();
 
+        private readonly List<RegionCoordinate> _evictionBuffer = new();
+
         public HydrologyRegionCache(HydrologyRegionBuilder builder)
         {
             _builder = builder;
@@ -44,6 +46,42 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
             return result;
         }
+
+
+
+        public void EvictOutside(
+            RegionCoordinate center,
+            int keepRadius)
+        {
+            _evictionBuffer.Clear();
+
+            foreach (KeyValuePair<RegionCoordinate, CacheEntry> pair in _regions)
+            {
+                int dx = pair.Key.X - center.X;
+                int dy = pair.Key.Y - center.Y;
+
+                int chebyshev = System.Math.Max(
+                    System.Math.Abs(dx),
+                    System.Math.Abs(dy));
+
+                if (chebyshev > keepRadius)
+                {
+                    _evictionBuffer.Add(pair.Key);
+                }
+            }
+
+            foreach (RegionCoordinate key in _evictionBuffer)
+            {
+                CacheEntry entry = _regions[key];
+
+                entry.Handle.Complete();
+                entry.Data.Dispose();
+
+                _regions.Remove(key);
+            }
+        }
+
+
 
         public void Dispose()
         {

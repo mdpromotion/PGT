@@ -1,24 +1,46 @@
 ﻿using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
+using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 
-
 namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 {
     public sealed class HydrologyGenerator :
         IGenerationStage,
+        IGenerationCacheEvictor,
         IDisposable
     {
+        private readonly struct MergedEntry
+        {
+            public readonly NativeList<float2Point> Points;
+            public readonly SpatialHashData Hash;
+            public readonly JobHandle Handle;
+
+            public MergedEntry(
+                NativeList<float2Point> points,
+                SpatialHashData hash,
+                JobHandle handle)
+            {
+                Points = points;
+                Hash = hash;
+                Handle = handle;
+            }
+        }
+
         private readonly ChunkGrid _grid;
         private readonly HydrologySettings _settings;
 
         private readonly HydrologyRegionCache _regionCache;
+
+        private readonly Dictionary<RegionCoordinate, MergedEntry> _mergedCache = new();
+        private readonly List<RegionCoordinate> _mergedEvictionBuffer = new();
 
 
 
@@ -31,8 +53,59 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             _settings = settings;
             _regionCache = regionCache;
         }
+        
+        
+        public void EvictOutside(
+            ChunkCoordinate center,
+            int viewDistance)
+        {
+            RegionCoordinate centerRegion =
+                RegionCoordinate.FromChunk(
+                    center,
+                    _settings.RegionSizeInChunks);
 
+            int keepRegionRadius =
+                (viewDistance / _settings.RegionSizeInChunks) + 1;
 
+            EvictMergedOutside(centerRegion, keepRegionRadius);
+
+            // regionCache должен хранить на 1 регион больше радиуса,
+            // т.к. merged-кэш на каждый регион тянет соседей 3x3
+            _regionCache.EvictOutside(centerRegion, keepRegionRadius + 1);
+        }
+        
+        private void EvictMergedOutside(
+            RegionCoordinate center,
+            int keepRadius)
+        {
+            _mergedEvictionBuffer.Clear();
+
+            foreach (RegionCoordinate key in _mergedCache.Keys)
+            {
+                int dx = key.X - center.X;
+                int dy = key.Y - center.Y;
+
+                int chebyshev = System.Math.Max(
+                    System.Math.Abs(dx),
+                    System.Math.Abs(dy));
+
+                if (chebyshev > keepRadius)
+                {
+                    _mergedEvictionBuffer.Add(key);
+                }
+            }
+
+            foreach (RegionCoordinate key in _mergedEvictionBuffer)
+            {
+                MergedEntry entry = _mergedCache[key];
+
+                entry.Handle.Complete();
+                entry.Points.Dispose();
+                entry.Hash.Dispose();
+
+                _mergedCache.Remove(key);
+            }
+        }
 
         public JobHandle Schedule(
             ChunkGenerationState state,
@@ -41,17 +114,54 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             ChunkGenerationContext context =
                 state.Context;
 
-
-
             RegionCoordinate region =
                 RegionCoordinate.FromChunk(
                     context.Coordinate,
                     _settings.RegionSizeInChunks);
 
+            if (!_mergedCache.TryGetValue(region, out MergedEntry merged))
+            {
+                merged = BuildNeighbourhood(region, dependency);
+                _mergedCache.Add(region, merged);
+            }
+
+            JobHandle mergeHandle =
+                JobHandle.CombineDependencies(dependency, merged.Handle);
+
+            NativeArray<float> mask =
+                new NativeArray<float>(
+                    context.Resolution *
+                    context.Resolution,
+                    Allocator.Persistent);
+
+            state.Landscape.AttachRiverMask(mask);
+
+            HydrologyCarveJob job =
+                new HydrologyCarveJob(
+                    state.Landscape.Heights,
+                    mask,
+                    context.Resolution,
+                    _grid.ChunkSizeX,
+                    _grid.ChunkSizeZ,
+                    new int2(
+                        context.Coordinate.X,
+                        context.Coordinate.Y),
+                    merged.Points.AsDeferredJobArray(),
+                    merged.Hash,
+                    _settings);
+
+            return job.Schedule(
+                mask.Length,
+                64,
+                mergeHandle);
+        }
 
 
-            // Запрашиваем 9 соседних регионов. Get() не блокирует: если региона
-            // ещё нет в кэше, он тут же ставится в очередь на построение.
+
+        private MergedEntry BuildNeighbourhood(
+            RegionCoordinate region,
+            JobHandle dependency)
+        {
             NativeArray<float2Point> source0 = default;
             NativeArray<float2Point> source1 = default;
             NativeArray<float2Point> source2 = default;
@@ -102,12 +212,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 }
             }
 
-
-
             NativeList<float2Point> merged =
                 new NativeList<float2Point>(Allocator.Persistent);
-
-
 
             MergeRegionsJob mergeJob = new MergeRegionsJob
             {
@@ -126,50 +232,72 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             JobHandle mergeHandle =
                 mergeJob.Schedule(regionsHandle);
 
+            float regionWorldSizeX =
+                _grid.ChunkSizeX * _settings.RegionSizeInChunks;
 
+            float regionWorldSizeZ =
+                _grid.ChunkSizeZ * _settings.RegionSizeInChunks;
 
-            NativeArray<float> mask =
-                new NativeArray<float>(
-                    context.Resolution *
-                    context.Resolution,
-                    Allocator.Persistent);
+            float2 origin = new float2(
+                (region.X - 1) * regionWorldSizeX,
+                (region.Y - 1) * regionWorldSizeZ);
 
+            float cellSize = math.max(
+                math.max(_settings.RiverWidth * 3f, _settings.LakeRadius),
+                0.001f);
 
+            int gridWidth = (int)math.ceil(3f * regionWorldSizeX / cellSize) + 1;
+            int gridHeight = (int)math.ceil(3f * regionWorldSizeZ / cellSize) + 1;
 
-            state.Landscape.AttachRiverMask(mask);
+            NativeArray<int> cellStart =
+                new NativeArray<int>(gridWidth * gridHeight, Allocator.Persistent);
 
+            NativeArray<int> cellCount =
+                new NativeArray<int>(gridWidth * gridHeight, Allocator.Persistent);
 
+            NativeList<int> pointIndices =
+                new NativeList<int>(Allocator.Persistent);
 
-            HydrologyCarveJob job =
-                new HydrologyCarveJob(
-                    state.Landscape.Heights,
-                    mask,
-                    context.Resolution,
-                    _grid.ChunkSizeX,
-                    _grid.ChunkSizeZ,
-                    new int2(
-                        context.Coordinate.X,
-                        context.Coordinate.Y),
-                    merged.AsDeferredJobArray(),
-                    _settings);
+            BuildSpatialHashJob hashJob = new BuildSpatialHashJob
+            {
+                Points = merged.AsDeferredJobArray(),
+                Origin = origin,
+                CellSize = cellSize,
+                GridWidth = gridWidth,
+                GridHeight = gridHeight,
+                CellStart = cellStart,
+                CellCount = cellCount,
+                PointIndices = pointIndices
+            };
 
+            JobHandle hashHandle =
+                hashJob.Schedule(mergeHandle);
 
+            SpatialHashData hash = new SpatialHashData(
+                cellStart,
+                cellCount,
+                pointIndices,
+                origin,
+                cellSize,
+                gridWidth,
+                gridHeight);
 
-            JobHandle handle =
-                job.Schedule(
-                    mask.Length,
-                    64,
-                    mergeHandle);
-
-
-
-            return merged.Dispose(handle);
+            return new MergedEntry(merged, hash, hashHandle);
         }
 
 
 
         public void Dispose()
         {
+            foreach (MergedEntry entry in _mergedCache.Values)
+            {
+                entry.Handle.Complete();
+                entry.Points.Dispose();
+                entry.Hash.Dispose();
+            }
+
+            _mergedCache.Clear();
+
             _regionCache.Dispose();
         }
     }

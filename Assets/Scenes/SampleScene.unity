@@ -813,18 +813,17 @@ MonoBehaviour:
   chunksParent: {fileID: 758205965}
   hydrologySettings:
     RegionSizeInChunks: 32
-    RegionCoarseResolution: 33
+    RegionCoarseResolution: 64
     RiverSourceCount: 3
     CarveDepth: 0.1
     RiverWidth: 32
-    MaxTraceSteps: 64
+    MaxTraceSteps: 128
     Seed: 0
-    MaxDepthStrengthMultiplier: 2.5
     LakeRadius: 45
     LakeDepth: 0.05
-    StepDistance: 20
+    StepDistance: 60
     TurnSmoothing: 0.85
-    MeanderStrength: 0.15
+    MeanderStrength: 0.2
     GradientEpsilon: 1
   viewDistance: 5
 --- !u!1 &1508698440

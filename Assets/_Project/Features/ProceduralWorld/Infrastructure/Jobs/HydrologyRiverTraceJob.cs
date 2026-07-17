@@ -40,6 +40,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
 
             Random random = new Random((uint)math.max(seed, 1));
 
+            float average = ComputeAverageHeight();
+
             for (int river = 0; river < HydrologySettings.RiverSourceCount; river++)
             {
                 int segmentId = unchecked(
@@ -49,7 +51,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
                     HydrologySettings.MaxTraceSteps + 1,
                     Allocator.Temp);
 
-                TraceRiver(ref random, riverPoints, segmentId);
+                TraceRiver(ref random, riverPoints, segmentId, average);
 
                 SmoothRiver(riverPoints, Points);
 
@@ -57,12 +59,23 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             }
         }
 
+        private float ComputeAverageHeight()
+        {
+            float average = 0f;
+
+            for (int i = 0; i < Heights.Length; i++)
+                average += Heights[i];
+
+            return average / Heights.Length;
+        }
+
         private void TraceRiver(
             ref Random random,
             NativeList<float2Point> points,
-            int segmentId)
+            int segmentId,
+            float averageHeight)
         {
-            int start = PickHighPoint(ref random);
+            int start = PickHighPoint(ref random, averageHeight);
 
             int sx = start % Size;
             int sz = start / Size;
@@ -134,15 +147,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             }
         }
 
-        private int PickHighPoint(ref Random random)
+        private int PickHighPoint(ref Random random, float average)
         {
-            float average = 0f;
-
-            for (int i = 0; i < Heights.Length; i++)
-                average += Heights[i];
-
-            average /= Heights.Length;
-
             for (int i = 0; i < 16; i++)
             {
                 int id = random.NextInt(Heights.Length);

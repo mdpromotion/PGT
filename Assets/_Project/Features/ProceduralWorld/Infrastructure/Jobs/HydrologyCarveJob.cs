@@ -7,7 +7,7 @@ using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
 {
-    [BurstCompile]
+    [BurstCompile(FloatMode = FloatMode.Fast, FloatPrecision = FloatPrecision.Low)]
     public struct HydrologyCarveJob : IJobParallelFor
     {
         private NativeArray<float> _heights;
@@ -15,13 +15,29 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
 
         private readonly int _resolution;
 
+        private readonly float _stepX;
+        private readonly float _stepZ;
+
+        private readonly int2 _chunk;
         private readonly float _chunkSizeX;
         private readonly float _chunkSizeZ;
 
-        private readonly int2 _chunk;
-
         [ReadOnly]
         private NativeArray<float2Point> _riverPoints;
+
+        [ReadOnly]
+        private NativeArray<int> _cellStart;
+
+        [ReadOnly]
+        private NativeArray<int> _cellCount;
+
+        [ReadOnly]
+        private NativeArray<int> _pointIndices;
+
+        private readonly float2 _hashOrigin;
+        private readonly float _cellSize;
+        private readonly int _gridWidth;
+        private readonly int _gridHeight;
 
         private readonly HydrologySettings _settings;
 
@@ -33,6 +49,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             float chunkSizeZ,
             int2 chunk,
             NativeArray<float2Point> riverPoints,
+            SpatialHashData hash,
             HydrologySettings settings)
         {
             _heights = heights;
@@ -43,6 +60,17 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             _chunk = chunk;
             _riverPoints = riverPoints;
             _settings = settings;
+
+            _stepX = chunkSizeX / (resolution - 1);
+            _stepZ = chunkSizeZ / (resolution - 1);
+
+            _cellStart = hash.CellStart;
+            _cellCount = hash.CellCount;
+            _pointIndices = hash.PointIndices.AsDeferredJobArray();
+            _hashOrigin = hash.Origin;
+            _cellSize = hash.CellSize;
+            _gridWidth = hash.GridWidth;
+            _gridHeight = hash.GridHeight;
         }
 
         public void Execute(int index)
@@ -50,11 +78,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             int x = index % _resolution;
             int z = index / _resolution;
 
-            float stepX = _chunkSizeX / (_resolution - 1);
-            float stepZ = _chunkSizeZ / (_resolution - 1);
-
-            float worldX = _chunk.x * _chunkSizeX + x * stepX;
-            float worldZ = _chunk.y * _chunkSizeZ + z * stepZ;
+            float worldX = _chunk.x * _chunkSizeX + x * _stepX;
+            float worldZ = _chunk.y * _chunkSizeZ + z * _stepZ;
 
             float2 world = new float2(worldX, worldZ);
 
@@ -66,62 +91,88 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             float closestLakeRadius = 0f;
             float closestLakeHeight = 0f;
 
+            int centerCx = (int)math.floor((world.x - _hashOrigin.x) / _cellSize);
+            int centerCz = (int)math.floor((world.y - _hashOrigin.y) / _cellSize);
+
             int count = _riverPoints.Length;
 
-            for (int i = 0; i < count; i++)
+            for (int dz = -1; dz <= 1; dz++)
             {
-                float2Point point = _riverPoints[i];
-                float2 a = new float2(point.X, point.Z);
+                int cz = centerCz + dz;
 
-                if (point.Kind == HydrologyPointKind.Lake)
-                {
-                    float lakeDist = math.distance(world, a);
-
-                    if (lakeDist < closestLakeDist)
-                    {
-                        closestLakeDist = lakeDist;
-                        closestLakeRadius = math.max(point.Strength, 0.001f);
-                        closestLakeHeight = point.Height;
-                    }
-
+                if (cz < 0 || cz >= _gridHeight)
                     continue;
-                }
 
-                bool hasNext =
-                    i + 1 < count &&
-                    _riverPoints[i + 1].SegmentId == point.SegmentId &&
-                    _riverPoints[i + 1].Kind == HydrologyPointKind.River;
-
-                float distance;
-                float strength;
-                float riverHeight;
-
-                if (hasNext)
+                for (int dx = -1; dx <= 1; dx++)
                 {
-                    float2Point next = _riverPoints[i + 1];
-                    float2 b = new float2(next.X, next.Z);
-                    float2 ab = b - a;
+                    int cx = centerCx + dx;
 
-                    float length = math.max(math.lengthsq(ab), 0.0001f);
-                    float t = math.saturate(math.dot(world - a, ab) / length);
-                    float2 closest = a + ab * t;
+                    if (cx < 0 || cx >= _gridWidth)
+                        continue;
 
-                    distance = math.distance(world, closest);
-                    strength = math.lerp(point.Strength, next.Strength, t);
-                    riverHeight = math.lerp(point.Height, next.Height, t);
-                }
-                else
-                {
-                    distance = math.distance(world, a);
-                    strength = point.Strength;
-                    riverHeight = point.Height;
-                }
+                    int cell = cz * _gridWidth + cx;
 
-                if (distance < closestRiverDist)
-                {
-                    closestRiverDist = distance;
-                    closestStrength = strength;
-                    closestRiverHeight = riverHeight;
+                    int start = _cellStart[cell];
+                    int cellPointCount = _cellCount[cell];
+
+                    for (int k = 0; k < cellPointCount; k++)
+                    {
+                        int i = _pointIndices[start + k];
+
+                        float2Point point = _riverPoints[i];
+                        float2 a = new float2(point.X, point.Z);
+
+                        if (point.Kind == HydrologyPointKind.Lake)
+                        {
+                            float lakeDist = math.distance(world, a);
+
+                            if (lakeDist < closestLakeDist)
+                            {
+                                closestLakeDist = lakeDist;
+                                closestLakeRadius = math.max(point.Strength, 0.001f);
+                                closestLakeHeight = point.Height;
+                            }
+
+                            continue;
+                        }
+
+                        bool hasNext =
+                            i + 1 < count &&
+                            _riverPoints[i + 1].SegmentId == point.SegmentId &&
+                            _riverPoints[i + 1].Kind == HydrologyPointKind.River;
+
+                        float distance;
+                        float strength;
+                        float riverHeight;
+
+                        if (hasNext)
+                        {
+                            float2Point next = _riverPoints[i + 1];
+                            float2 b = new float2(next.X, next.Z);
+                            float2 ab = b - a;
+
+                            float length = math.max(math.lengthsq(ab), 0.0001f);
+                            float t = math.saturate(math.dot(world - a, ab) / length);
+                            float2 closest = a + ab * t;
+
+                            distance = math.distance(world, closest);
+                            strength = math.lerp(point.Strength, next.Strength, t);
+                            riverHeight = math.lerp(point.Height, next.Height, t);
+                        }
+                        else
+                        {
+                            distance = math.distance(world, a);
+                            strength = point.Strength;
+                            riverHeight = point.Height;
+                        }
+
+                        if (distance < closestRiverDist)
+                        {
+                            closestRiverDist = distance;
+                            closestStrength = strength;
+                            closestRiverHeight = riverHeight;
+                        }
+                    }
                 }
             }
 
