@@ -809,33 +809,46 @@ MonoBehaviour:
   autoInjectGameObjects: []
   chunkPrefab: {fileID: 5116074535957847417, guid: 2ff94efd95661ba7789a898e4249b4c1, type: 3}
   worldSettings: {fileID: 11400000, guid: dbe12bdf8867feb4880810240955aec2, type: 2}
-  biomeDatabase: {fileID: 11400000, guid: d38fb67540b9813a18085937a84d5b76, type: 2}
   chunksParent: {fileID: 758205965}
   hydrologySettings:
-    RegionSizeInChunks: 16
-    RegionCoarseResolution: 129
+<<<<<<< Updated upstream
+    RegionSizeInChunks: 32
+    RegionCoarseResolution: 64
     RiverSourceCount: 3
-    CarveDepth: 0.2
-    RiverWidth: 150
-    MaxTraceSteps: 220
+    CarveDepth: 0.1
+    RiverWidth: 32
+    MaxTraceSteps: 128
     Seed: 0
-    LakeRadius: 1
-    LakeDepth: 0.2
-    SpringBasinFlatness: 0.003
-    StepDistance: 28
+    LakeRadius: 45
+    LakeDepth: 0.05
+    StepDistance: 60
+    TurnSmoothing: 0.85
+    MeanderStrength: 0.2
+    GradientEpsilon: 1
+=======
+    RegionSizeInChunks: 64
+    RegionCoarseResolution: 256
+    RiverSourceCount: 3
+    CarveDepth: 0.5
+    RiverWidth: 500
+    MaxTraceSteps: 300
+    StepDistance: 64
     TurnSmoothing: 0.85
     MeanderStrength: 0.35
     GradientEpsilon: 6
-    BaseStrengthGrowth: 0.006
+    MeanderResponsiveness: 0.03
+    MaxTurnAnglePerStep: 0.01
+    SlopeStraightenFactor: 0.8
+    BaseStrengthGrowth: 0.018
     SlopeStrengthFactor: 0.9
     MaxRiverStrength: 5
-    ConfluenceDistance: 24
-    LakeMergeDistance: 26
-    ConfluenceStrengthFactor: 0.6
-    RiverStartFadeSteps: 6
+    ConfluenceDistance: 60
+    ConfluenceStrengthFactor: 1.4
+    RiverStartFadeSteps: 20
     InitialRiverStrength: 0.2
-    RiverEndFadeSteps: 10
-  viewDistance: 15
+    InitialCarveDepthFactor: 0.15
+>>>>>>> Stashed changes
+  viewDistance: 5
 --- !u!1 &1508698440
 GameObject:
   m_ObjectHideFlags: 0
