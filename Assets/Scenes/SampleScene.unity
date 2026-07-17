@@ -811,6 +811,21 @@ MonoBehaviour:
   worldSettings: {fileID: 11400000, guid: dbe12bdf8867feb4880810240955aec2, type: 2}
   biomeDatabase: {fileID: 11400000, guid: d38fb67540b9813a18085937a84d5b76, type: 2}
   chunksParent: {fileID: 758205965}
+  hydrologySettings:
+    RegionSizeInChunks: 32
+    RegionCoarseResolution: 33
+    RiverSourceCount: 3
+    CarveDepth: 0.1
+    RiverWidth: 32
+    MaxTraceSteps: 64
+    Seed: 0
+    MaxDepthStrengthMultiplier: 2.5
+    LakeRadius: 45
+    LakeDepth: 0.05
+    StepDistance: 20
+    TurnSmoothing: 0.85
+    MeanderStrength: 0.15
+    GradientEpsilon: 1
   viewDistance: 5
 --- !u!1 &1508698440
 GameObject:
@@ -952,7 +967,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
@@ -969,7 +984,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c69b48f406de21869e31882342f076f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 5555
+  _moveSpeed: 55
   _jumpVelocity: 5
   _groundMask:
     serializedVersion: 2
