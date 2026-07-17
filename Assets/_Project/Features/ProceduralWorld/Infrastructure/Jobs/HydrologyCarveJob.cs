@@ -23,7 +23,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
         private readonly float _chunkSizeZ;
 
         [ReadOnly]
-        private NativeArray<float2Point> _riverPoints;
+        private NativeArray<RiverSegment> _riverSegments;
 
         [ReadOnly]
         private NativeArray<int> _cellStart;
@@ -48,7 +48,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             float chunkSizeX,
             float chunkSizeZ,
             int2 chunk,
-            NativeArray<float2Point> riverPoints,
+            NativeArray<RiverSegment> riverSegments,
             SpatialHashData hash,
             HydrologySettings settings)
         {
@@ -58,7 +58,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             _chunkSizeX = chunkSizeX;
             _chunkSizeZ = chunkSizeZ;
             _chunk = chunk;
-            _riverPoints = riverPoints;
+            _riverSegments = riverSegments;
             _settings = settings;
 
             _stepX = chunkSizeX / (resolution - 1);
@@ -83,18 +83,21 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
 
             float2 world = new float2(worldX, worldZ);
 
-            float closestRiverDist = float.MaxValue;
-            float closestStrength = 0f;
-            float closestRiverHeight = 0f;
+            float combinedMask = 0f;
+            float weightedHeight = 0f;
+            float totalWeight = 0f;
+            float strongestDepth = 0f;
 
-            float closestLakeDist = float.MaxValue;
-            float closestLakeRadius = 0f;
-            float closestLakeHeight = 0f;
+            float maxRiverStrength = math.max(_settings.MaxRiverStrength, 0.0001f);
+            float invMaxRiverStrength = 1f / maxRiverStrength;
+
+            float minCarveDepth = _settings.CarveDepth * _settings.InitialCarveDepthFactor;
+            float maxCarveDepth = _settings.CarveDepth;
+
+            float riverWidthScale = _settings.RiverWidth;
 
             int centerCx = (int)math.floor((world.x - _hashOrigin.x) / _cellSize);
             int centerCz = (int)math.floor((world.y - _hashOrigin.y) / _cellSize);
-
-            int count = _riverPoints.Length;
 
             for (int dz = -1; dz <= 1; dz++)
             {
@@ -119,107 +122,70 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
                     {
                         int i = _pointIndices[start + k];
 
-                        float2Point point = _riverPoints[i];
-                        float2 a = new float2(point.X, point.Z);
+                        RiverSegment segment = _riverSegments[i];
 
-                        if (point.Kind == HydrologyPointKind.Lake)
-                        {
-                            float lakeDist = math.distance(world, a);
+                        float2 a = segment.A;
+                        float2 b = segment.B;
+                        float2 ab = b - a;
 
-                            if (lakeDist < closestLakeDist)
-                            {
-                                closestLakeDist = lakeDist;
-                                closestLakeRadius = math.max(point.Strength, 0.001f);
-                                closestLakeHeight = point.Height;
-                            }
+                        float abLenSq = math.max(math.lengthsq(ab), 0.0001f);
+                        float t = math.saturate(math.dot(world - a, ab) / abLenSq);
 
+                        float2 closest = a + ab * t;
+                        float2 delta = world - closest;
+
+                        float distanceSq = math.lengthsq(delta);
+                        float strength = math.lerp(segment.StrengthA, segment.StrengthB, t);
+                        float riverHeight = math.lerp(segment.HeightA, segment.HeightB, t);
+
+                        float clampedStrength = math.min(strength, maxRiverStrength);
+                        float width = math.max(riverWidthScale * clampedStrength, 0.001f);
+                        float widthSq = width * width;
+
+                        if (distanceSq >= widthSq)
                             continue;
-                        }
 
-                        bool hasNext =
-                            i + 1 < count &&
-                            _riverPoints[i + 1].SegmentId == point.SegmentId &&
-                            _riverPoints[i + 1].Kind == HydrologyPointKind.River;
+                        float distance = math.sqrt(distanceSq);
+                        float normalized = math.saturate(1f - distance / width);
 
-                        float distance;
-                        float strength;
-                        float riverHeight;
+                        float influence = normalized * normalized * (3f - 2f * normalized);
 
-                        if (hasNext)
-                        {
-                            float2Point next = _riverPoints[i + 1];
-                            float2 b = new float2(next.X, next.Z);
-                            float2 ab = b - a;
+                        float depth = math.lerp(
+                            minCarveDepth,
+                            maxCarveDepth,
+                            clampedStrength * invMaxRiverStrength);
 
-                            float length = math.max(math.lengthsq(ab), 0.0001f);
-                            float t = math.saturate(math.dot(world - a, ab) / length);
-                            float2 closest = a + ab * t;
+                        float riverBottom = riverHeight - depth;
 
-                            distance = math.distance(world, closest);
-                            strength = math.lerp(point.Strength, next.Strength, t);
-                            riverHeight = math.lerp(point.Height, next.Height, t);
-                        }
-                        else
-                        {
-                            distance = math.distance(world, a);
-                            strength = point.Strength;
-                            riverHeight = point.Height;
-                        }
+                        float localDepth = depth * influence;
+                        strongestDepth = math.max(strongestDepth, localDepth);
 
-                        if (distance < closestRiverDist)
-                        {
-                            closestRiverDist = distance;
-                            closestStrength = strength;
-                            closestRiverHeight = riverHeight;
-                        }
+                        float blendWeight = influence * influence;
+                        weightedHeight += riverBottom * blendWeight;
+                        totalWeight += blendWeight;
+
+                        combinedMask = 1f - (1f - combinedMask) * (1f - influence);
                     }
                 }
             }
 
-            float lakeMask = 0f;
+            _riverMask[index] = combinedMask;
 
-            if (closestLakeDist < float.MaxValue)
-            {
-                float t = math.saturate(1f - closestLakeDist / closestLakeRadius);
-                lakeMask = t * t * (3f - 2f * t);
-            }
-
-            float riverShape = 0f;
-
-            if (closestRiverDist < float.MaxValue)
-            {
-                float width = math.max(_settings.RiverWidth * closestStrength, 0.001f);
-                float normalized = math.saturate(1f - closestRiverDist / width);
-                riverShape = math.pow(normalized, 2.2f);
-            }
-
-            float mask = math.max(riverShape, lakeMask);
-            _riverMask[index] = mask;
-
-            if (mask <= 0f)
-            {
+            if (combinedMask <= 0f || totalWeight <= 0f)
                 return;
-            }
 
-            float targetHeight = _heights[index];
+            float blendedHeight = weightedHeight / totalWeight;
 
-            if (riverShape > 0f)
-            {
-                float depth = math.lerp(
-                    _settings.CarveDepth * 0.35f,
-                    _settings.CarveDepth,
-                    math.saturate(closestStrength / 3f));
+            float targetRiverHeight = math.min(
+                blendedHeight,
+                _heights[index] - strongestDepth);
 
-                float riverBottom = closestRiverHeight - depth;
-                targetHeight = math.min(targetHeight, math.lerp(_heights[index], riverBottom, riverShape));
-            }
-
-            if (lakeMask > 0f)
-            {
-                float lakeBottom = closestLakeHeight - _settings.LakeDepth;
-                float lakeTarget = math.lerp(_heights[index], lakeBottom, lakeMask);
-                targetHeight = math.min(targetHeight, lakeTarget);
-            }
+            float targetHeight = math.min(
+                _heights[index],
+                math.lerp(
+                    _heights[index],
+                    targetRiverHeight,
+                    combinedMask));
 
             _heights[index] = targetHeight;
         }

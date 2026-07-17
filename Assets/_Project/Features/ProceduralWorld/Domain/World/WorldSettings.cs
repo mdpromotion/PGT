@@ -1,4 +1,3 @@
-using _Project.Features.ProceduralWorld.Domain.Biomes;
 using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Domain.World

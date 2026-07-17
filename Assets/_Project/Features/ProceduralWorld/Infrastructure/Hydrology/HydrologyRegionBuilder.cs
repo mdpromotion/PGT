@@ -7,6 +7,8 @@ using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
+using UnityEditor.Rendering;
+using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 {
@@ -74,6 +76,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             
             NativeList<float2Point> points =
                 new NativeList<float2Point>(initialCapacity, Allocator.Persistent);
+            
+            Debug.Log(_worldSettings.Seed);
 
             HydrologyRiverTraceJob traceJob = new HydrologyRiverTraceJob
             {
@@ -86,6 +90,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 Settings = settings,
                 Offsets = offsets,
                 HydrologySettings = _hydrologySettings,
+                WorldSeed = _worldSettings.Seed,
                 RegionCoord = new int2(region.X, region.Y),
                 Points = points
             };

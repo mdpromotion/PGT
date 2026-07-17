@@ -10,7 +10,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
     public struct BuildSpatialHashJob : IJob
     {
         [ReadOnly]
-        public NativeArray<float2Point> Points;
+        public NativeArray<RiverSegment> Segments;
 
         public float2 Origin;
         public float CellSize;
@@ -28,7 +28,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             for (int i = 0; i < cellsLength; i++)
                 CellCount[i] = 0;
 
-            int n = Points.Length;
+            int n = Segments.Length;
 
             PointIndices.ResizeUninitialized(n);
 
@@ -36,7 +36,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
 
             for (int i = 0; i < n; i++)
             {
-                int cell = GetCell(Points[i]);
+                int cell = GetCell(Segments[i]);
                 cellOf[i] = cell;
                 CellCount[cell]++;
             }
@@ -67,10 +67,12 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             cursor.Dispose();
         }
 
-        private int GetCell(float2Point p)
+        private int GetCell(RiverSegment s)
         {
-            int cx = (int)math.floor((p.X - Origin.x) / CellSize);
-            int cz = (int)math.floor((p.Z - Origin.y) / CellSize);
+            float2 mid = (s.A + s.B) * 0.5f;
+
+            int cx = (int)math.floor((mid.x - Origin.x) / CellSize);
+            int cz = (int)math.floor((mid.y - Origin.y) / CellSize);
 
             cx = math.clamp(cx, 0, GridWidth - 1);
             cz = math.clamp(cz, 0, GridHeight - 1);

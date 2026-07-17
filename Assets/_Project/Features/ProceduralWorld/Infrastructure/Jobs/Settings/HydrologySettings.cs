@@ -12,31 +12,27 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings
         public float CarveDepth;
         public float RiverWidth;
         public int MaxTraceSteps;
-        public int Seed;
 
-        [Header("Water source (lake)")]
-        public float LakeRadius;
-        public float LakeDepth;
-        
-        public float SpringBasinFlatness;
-
-        [Header("Continuous tracing / meander")]
         public float StepDistance;
         public float TurnSmoothing;
         public float MeanderStrength;
         public float GradientEpsilon;
+        
+        public float MeanderResponsiveness;
+        
+        public float MaxTurnAnglePerStep;
+        
+        public float SlopeStraightenFactor;
 
         public float BaseStrengthGrowth;
         public float SlopeStrengthFactor;
         public float MaxRiverStrength;
         public float ConfluenceDistance;
-        public float LakeMergeDistance;
         public float ConfluenceStrengthFactor;
 
         [Header("Fade in/out")]
         public int RiverStartFadeSteps;
         public float InitialRiverStrength;
-        
-        public int RiverEndFadeSteps;
+        public float InitialCarveDepthFactor;
     }
 }

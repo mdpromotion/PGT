@@ -22,7 +22,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
         public float StepZ;
 
         public TerrainNoiseSettings Settings;
-
+        public int WorldSeed;
+        
         [ReadOnly]
         public NativeArray<float2> Offsets;
 
@@ -36,7 +37,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
         {
             int seed =
                 (int)math.hash(RegionCoord) ^
-                HydrologySettings.Seed;
+                WorldSeed;
 
             Random random = new Random((uint)math.max(seed, 1));
 
@@ -69,11 +70,10 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             return average / Heights.Length;
         }
         
-        private int PickHighPoint(ref Random random, float averageHeight, out bool isBasin)
+        private int PickHighPoint(ref Random random, float averageHeight)
         {
             int bestId = -1;
             float bestHeight = averageHeight;
-            isBasin = false;
 
             for (int attempt = 0; attempt < 24; attempt++)
             {
@@ -116,32 +116,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
                 bestId = id;
             }
 
-            if (bestId >= 0)
-            {
-                int bx = bestId % Size;
-                int bz = bestId / Size;
-
-                float minH = float.MaxValue;
-                float maxH = float.MinValue;
-
-                for (int dz = -2; dz <= 2; dz++)
-                {
-                    for (int dx = -2; dx <= 2; dx++)
-                    {
-                        int nx = bx + dx;
-                        int nz = bz + dz;
-
-                        int neighbourId = nz * Size + nx;
-                        float h = Heights[neighbourId];
-
-                        minH = math.min(minH, h);
-                        maxH = math.max(maxH, h);
-                    }
-                }
-
-                isBasin = (maxH - minH) <= HydrologySettings.SpringBasinFlatness;
-            }
-
             return bestId >= 0 ? bestId : 0;
         }
 
@@ -151,7 +125,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             int segmentId,
             float averageHeight)
         {
-            int start = PickHighPoint(ref random, averageHeight, out bool isBasin);
+            int start = PickHighPoint(ref random, averageHeight);
 
             int sx = start % Size;
             int sz = start / Size;
@@ -161,23 +135,13 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
                 OriginZ + sz * StepZ);
 
             float height = HeightSampler.Sample(pos, Settings, Offsets);
-            
-            if (isBasin)
-            {
-                points.Add(new float2Point
-                {
-                    X = pos.x,
-                    Z = pos.y,
-                    Height = height,
-                    Strength = HydrologySettings.LakeRadius,
-                    SegmentId = segmentId,
-                    Kind = HydrologyPointKind.Lake
-                });
-            }
 
             float2 direction = float2.zero;
             float strength = HydrologySettings.InitialRiverStrength;
             float previousHeight = height;
+            
+            float meanderPhase = 0f;
+            float meanderTarget = random.NextFloat(-1f, 1f);
 
             int stepsTaken = 0;
             bool endedByConfluence = false;
@@ -198,7 +162,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
 
                 stepsTaken++;
 
-                if (TryFindConfluence(pos, segmentId, out int hitIndex, out bool hitLake))
+                if (TryFindConfluence(pos, segmentId, out int hitIndex))
                 {
                     float2Point hitPoint = Points[hitIndex];
 
@@ -207,16 +171,22 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
                     last.Z = hitPoint.Z;
                     points[points.Length - 1] = last;
 
-                    if (!hitLake)
-                    {
-                        BoostDownstream(
-                            Points,
-                            hitIndex,
-                            hitPoint.SegmentId,
-                            math.min(
-                                strength * HydrologySettings.ConfluenceStrengthFactor,
-                                HydrologySettings.MaxRiverStrength));
-                    }
+                    BlendApproachToConfluence(
+                        points,
+                        hitPoint.Strength,
+                        hitPoint.Height,
+                        HydrologySettings.RiverStartFadeSteps);
+
+                    float boostedStrength = math.min(
+                        math.max(hitPoint.Strength, strength * HydrologySettings.ConfluenceStrengthFactor),
+                        HydrologySettings.MaxRiverStrength);
+
+                    BoostDownstream(
+                        Points,
+                        hitIndex,
+                        hitPoint.SegmentId,
+                        boostedStrength,
+                        HydrologySettings.RiverStartFadeSteps);
 
                     endedByConfluence = true;
                     break;
@@ -241,14 +211,32 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
                             downhill,
                             1f - HydrologySettings.TurnSmoothing))
                         : downhill;
+                
+                meanderPhase = math.lerp(
+                    meanderPhase,
+                    meanderTarget,
+                    HydrologySettings.MeanderResponsiveness);
 
-                float wobble =
-                    (random.NextFloat() - 0.5f) *
-                    HydrologySettings.MeanderStrength;
+                if (math.abs(meanderPhase - meanderTarget) < 0.05f)
+                {
+                    meanderTarget = random.NextFloat(-1f, 1f);
+                }
+                
+                float slopeStraighten = math.saturate(slope * HydrologySettings.SlopeStraightenFactor);
+                float meanderScale = 1f - slopeStraighten;
 
-                direction = math.normalize(
+                float wobble = meanderPhase * HydrologySettings.MeanderStrength * meanderScale;
+
+                float2 wobbled = math.normalize(
                     desired +
                     new float2(-desired.y, desired.x) * wobble);
+
+                float2 newDirection =
+                    math.lengthsq(direction) > 1e-8f
+                        ? ClampTurn(direction, wobbled, HydrologySettings.MaxTurnAnglePerStep)
+                        : wobbled;
+
+                direction = newDirection;
 
                 pos += direction * HydrologySettings.StepDistance;
 
@@ -259,7 +247,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
                     HydrologySettings.BaseStrengthGrowth +
                     slope * HydrologySettings.SlopeStrengthFactor,
                     HydrologySettings.MaxRiverStrength);
-                
+
                 if (stepsTaken < HydrologySettings.RiverStartFadeSteps)
                 {
                     float t = stepsTaken / (float)HydrologySettings.RiverStartFadeSteps;
@@ -281,12 +269,51 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
                 ApplyEndFade(points);
             }
         }
+        
+        private static float2 ClampTurn(float2 from, float2 to, float maxAngleRadians)
+        {
+            float angleFrom = math.atan2(from.y, from.x);
+            float angleTo = math.atan2(to.y, to.x);
+
+            float delta = angleTo - angleFrom;
+            
+            delta = math.atan2(math.sin(delta), math.cos(delta));
+
+            float clampedDelta = math.clamp(delta, -maxAngleRadians, maxAngleRadians);
+
+            float finalAngle = angleFrom + clampedDelta;
+
+            return new float2(math.cos(finalAngle), math.sin(finalAngle));
+        }
+
+        private static void BlendApproachToConfluence(
+            NativeList<float2Point> points,
+            float targetStrength,
+            float targetHeight,
+            int fadeSteps)
+        {
+            int count = points.Length;
+            int steps = math.min(math.max(fadeSteps, 1), count);
+
+            for (int i = 0; i < steps; i++)
+            {
+                int index = count - 1 - i;
+
+                float t = steps > 1 ? 1f - i / (float)(steps - 1) : 1f;
+                float smooth = t * t * (3f - 2f * t);
+
+                float2Point p = points[index];
+                p.Strength = math.lerp(p.Strength, targetStrength, smooth);
+                p.Height = math.lerp(p.Height, targetHeight, smooth);
+                points[index] = p;
+            }
+        }
 
         private static void ApplyEndFade(NativeList<float2Point> points)
         {
             int fadeSteps = 0;
             int count = points.Length;
-            
+
             for (int i = count - 1; i >= 0; i--)
             {
                 if (points[i].Kind != HydrologyPointKind.River)
@@ -314,13 +341,12 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
         private bool TryFindConfluence(
             float2 pos,
             int ownSegmentId,
-            out int hitIndex,
-            out bool hitLake)
+            out int hitIndex)
         {
             hitIndex = -1;
-            hitLake = false;
 
             float bestDistSq = float.MaxValue;
+            float thresholdSq = HydrologySettings.ConfluenceDistance * HydrologySettings.ConfluenceDistance;
 
             int count = Points.Length;
 
@@ -331,21 +357,16 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
                 if (p.SegmentId == ownSegmentId)
                     continue;
 
-                float threshold = p.Kind == HydrologyPointKind.Lake
-                    ? HydrologySettings.LakeMergeDistance
-                    : HydrologySettings.ConfluenceDistance;
-
                 float2 ppos = new float2(p.X, p.Z);
                 float distSq = math.distancesq(pos, ppos);
 
-                if (distSq > threshold * threshold)
+                if (distSq > thresholdSq)
                     continue;
 
                 if (distSq < bestDistSq)
                 {
                     bestDistSq = distSq;
                     hitIndex = i;
-                    hitLake = p.Kind == HydrologyPointKind.Lake;
                 }
             }
 
@@ -356,8 +377,11 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             NativeList<float2Point> points,
             int fromIndex,
             int targetSegmentId,
-            float bonus)
+            float targetStrength,
+            int fadeSteps)
         {
+            int steps = 0;
+
             for (int i = fromIndex; i < points.Length; i++)
             {
                 float2Point p = points[i];
@@ -368,8 +392,14 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
                 if (p.Kind != HydrologyPointKind.River)
                     continue;
 
-                p.Strength += bonus;
+                float t = fadeSteps > 0 ? math.saturate(steps / (float)fadeSteps) : 1f;
+                float smooth = t * t * (3f - 2f * t);
+
+                float blended = math.lerp(p.Strength, targetStrength, smooth);
+                p.Strength = math.min(math.max(p.Strength, blended), targetStrength);
+
                 points[i] = p;
+                steps++;
             }
         }
 
@@ -391,12 +421,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
                 float2Point b = riverPoints[i + 1];
 
                 output.Add(a);
-
-                if (a.Kind == HydrologyPointKind.Lake ||
-                    b.Kind == HydrologyPointKind.Lake)
-                {
-                    continue;
-                }
 
                 output.Add(new float2Point
                 {

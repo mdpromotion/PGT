@@ -10,7 +10,6 @@ using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Application.World;
 using _Project.Features.ProceduralWorld.Domain;
-using _Project.Features.ProceduralWorld.Domain.Biomes;
 using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure;
 using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
@@ -34,9 +33,6 @@ namespace _Project.Features.Core.Bootstrap
 
         [SerializeField]
         private WorldSettings worldSettings;
-
-        [SerializeField]
-        private BiomeDatabase biomeDatabase;
 
         [SerializeField]
         private Transform chunksParent;
@@ -94,11 +90,6 @@ namespace _Project.Features.Core.Bootstrap
             builder.RegisterInstance(
                 worldSettings);
 
-
-            builder.RegisterInstance(
-                biomeDatabase);
-
-
             builder.RegisterInstance(
                 hydrologySettings);
 
@@ -110,15 +101,7 @@ namespace _Project.Features.Core.Bootstrap
                             chunkPrefab.terrainData.size.x,
                             chunkPrefab.terrainData.size.z),
                     Lifetime.Singleton);
-
-
-
-            builder.Register<BiomeResolver>(
-                    Lifetime.Singleton)
-                .As<IBiomeResolver>();
-
-
-
+            
             builder.Register<TerrainNoiseSettingsProvider>(
                     Lifetime.Singleton)
                 .AsSelf()

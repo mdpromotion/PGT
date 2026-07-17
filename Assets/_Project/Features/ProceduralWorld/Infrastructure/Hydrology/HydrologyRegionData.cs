@@ -5,8 +5,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 {
     public enum HydrologyPointKind : byte
     {
-        River = 0,
-        Lake = 1
+        River = 0
     }
 
     public readonly struct HydrologyRegionData
@@ -27,7 +26,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 Points.Dispose();
         }
     }
-    
+
     public struct float2Point
     {
         public float X;
