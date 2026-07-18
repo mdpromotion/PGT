@@ -1,14 +1,16 @@
+using _Project.Features.ProceduralWorld.Application.Chunks;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Domain.Landscape;
-using _Project.Features.ProceduralWorld.Infrastructure;
+using _Project.Features.ProceduralWorld.Infrastructure.Chunks;
+using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 using UnityEngine;
 
-namespace _Project.Features.ProceduralWorld.Application.Chunks
+namespace _Project.Features.ProceduralWorld.Application.Landscape
 {
     public class LandscapeApplier
     {
-        private readonly ITerrainFactory _factory;
+        private readonly ILandscapeFactory _factory;
         private readonly ITerrainWriter _writer;
         private readonly IChunkNeighborConnector _neighborConnector;
         private readonly ChunkRepository _repository;
@@ -17,7 +19,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
 
         public LandscapeApplier(
-            ITerrainFactory factory,
+            ILandscapeFactory factory,
             ITerrainWriter writer,
             IChunkNeighborConnector neighborConnector,
             ChunkRepository repository,

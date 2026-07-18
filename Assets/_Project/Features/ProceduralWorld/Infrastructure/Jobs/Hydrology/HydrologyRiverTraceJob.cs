@@ -1,12 +1,12 @@
-﻿using Unity.Burst;
+﻿using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
+using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
-using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
-using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 using Random = Unity.Mathematics.Random;
 
-namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
+namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 {
     [BurstCompile]
     public struct HydrologyRiverTraceJob : IJob

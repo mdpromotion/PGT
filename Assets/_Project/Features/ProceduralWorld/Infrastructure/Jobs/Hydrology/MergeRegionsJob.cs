@@ -3,7 +3,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 
-namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
+namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 {
     [BurstCompile]
     public struct MergeRegionsJob : IJob

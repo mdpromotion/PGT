@@ -4,10 +4,10 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 
-namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
+namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Landscape
 {
     [BurstCompile]
-    public struct TerrainGenerationJob : IJobParallelFor
+    public struct LandscapeGenerationJob : IJobParallelFor
     {
         private NativeArray<float> _heights;
 
@@ -23,7 +23,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
         [ReadOnly]
         private NativeArray<float2> _octaveOffsets;
 
-        public TerrainGenerationJob(
+        public LandscapeGenerationJob(
             NativeArray<float> heights,
             int resolution,
             float chunkSizeX,

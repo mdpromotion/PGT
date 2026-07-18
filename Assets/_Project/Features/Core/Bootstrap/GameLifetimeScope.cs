@@ -8,11 +8,13 @@ using _Project.Features.Player.Presentation;
 using _Project.Features.ProceduralWorld.Application.Chunks;
 using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
+using _Project.Features.ProceduralWorld.Application.Landscape;
 using _Project.Features.ProceduralWorld.Application.World;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure;
 using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
+using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
 using _Project.Features.ProceduralWorld.Presentation;
@@ -172,11 +174,11 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.Register(
                     container =>
-                        new TerrainChunkFactory(
+                        new LandscapeChunkFactory(
                             chunkPrefab,
                             container.Resolve<ChunkGrid>()),
                     Lifetime.Singleton)
-                .As<ITerrainFactory>();
+                .As<ILandscapeFactory>();
 
 
 
@@ -202,7 +204,7 @@ namespace _Project.Features.Core.Bootstrap
             builder.Register(
                     container =>
                         new LandscapeApplier(
-                            container.Resolve<ITerrainFactory>(),
+                            container.Resolve<ILandscapeFactory>(),
                             container.Resolve<ITerrainWriter>(),
                             container.Resolve<IChunkNeighborConnector>(),
                             container.Resolve<ChunkRepository>(),
@@ -217,7 +219,7 @@ namespace _Project.Features.Core.Bootstrap
                             container.Resolve<ChunkGenerationScheduler>(),
                             container.Resolve<ChunkRepository>(),
                             container.Resolve<LandscapeApplier>(),
-                            container.Resolve<ITerrainFactory>(),
+                            container.Resolve<ILandscapeFactory>(),
                             container.Resolve<IChunkNeighborConnector>()),
                     Lifetime.Singleton);
 

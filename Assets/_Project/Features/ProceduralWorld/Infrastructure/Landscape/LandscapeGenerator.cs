@@ -5,6 +5,7 @@ using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Domain.Landscape;
 using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs;
+using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Landscape;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -54,8 +55,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Landscape
             state.Landscape =
                 landscape;
 
-            TerrainGenerationJob job =
-                new TerrainGenerationJob(
+            LandscapeGenerationJob job =
+                new LandscapeGenerationJob(
                     heights,
                     resolution,
                     _grid.ChunkSizeX,

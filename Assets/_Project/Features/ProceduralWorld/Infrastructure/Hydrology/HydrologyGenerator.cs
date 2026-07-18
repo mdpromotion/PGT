@@ -8,6 +8,7 @@ using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs;
+using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology

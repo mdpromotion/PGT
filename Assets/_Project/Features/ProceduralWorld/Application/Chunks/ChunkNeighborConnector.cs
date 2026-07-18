@@ -2,17 +2,18 @@ using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Infrastructure;
+using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Application.Chunks
 {
     public class ChunkNeighborConnector : IChunkNeighborConnector
     {
-        private readonly ITerrainFactory _factory;
+        private readonly ILandscapeFactory _factory;
 
 
         public ChunkNeighborConnector(
-            ITerrainFactory factory)
+            ILandscapeFactory factory)
         {
             _factory = factory;
         }

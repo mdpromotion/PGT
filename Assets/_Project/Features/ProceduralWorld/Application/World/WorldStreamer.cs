@@ -56,7 +56,6 @@ namespace _Project.Features.ProceduralWorld.Application.World
 
         public void Update()
         {
-            
             ChunkCoordinate center =
                 _chunkGrid.ToChunkCoordinate(
                     _player.Position);

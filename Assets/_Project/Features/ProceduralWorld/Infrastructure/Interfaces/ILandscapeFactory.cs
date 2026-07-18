@@ -1,10 +1,9 @@
-using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using UnityEngine;
 
-namespace _Project.Features.ProceduralWorld.Infrastructure
+namespace _Project.Features.ProceduralWorld.Infrastructure.Interfaces
 {
-    public interface ITerrainFactory
+    public interface ILandscapeFactory
     {
         Terrain Create(ChunkCoordinate coordinate, Transform parent);
         void Show(Terrain terrain);

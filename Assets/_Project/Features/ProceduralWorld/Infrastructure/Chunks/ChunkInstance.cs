@@ -1,7 +1,8 @@
-﻿using _Project.Features.ProceduralWorld.Domain.Landscape;
+﻿using _Project.Features.ProceduralWorld.Domain.Chunks;
+using _Project.Features.ProceduralWorld.Domain.Landscape;
 using UnityEngine;
 
-namespace _Project.Features.ProceduralWorld.Domain.Chunks
+namespace _Project.Features.ProceduralWorld.Infrastructure.Chunks
 {
     public sealed class ChunkInstance
     {

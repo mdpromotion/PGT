@@ -5,6 +5,7 @@ using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs;
+using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
 using UnityEditor.Rendering;

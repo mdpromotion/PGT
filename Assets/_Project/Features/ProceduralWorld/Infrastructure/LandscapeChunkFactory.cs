@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
+using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 using _Project.Features.ProceduralWorld.Presentation;
 using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure
 {
-    public class TerrainChunkFactory : ITerrainFactory
+    public class LandscapeChunkFactory : ILandscapeFactory
     {
         private readonly Terrain _prefab;
         private readonly ChunkGrid _grid;
@@ -15,7 +16,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
         private readonly Queue<Terrain> _pool;
 
-        public TerrainChunkFactory(
+        public LandscapeChunkFactory(
             Terrain prefab,
             ChunkGrid grid,
             int expectedPoolCapacity = 32)

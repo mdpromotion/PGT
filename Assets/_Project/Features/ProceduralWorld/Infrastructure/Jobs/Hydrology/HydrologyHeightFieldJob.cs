@@ -1,10 +1,10 @@
+using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 using Unity.Burst;
 using Unity.Collections;
-using Unity.Mathematics;
-using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 using Unity.Jobs;
+using Unity.Mathematics;
 
-namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
+namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 {
     [BurstCompile]
     public struct HydrologyHeightFieldJob : IJobParallelFor

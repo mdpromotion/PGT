@@ -1,4 +1,5 @@
 using _Project.Features.ProceduralWorld.Domain.Chunks;
+using _Project.Features.ProceduralWorld.Infrastructure.Chunks;
 
 namespace _Project.Features.ProceduralWorld.Application.Interfaces
 {

@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
+using _Project.Features.ProceduralWorld.Application.Landscape;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Infrastructure;
+using _Project.Features.ProceduralWorld.Infrastructure.Chunks;
+using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 
 namespace _Project.Features.ProceduralWorld.Application.Chunks
 {
@@ -12,7 +15,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
         private readonly ChunkRepository _repository;
         private readonly LandscapeApplier _applier;
 
-        private readonly ITerrainFactory _factory;
+        private readonly ILandscapeFactory _factory;
         private readonly IChunkNeighborConnector _neighborConnector;
 
 
@@ -29,7 +32,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             ChunkGenerationScheduler scheduler,
             ChunkRepository repository,
             LandscapeApplier applier,
-            ITerrainFactory factory,
+            ILandscapeFactory factory,
             IChunkNeighborConnector neighborConnector)
         {
             _scheduler = scheduler;
