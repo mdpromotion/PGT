@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using _Project.Features.Camera.Presentation;
+using _Project.Features.Camera.Infrastructure;
 using _Project.Features.Player.Application;
 using _Project.Features.Player.Domain;
 using _Project.Features.Player.Infrastructure;

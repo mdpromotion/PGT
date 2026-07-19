@@ -1,4 +1,4 @@
-namespace _Project.Features.Camera.Presentation
+namespace _Project.Features.Camera.Infrastructure
 {
     public interface IFpsPlayerMotor
     {

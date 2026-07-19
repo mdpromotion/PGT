@@ -2,20 +2,20 @@ using _Project.Features.Player.Presentation;
 using UnityEngine;
 using VContainer;
 
-namespace _Project.Features.Camera.Presentation
+namespace _Project.Features.Camera.Infrastructure
 {
     public sealed class FpsCameraController : MonoBehaviour
     {
         private Transform _cameraTransform;
 
-        [SerializeField] private float _sensitivity = 0.08f;
-        [SerializeField] private bool _invertY;
+        [SerializeField] private float sensitivity = 0.08f;
+        [SerializeField] private bool invertY;
 
         private IPlayerInputReader _input;
         private IFpsPlayerMotor _motor;
 
         private float _pitch;
-        
+
         [Inject]
         public void Construct(
             IPlayerInputReader input,
@@ -25,26 +25,28 @@ namespace _Project.Features.Camera.Presentation
             _motor = motor;
         }
 
-        private void Awake() => _cameraTransform = transform;
+        private void Awake()
+        {
+            _cameraTransform = transform;
+        }
 
         private void Update()
         {
             if (_input == null || _motor == null)
                 return;
 
-            var look = _input.Look * _sensitivity;
+            Vector2 look = _input.Look * sensitivity;
 
             _motor.SetLookYaw(look.x);
 
-            var y = _invertY ? look.y : -look.y;
-            
+            float y = invertY ? look.y : -look.y;
+
             _pitch = Mathf.Clamp(
                 _pitch + y,
                 -89f,
-                89f
-            );
-            
-            _cameraTransform.localRotation = Quaternion.Euler(_pitch, 0, 0);
+                89f);
+
+            _cameraTransform.localRotation = Quaternion.Euler(_pitch, 0f, 0f);
         }
     }
 }

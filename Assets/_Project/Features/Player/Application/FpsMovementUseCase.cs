@@ -11,15 +11,15 @@ namespace _Project.Features.Player.Application
             Vector3 currentVelocity,
             float moveSpeed)
         {
-            var planarForward = Vector3.ProjectOnPlane(forward, Vector3.up).normalized;
-            var planarRight = Vector3.ProjectOnPlane(right, Vector3.up).normalized;
+            Vector3 planarForward = Vector3.ProjectOnPlane(forward, Vector3.up).normalized;
+            Vector3 planarRight = Vector3.ProjectOnPlane(right, Vector3.up).normalized;
 
-            var move = planarForward * moveInput.y + planarRight * moveInput.x;
+            Vector3 move = planarForward * moveInput.y + planarRight * moveInput.x;
 
             if (move.sqrMagnitude > 1f)
                 move.Normalize();
 
-            var desiredVelocity = move * moveSpeed;
+            Vector3 desiredVelocity = move * moveSpeed;
 
             return new Vector3(
                 desiredVelocity.x,
