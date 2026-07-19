@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 
-
-namespace _Project.Features.ProceduralWorld.Application.Chunks
+namespace _Project.Features.ProceduralWorld.Application.Chunks.Generation
 {
     public class ChunkGenerationScheduler
     {

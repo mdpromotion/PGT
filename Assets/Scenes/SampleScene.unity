@@ -832,6 +832,8 @@ MonoBehaviour:
     RiverStartFadeSteps: 20
     InitialRiverStrength: 0.2
     InitialCarveDepthFactor: 0.15
+    EdgeSinkFactor: 0.01
+    EdgeOverlapFactor: 0.15
   viewDistance: 5
 --- !u!1 &1508698440
 GameObject:

@@ -1,10 +1,7 @@
-using System.Collections.Generic;
 using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Domain.Landscape;
-using _Project.Features.ProceduralWorld.Domain.World;
-using _Project.Features.ProceduralWorld.Infrastructure.Jobs;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Landscape;
 using Unity.Collections;
 using Unity.Jobs;

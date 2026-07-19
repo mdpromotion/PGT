@@ -42,6 +42,10 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                     HeightB = b.Height,
                     StrengthA = a.Strength,
                     StrengthB = b.Strength,
+                    LeftBankHeightA = a.LeftBankHeight,
+                    LeftBankHeightB = b.LeftBankHeight,
+                    RightBankHeightA = a.RightBankHeight,
+                    RightBankHeightB = b.RightBankHeight,
                     SegmentId = a.SegmentId
                 });
             }

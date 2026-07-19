@@ -34,5 +34,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings
         public int RiverStartFadeSteps;
         public float InitialRiverStrength;
         public float InitialCarveDepthFactor;
+        public float EdgeSinkFactor;
+
+        [Header("Edge overlap")]
+        public float EdgeOverlapFactor;
     }
 }

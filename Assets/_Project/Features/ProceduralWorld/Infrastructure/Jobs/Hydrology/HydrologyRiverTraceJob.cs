@@ -118,6 +118,23 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
             return bestId >= 0 ? bestId : 0;
         }
+        
+        private float2 ResolveBankSamplingTangent(float2 pos, float2 direction)
+        {
+            if (math.lengthsq(direction) > 1e-8f)
+                return math.normalize(direction);
+
+            float2 downhill = HeightSampler.SampleDownhillDirection(
+                pos,
+                HydrologySettings.GradientEpsilon,
+                Settings,
+                Offsets,
+                out _);
+
+            return math.lengthsq(downhill) > 1e-8f
+                ? math.normalize(downhill)
+                : new float2(1f, 0f);
+        }
 
         private void TraceRiver(
             ref Random random,
@@ -149,6 +166,20 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             for (int i = 0; i < HydrologySettings.MaxTraceSteps; i++)
             {
                 float terrain = HeightSampler.Sample(pos, Settings, Offsets);
+                
+                float2 tangent = ResolveBankSamplingTangent(pos, direction);
+                float2 perpendicular = new float2(-tangent.y, tangent.x);
+
+                float clampedStrengthForSample = math.min(strength, HydrologySettings.MaxRiverStrength);
+                float halfWidth = math.max(
+                    HydrologySettings.RiverWidth * clampedStrengthForSample,
+                    0.001f);
+
+                float2 leftPos = pos - perpendicular * halfWidth;
+                float2 rightPos = pos + perpendicular * halfWidth;
+
+                float leftBankHeight = HeightSampler.Sample(leftPos, Settings, Offsets);
+                float rightBankHeight = HeightSampler.Sample(rightPos, Settings, Offsets);
 
                 points.Add(new float2Point
                 {
@@ -156,6 +187,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                     Z = pos.y,
                     Height = math.min(terrain, previousHeight),
                     Strength = strength,
+                    LeftBankHeight = leftBankHeight,
+                    RightBankHeight = rightBankHeight,
                     SegmentId = segmentId,
                     Kind = HydrologyPointKind.River
                 });
@@ -428,6 +461,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                     Z = math.lerp(a.Z, b.Z, .5f),
                     Height = math.lerp(a.Height, b.Height, .5f),
                     Strength = math.lerp(a.Strength, b.Strength, .5f),
+                    LeftBankHeight = math.lerp(a.LeftBankHeight, b.LeftBankHeight, .5f),
+                    RightBankHeight = math.lerp(a.RightBankHeight, b.RightBankHeight, .5f),
                     SegmentId = a.SegmentId,
                     Kind = HydrologyPointKind.River
                 });

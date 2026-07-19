@@ -12,6 +12,11 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
         public float StrengthA;
         public float StrengthB;
+        
+        public float LeftBankHeightA;
+        public float LeftBankHeightB;
+        public float RightBankHeightA;
+        public float RightBankHeightB;
 
         public int SegmentId;
     }

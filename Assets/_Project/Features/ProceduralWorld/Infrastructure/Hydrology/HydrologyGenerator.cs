@@ -7,7 +7,6 @@ using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
-using _Project.Features.ProceduralWorld.Infrastructure.Jobs;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 
@@ -124,18 +123,28 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             JobHandle mergeHandle =
                 JobHandle.CombineDependencies(dependency, merged.Handle);
 
+            int size =
+                context.Resolution * context.Resolution;
+
             NativeArray<float> mask =
-                new NativeArray<float>(
-                    context.Resolution *
-                    context.Resolution,
-                    Allocator.Persistent);
+                new NativeArray<float>(size, Allocator.Persistent);
+
+            NativeArray<float> waterSurfaceHeight =
+                new NativeArray<float>(size, Allocator.Persistent);
+
+            NativeArray<float> bankHeight =
+                new NativeArray<float>(size, Allocator.Persistent);
 
             state.Landscape.AttachRiverMask(mask);
+            state.Landscape.AttachWaterSurfaceHeight(waterSurfaceHeight);
+            state.Landscape.AttachBankHeight(bankHeight);
 
             HydrologyCarveJob job =
                 new HydrologyCarveJob(
                     state.Landscape.Heights,
                     mask,
+                    waterSurfaceHeight,
+                    bankHeight,
                     context.Resolution,
                     _grid.ChunkSizeX,
                     _grid.ChunkSizeZ,
