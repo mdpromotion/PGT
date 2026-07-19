@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Unity.Jobs;
-using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology

@@ -1,77 +1,94 @@
-using _Project.Features.ProceduralWorld.Application.Chunks;
-using _Project.Features.ProceduralWorld.Application.Interfaces;
-using _Project.Features.ProceduralWorld.Domain.Chunks;
-using _Project.Features.ProceduralWorld.Domain.Landscape;
-using _Project.Features.ProceduralWorld.Infrastructure.Chunks;
-using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
-using UnityEngine;
+    using _Project.Features.ProceduralWorld.Application.Chunks;
+    using _Project.Features.ProceduralWorld.Application.Interfaces;
+    using _Project.Features.ProceduralWorld.Domain.Chunks;
+    using _Project.Features.ProceduralWorld.Domain.Landscape;
+    using _Project.Features.ProceduralWorld.Infrastructure.Chunks;
+    using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
+    using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
+    using UnityEngine;
 
-namespace _Project.Features.ProceduralWorld.Application.Landscape
-{
-    public class LandscapeApplier
+    namespace _Project.Features.ProceduralWorld.Application.Landscape
     {
-        private readonly ILandscapeFactory _factory;
-        private readonly ITerrainWriter _writer;
-        private readonly IChunkNeighborConnector _neighborConnector;
-        private readonly ChunkRepository _repository;
-        private readonly Transform _parent;
-
-
-
-        public LandscapeApplier(
-            ILandscapeFactory factory,
-            ITerrainWriter writer,
-            IChunkNeighborConnector neighborConnector,
-            ChunkRepository repository,
-            Transform parent)
+        public class LandscapeApplier
         {
-            _factory = factory;
-            _writer = writer;
-            _neighborConnector = neighborConnector;
-            _repository = repository;
-            _parent = parent;
-        }
+            private readonly ILandscapeFactory _factory;
+            private readonly ITerrainWriter _writer;
+            private readonly IChunkNeighborConnector _neighborConnector;
+            private readonly ChunkRepository _repository;
+            private readonly ChunkWaterPresenter _waterPresenter;
+            private readonly Transform _parent;
 
 
 
-        public void Apply(
-            ChunkGenerationResult result)
-        {
-            LandscapeData data =
-                result.State.Landscape;
+            public LandscapeApplier(
+                ILandscapeFactory factory,
+                ITerrainWriter writer,
+                IChunkNeighborConnector neighborConnector,
+                ChunkRepository repository,
+                ChunkWaterPresenter waterPresenter,
+                Transform parent)
+            {
+                _factory = factory;
+                _writer = writer;
+                _neighborConnector = neighborConnector;
+                _repository = repository;
+                _waterPresenter = waterPresenter;
+                _parent = parent;
+            }
 
 
-            Terrain terrain =
-                _factory.Create(
+
+            public void Apply(
+                ChunkGenerationResult result)
+            {
+                LandscapeData data =
+                    result.State.Landscape;
+
+
+                Terrain terrain =
+                    _factory.Create(
+                        data.Coordinate,
+                        _parent);
+
+
+                _writer.Write(
+                    terrain,
+                    data);
+
+
+                terrain.terrainData.SyncHeightmap();
+
+
+                MeshRenderer waterRenderer =
+                    _factory.GetWaterRenderer(terrain);
+
+                WaterState waterState =
+                    _factory.GetWaterState(terrain);
+
+                _waterPresenter.Apply(
+                    waterRenderer,
+                    waterState,
                     data.Coordinate,
-                    _parent);
-
-
-            _writer.Write(
-                terrain,
-                data);
-
-
-            terrain.terrainData.SyncHeightmap();
+                    data);
 
 
 
-            ChunkInstance chunk =
-                new ChunkInstance(
-                    data.Coordinate,
-                    data,
-                    terrain);
+                ChunkInstance chunk =
+                    new ChunkInstance(
+                        data.Coordinate,
+                        data,
+                        terrain);
 
 
 
-            _repository.Add(
-                chunk);
+                _repository.Add(
+                    chunk);
 
 
 
-            _neighborConnector.Connect(
-                _repository,
-                data.Coordinate);
+                _neighborConnector.Connect(
+                    _repository,
+                    data.Coordinate);
+            }
         }
     }
-}

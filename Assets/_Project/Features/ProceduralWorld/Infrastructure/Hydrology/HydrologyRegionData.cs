@@ -1,5 +1,4 @@
-﻿using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
-using Unity.Collections;
+﻿using Unity.Collections;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 {
@@ -34,6 +33,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
         public float Height;
         public float Strength;
+        
+        public float LeftBankHeight;
+        public float RightBankHeight;
 
         public int SegmentId;
 

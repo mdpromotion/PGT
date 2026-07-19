@@ -178,7 +178,8 @@ namespace _Project.Features.Core.Bootstrap
                             chunkPrefab,
                             container.Resolve<ChunkGrid>()),
                     Lifetime.Singleton)
-                .As<ILandscapeFactory>();
+                .As<ILandscapeFactory>()
+                .As<IDisposable>();
 
 
 
@@ -202,12 +203,22 @@ namespace _Project.Features.Core.Bootstrap
 
 
             builder.Register(
+                container =>
+                    new ChunkWaterPresenter(
+                        chunkPrefab.terrainData.size.y,
+                        1),
+                Lifetime.Singleton);
+
+
+
+            builder.Register(
                     container =>
                         new LandscapeApplier(
                             container.Resolve<ILandscapeFactory>(),
                             container.Resolve<ITerrainWriter>(),
                             container.Resolve<IChunkNeighborConnector>(),
                             container.Resolve<ChunkRepository>(),
+                            container.Resolve<ChunkWaterPresenter>(),
                             chunksParent),
                     Lifetime.Singleton);
 

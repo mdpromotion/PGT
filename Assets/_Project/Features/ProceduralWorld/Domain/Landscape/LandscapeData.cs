@@ -11,6 +11,10 @@ namespace _Project.Features.ProceduralWorld.Domain.Landscape
 
         public NativeArray<float> RiverMask { get; private set; }
 
+        public NativeArray<float> WaterSurfaceHeight { get; private set; }
+
+        public NativeArray<float> BankHeight { get; private set; }
+
         public int Resolution { get; }
 
         public LandscapeData(
@@ -25,15 +29,23 @@ namespace _Project.Features.ProceduralWorld.Domain.Landscape
             Resolution = resolution;
         }
 
-
-
         public void AttachRiverMask(
             NativeArray<float> riverMask)
         {
             RiverMask = riverMask;
         }
 
+        public void AttachWaterSurfaceHeight(
+            NativeArray<float> waterSurfaceHeight)
+        {
+            WaterSurfaceHeight = waterSurfaceHeight;
+        }
 
+        public void AttachBankHeight(
+            NativeArray<float> bankHeight)
+        {
+            BankHeight = bankHeight;
+        }
 
         public void Dispose()
         {
@@ -45,6 +57,16 @@ namespace _Project.Features.ProceduralWorld.Domain.Landscape
             if (RiverMask.IsCreated)
             {
                 RiverMask.Dispose();
+            }
+
+            if (WaterSurfaceHeight.IsCreated)
+            {
+                WaterSurfaceHeight.Dispose();
+            }
+
+            if (BankHeight.IsCreated)
+            {
+                BankHeight.Dispose();
             }
         }
     }

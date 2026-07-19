@@ -1,7 +1,5 @@
 using _Project.Features.ProceduralWorld.Application.Interfaces;
-using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
-using _Project.Features.ProceduralWorld.Infrastructure;
 using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 using UnityEngine;
 
