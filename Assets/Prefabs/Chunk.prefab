@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5116074535957847417}
   - component: {fileID: 5459949512617695324}
   - component: {fileID: 7959816151240782271}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Chunk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 7229367638282472371}
   - component: {fileID: 3874217948821688025}
   - component: {fileID: 8235212807399687847}
-  m_Layer: 0
+  m_Layer: 4
   m_Name: Water
   m_TagString: Untagged
   m_Icon: {fileID: 0}
