@@ -849,6 +849,7 @@ GameObject:
   - component: {fileID: 1508698441}
   - component: {fileID: 1508698445}
   - component: {fileID: 1508698446}
+  - component: {fileID: 1508698448}
   - component: {fileID: 1508698447}
   m_Layer: 0
   m_Name: Capsule
@@ -947,7 +948,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 100, y: 500, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 330585546}
@@ -979,7 +980,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 1
+  m_CollisionDetection: 0
 --- !u!114 &1508698446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -992,13 +993,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c69b48f406de21869e31882342f076f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 7
-  _jumpVelocity: 5
-  _sprintSpeed: 15
+  _moveSpeed: 55
+  _jumpVelocity: 50
+  _sprintSpeed: 10
   _groundMask:
     serializedVersion: 2
     m_Bits: 0
-  _groundCheckDistance: 0.25
+  _groundCheckDistance: 0.15
   _groundCheckRadius: 0.3
 --- !u!114 &1508698447
 MonoBehaviour:
@@ -1009,9 +1010,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 1508698440}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f51de87e2b144c089874e2af0a7b87c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Infrastructure.WaterVolumeTracker
+  _enterMaskThreshold: 0.1
+  _exitMaskThreshold: 0.03
+--- !u!114 &1508698448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508698440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bba3a176a2f2990b791d41363d93ff6b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Infrastructure.RigidbodyPlayerState
   _rb: {fileID: 1508698445}
 --- !u!1 &1657195339
 GameObject:

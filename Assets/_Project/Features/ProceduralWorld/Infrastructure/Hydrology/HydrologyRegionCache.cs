@@ -7,16 +7,10 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 {
     public sealed class HydrologyRegionCache : IDisposable
     {
-        private readonly struct CacheEntry
+        private struct CacheEntry
         {
-            public readonly HydrologyRegionData Data;
-            public readonly JobHandle Handle;
-
-            public CacheEntry(HydrologyRegionData data, JobHandle handle)
-            {
-                Data = data;
-                Handle = handle;
-            }
+            public HydrologyRegionData Data;
+            public JobHandle Handle;
         }
 
         private readonly HydrologyRegionBuilder _builder;
@@ -33,15 +27,11 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
         public RegionFetchResult Get(RegionCoordinate region)
         {
             if (_regions.TryGetValue(region, out CacheEntry entry))
-            {
                 return new RegionFetchResult(entry.Data, entry.Handle);
-            }
 
             RegionFetchResult result = _builder.Schedule(region);
 
-            _regions.Add(
-                region,
-                new CacheEntry(result.Data, result.Handle));
+            _regions.Add(region, new CacheEntry { Data = result.Data, Handle = result.Handle });
 
             return result;
         }
@@ -79,7 +69,15 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 _regions.Remove(key);
             }
         }
-
+        
+        public void RegisterReader(RegionCoordinate region, JobHandle readerHandle)
+        {
+            if (_regions.TryGetValue(region, out CacheEntry entry))
+            {
+                entry.Handle = JobHandle.CombineDependencies(entry.Handle, readerHandle);
+                _regions[region] = entry;
+            }
+        }
 
 
         public void Dispose()

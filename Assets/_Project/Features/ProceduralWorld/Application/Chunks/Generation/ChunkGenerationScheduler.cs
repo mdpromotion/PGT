@@ -127,19 +127,12 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks.Generation
         {
             int applied = 0;
 
-
-
             for(int i = 0; i < _running.Count;)
             {
                 if(applied >= MaxApplyPerFrame)
                     break;
 
-
-
-                GenerationTask task =
-                    _running[i];
-
-
+                GenerationTask task = _running[i];
 
                 if(!task.Handle.IsCompleted)
                 {
@@ -147,45 +140,30 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks.Generation
                     continue;
                 }
 
-
-
                 task.Handle.Complete();
 
-
-
-                ChunkCoordinate coordinate =
-                    task.State.Context.Coordinate;
-
-
+                ChunkCoordinate coordinate = task.State.Context.Coordinate;
 
                 if(task.Cancelled)
                 {
                     task.State.Landscape.Dispose();
 
-                    completed(
-                        coordinate);
-                    
+                    completed(coordinate);
+
                     RemoveTask(i);
-                    
+
                     continue;
                 }
 
+                ChunkGenerationResult result = new ChunkGenerationResult(task.State);
 
+                apply(result);
+                
 
-                ChunkGenerationResult result =
-                    new ChunkGenerationResult(
-                        task.State);
-                
-                apply(
-                    result);
-                
-                task.State.Landscape.Dispose();
-                
-                completed(
-                    coordinate);
-                
+                completed(coordinate);
+
                 RemoveTask(i);
-                
+
                 applied++;
             }
         }

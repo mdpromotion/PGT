@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
@@ -5,59 +6,45 @@ using _Project.Features.ProceduralWorld.Infrastructure.Chunks;
 
 namespace _Project.Features.ProceduralWorld.Application.Chunks
 {
-    public class ChunkRepository : IChunkLookup
+    public class ChunkRepository : IChunkLookup, IDisposable
     {
-        private readonly Dictionary<
-            ChunkCoordinate,
-            ChunkInstance> _chunks = new();
+        private readonly Dictionary<ChunkCoordinate, ChunkInstance> _chunks = new();
 
-
-
-        public bool Contains(
-            ChunkCoordinate coordinate)
+        public bool Contains(ChunkCoordinate coordinate)
         {
             return _chunks.ContainsKey(coordinate);
         }
 
-
-
-        public bool TryGet(
-            ChunkCoordinate coordinate,
-            out ChunkInstance chunk)
+        public bool TryGet(ChunkCoordinate coordinate, out ChunkInstance chunk)
         {
-            return _chunks.TryGetValue(
-                coordinate,
-                out chunk);
+            return _chunks.TryGetValue(coordinate, out chunk);
         }
 
-
-
-        public ChunkInstance Get(
-            ChunkCoordinate coordinate)
+        public ChunkInstance Get(ChunkCoordinate coordinate)
         {
-            return _chunks.TryGetValue(
-                coordinate,
-                out ChunkInstance chunk)
+            return _chunks.TryGetValue(coordinate, out ChunkInstance chunk)
                 ? chunk
                 : null;
         }
 
-
-
-        public void Add(
-            ChunkInstance chunk)
+        public void Add(ChunkInstance chunk)
         {
-            _chunks.Add(
-                chunk.Coordinate,
-                chunk);
+            _chunks.Add(chunk.Coordinate, chunk);
         }
 
-
-
-        public void Remove(
-            ChunkCoordinate coordinate)
+        public void Remove(ChunkCoordinate coordinate)
         {
             _chunks.Remove(coordinate);
+        }
+
+        public void Dispose()
+        {
+            foreach (ChunkInstance chunk in _chunks.Values)
+            {
+                chunk.Landscape.Dispose();
+            }
+
+            _chunks.Clear();
         }
     }
 }

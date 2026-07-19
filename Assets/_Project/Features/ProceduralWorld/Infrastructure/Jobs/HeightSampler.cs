@@ -17,8 +17,10 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
             float maxAmplitude = 0f;
 
             float scale = math.max(settings.Scale, 0.0001f);
+            
+            int octaveCount = math.min(settings.Octaves, octaveOffsets.Length);
 
-            for (int i = 0; i < settings.Octaves; i++)
+            for (int i = 0; i < octaveCount; i++)
             {
                 maxAmplitude += amplitude;
 

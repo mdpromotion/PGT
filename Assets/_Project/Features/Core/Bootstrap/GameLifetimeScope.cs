@@ -103,6 +103,9 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.RegisterComponentInHierarchy<RigidbodyPlayerState>()
                 .As<IPlayerReadOnly>();
+
+
+            builder.RegisterComponentInHierarchy<WaterVolumeTracker>();
         }
 
         private void RegisterProceduralWorld(
@@ -251,7 +254,9 @@ namespace _Project.Features.Core.Bootstrap
                             container.Resolve<LandscapeApplier>(),
                             container.Resolve<ILandscapeFactory>(),
                             container.Resolve<IChunkNeighborConnector>()),
-                    Lifetime.Singleton);
+                    Lifetime.Singleton)
+                .AsSelf()
+                .As<IDisposable>();
 
 
 
@@ -265,6 +270,16 @@ namespace _Project.Features.Core.Bootstrap
                         container.Resolve<IEnumerable<IGenerationCacheEvictor>>()),
                 Lifetime.Singleton);
 
+
+
+            builder.Register(
+                    container =>
+                        new WaterQueryService(
+                            container.Resolve<ChunkGrid>(),
+                            container.Resolve<ChunkRepository>(),
+                            chunkPrefab.terrainData.size.y),
+                    Lifetime.Singleton)
+                .As<IWaterQuery>();
 
 
             builder.RegisterComponentInHierarchy<ProceduralWorldPresenter>();

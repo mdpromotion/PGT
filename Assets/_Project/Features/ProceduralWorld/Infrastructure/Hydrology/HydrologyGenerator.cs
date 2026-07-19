@@ -177,6 +177,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
             JobHandle regionsHandle = dependency;
 
+            Span<RegionCoordinate> neighbours = stackalloc RegionCoordinate[9];
+
             int slot = 0;
 
             for (int dz = -1; dz <= 1; dz++)
@@ -207,6 +209,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                         case 8: source8 = deferred; break;
                     }
 
+                    neighbours[slot] = neighbour;
+
                     slot++;
 
                     regionsHandle = JobHandle.CombineDependencies(
@@ -234,6 +238,11 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
             JobHandle mergeHandle =
                 mergeJob.Schedule(regionsHandle);
+
+            for (int i = 0; i < 9; i++)
+            {
+                _regionCache.RegisterReader(neighbours[i], mergeHandle);
+            }
 
             int initialCapacity = math.max(
                 1,
