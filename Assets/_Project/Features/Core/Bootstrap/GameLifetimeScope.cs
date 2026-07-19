@@ -18,6 +18,9 @@ using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
 using _Project.Features.ProceduralWorld.Presentation;
+using _Project.Features.Sound.Application;
+using _Project.Features.Sound.Infrastructure;
+using _Project.Features.Sound.Presentation;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -44,15 +47,31 @@ namespace _Project.Features.Core.Bootstrap
 
         [SerializeField]
         private int viewDistance = 3;
-
-
+        
+        [SerializeField] 
+        private SoundDatabase _database;
+        
+        [SerializeField] 
+        private int _globalMaxVoices = 32;
 
         protected override void Configure(
             IContainerBuilder builder)
         {
+            RegisterSound(builder);
+            
             RegisterPlayer(builder);
 
             RegisterProceduralWorld(builder);
+        }
+
+
+        private void RegisterSound(IContainerBuilder builder)
+        {
+            builder.RegisterInstance(_database);
+            builder.Register(_ => new SoundPlaybackGuard(_globalMaxVoices), Lifetime.Singleton);
+            builder.RegisterComponentOnNewGameObject<SoundVoicePool>(Lifetime.Singleton, "SoundVoicePool")
+                .DontDestroyOnLoad();
+            builder.Register<SoundService>(Lifetime.Singleton).As<ISoundService>();
         }
 
 
