@@ -14,11 +14,177 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Sound.Infrastructure.SoundDatabase
   _sounds:
   - _key:
-      _value: 
+      _value: Footstep
     _category: 0
-    _clips: []
+    _clips:
+    - {fileID: 8300000, guid: ac6649006dbee9e4685752e124111da7, type: 3}
     _cooldown: 0.15
     _maxConcurrentInstances: 2
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Footstep1
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: 9ea11a2d13d536e4e8441a0f5895995c, type: 3}
+    _cooldown: 0.15
+    _maxConcurrentInstances: 2
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Footstep2
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: 203ac8b6f07070e4f93f1c1a6fff06c3, type: 3}
+    _cooldown: 0.15
+    _maxConcurrentInstances: 2
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Footstep3
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: f42914d98b070f741b2feee96a2988ee, type: 3}
+    _cooldown: 0.15
+    _maxConcurrentInstances: 2
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Footstep4
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: feb62160ad1f8334ab037017b843d162, type: 3}
+    _cooldown: 0.15
+    _maxConcurrentInstances: 2
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Footstep5
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: 001f691d110d55648871a03f446ffa08, type: 3}
+    _cooldown: 0.15
+    _maxConcurrentInstances: 2
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Run
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: 9e68ea1ebd76aa44c8cfa5beb9850830, type: 3}
+    _cooldown: 0
+    _maxConcurrentInstances: 10
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Run1
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: fa95ebee958fb0e41a42a832aab767eb, type: 3}
+    _cooldown: 0
+    _maxConcurrentInstances: 10
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Run2
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: 1f2844efbf7abf647ba3d75d510f823a, type: 3}
+    _cooldown: 0
+    _maxConcurrentInstances: 10
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Run3
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: 7c518e8469a403b4c981664ecb28a79a, type: 3}
+    _cooldown: 0
+    _maxConcurrentInstances: 10
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Run4
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: 1deb201b8bf8f89479323a74e421150b, type: 3}
+    _cooldown: 0
+    _maxConcurrentInstances: 10
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Jump_Start
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: 665f92bb69e46a94a8caf3717dbb0d5e, type: 3}
+    _cooldown: 0
+    _maxConcurrentInstances: 10
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Jump_Start1
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: 8802544ed0324a14095edc70ab3bbab1, type: 3}
+    _cooldown: 0
+    _maxConcurrentInstances: 10
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Jump_Start2
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: 1a88f429c4a7b734f9c4254f0c654cea, type: 3}
+    _cooldown: 0
+    _maxConcurrentInstances: 10
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Jump_Land
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: 7131d701ae015a54aa3d856feccd513f, type: 3}
+    _cooldown: 0
+    _maxConcurrentInstances: 10
+    _volume: 1
+    _volumeVariance: 0.5
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Jump_Land1
+    _category: 0
+    _clips:
+    - {fileID: 8300000, guid: 65d9836027675574b8d070c5718f99c7, type: 3}
+    _cooldown: 0
+    _maxConcurrentInstances: 10
     _volume: 1
     _volumeVariance: 0.5
     _pitchVariance: 0

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using _Project.Features.Camera.Presentation;
+using _Project.Features.Camera.Infrastructure;
 using _Project.Features.Player.Application;
 using _Project.Features.Player.Domain;
 using _Project.Features.Player.Infrastructure;
@@ -49,11 +49,17 @@ namespace _Project.Features.Core.Bootstrap
         private int viewDistance = 3;
         
         [SerializeField] 
-        private SoundDatabase _database;
+        private SoundDatabase database;
         
         [SerializeField] 
-        private int _globalMaxVoices = 32;
+        private int globalMaxVoices = 32;
 
+        [SerializeField]
+        private FootstepSoundSet footstepSoundSet;
+
+        [SerializeField]
+        private PlayerMovementConfig playerMovementConfig;
+        
         protected override void Configure(
             IContainerBuilder builder)
         {
@@ -67,8 +73,8 @@ namespace _Project.Features.Core.Bootstrap
 
         private void RegisterSound(IContainerBuilder builder)
         {
-            builder.RegisterInstance(_database);
-            builder.Register(_ => new SoundPlaybackGuard(_globalMaxVoices), Lifetime.Singleton);
+            builder.RegisterInstance(database);
+            builder.Register(_ => new SoundPlaybackGuard(globalMaxVoices), Lifetime.Singleton);
             builder.RegisterComponentOnNewGameObject<SoundVoicePool>(Lifetime.Singleton, "SoundVoicePool")
                 .DontDestroyOnLoad();
             builder.Register<SoundService>(Lifetime.Singleton).As<ISoundService>();
@@ -76,8 +82,7 @@ namespace _Project.Features.Core.Bootstrap
 
 
 
-        private void RegisterPlayer(
-            IContainerBuilder builder)
+        private void RegisterPlayer(IContainerBuilder builder)
         {
             builder.Register<InputSystem_Actions>(
                 Lifetime.Singleton);
@@ -93,8 +98,21 @@ namespace _Project.Features.Core.Bootstrap
             builder.RegisterComponentInHierarchy<FpsCameraController>();
 
 
-            builder.Register<FpsMovementUseCase>(
+            builder.RegisterInstance(
+                    playerMovementConfig)
+                .AsSelf();
+
+
+            builder.Register<GroundMovementUseCase>(
                 Lifetime.Singleton);
+
+
+            builder.Register<SwimmingMovementUseCase>(
+                Lifetime.Singleton);
+
+
+            builder.RegisterComponentInHierarchy<PlayerStanceController>()
+                .As<IPlayerStanceState>();
 
 
             builder.RegisterComponentInHierarchy<FpsPlayerMotor>()
@@ -103,6 +121,16 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.RegisterComponentInHierarchy<RigidbodyPlayerState>()
                 .As<IPlayerReadOnly>();
+
+
+            builder.RegisterComponentInHierarchy<WaterVolumeTracker>()
+                .As<IWaterState>();
+
+
+            builder.RegisterInstance(footstepSoundSet);
+
+
+            builder.RegisterComponentInHierarchy<FootstepController>();
         }
 
         private void RegisterProceduralWorld(
@@ -251,7 +279,9 @@ namespace _Project.Features.Core.Bootstrap
                             container.Resolve<LandscapeApplier>(),
                             container.Resolve<ILandscapeFactory>(),
                             container.Resolve<IChunkNeighborConnector>()),
-                    Lifetime.Singleton);
+                    Lifetime.Singleton)
+                .AsSelf()
+                .As<IDisposable>();
 
 
 
@@ -265,6 +295,16 @@ namespace _Project.Features.Core.Bootstrap
                         container.Resolve<IEnumerable<IGenerationCacheEvictor>>()),
                 Lifetime.Singleton);
 
+
+
+            builder.Register(
+                    container =>
+                        new WaterQueryService(
+                            container.Resolve<ChunkGrid>(),
+                            container.Resolve<ChunkRepository>(),
+                            chunkPrefab.terrainData.size.y),
+                    Lifetime.Singleton)
+                .As<IWaterQuery>();
 
 
             builder.RegisterComponentInHierarchy<ProceduralWorldPresenter>();

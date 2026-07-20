@@ -11,7 +11,10 @@ namespace _Project.Features.Sound.Infrastructure
         private readonly SoundVoicePool _voicePool;
         private readonly SoundPlaybackGuard _guard;
 
-        public SoundService(SoundDatabase database, SoundVoicePool voicePool, SoundPlaybackGuard guard)
+        public SoundService(
+            SoundDatabase database,
+            SoundVoicePool voicePool,
+            SoundPlaybackGuard guard)
         {
             _database = database;
             _voicePool = voicePool;
@@ -20,27 +23,48 @@ namespace _Project.Features.Sound.Infrastructure
 
         public void Play(SoundKey key) => Play(key, SoundPlayOptions.Default);
 
-        public void PlayAt(SoundKey key, Vector3 worldPosition) => Play(key, SoundPlayOptions.At(worldPosition));
+        public void PlayAt(SoundKey key, Vector3 worldPosition) =>
+            Play(key, SoundPlayOptions.At(worldPosition));
 
         public void Play(SoundKey key, SoundPlayOptions options)
         {
             SoundDefinition definition = _database.Get(key);
-            if (definition == null) return;
 
+            if (definition == null)
+            {
+                return;
+            }
+            
             float now = Time.time;
             int activeForKey = _voicePool.CountActiveForKey(key);
             int activeTotal = _voicePool.CountActiveTotal();
+            
 
-            if (!_guard.CanPlay(definition, now, activeForKey, activeTotal, options.IgnoreLimits))
+            bool canPlay = _guard.CanPlay(
+                definition,
+                now,
+                activeForKey,
+                activeTotal,
+                options.IgnoreLimits);
+
+            if (!canPlay)
+            {
                 return;
+            }
 
             AudioClip clip = definition.GetRandomClip();
+
             if (clip == null)
             {
                 return;
             }
 
-            _voicePool.Play(definition, clip, options.Position, options.VolumeScale);
+            _voicePool.Play(
+                definition,
+                clip,
+                options.Position,
+                options.VolumeScale);
+
             _guard.RegisterPlay(definition, now);
         }
     }

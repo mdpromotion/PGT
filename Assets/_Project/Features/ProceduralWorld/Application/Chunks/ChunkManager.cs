@@ -65,6 +65,8 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
         public void Dispose()
         {
             _scheduler.CompleteAll();
+
+            _repository.Dispose();
         }
 
 
@@ -114,31 +116,18 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
 
 
-        public void Unload(
-            ChunkCoordinate coordinate)
+        public void Unload(ChunkCoordinate coordinate)
         {
-            if(!_repository.TryGet(
-                    coordinate,
-                    out ChunkInstance chunk))
-            {
+            if(!_repository.TryGet(coordinate, out ChunkInstance chunk))
                 return;
-            }
 
+            _neighborConnector.Disconnect(_repository, coordinate);
 
+            _repository.Remove(coordinate);
 
-            _neighborConnector.Disconnect(
-                _repository,
-                coordinate);
+            chunk.Landscape.Dispose();
 
-
-
-            _repository.Remove(
-                coordinate);
-
-
-
-            _factory.Release(
-                chunk.Terrain);
+            _factory.Release(chunk.Terrain);
         }
     }
 }

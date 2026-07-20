@@ -31,7 +31,16 @@ namespace _Project.Features.Sound.Infrastructure
             foreach (SoundDefinition definition in _sounds)
             {
                 if (definition == null)
+                {
                     continue;
+                }
+
+                if (_lookup.ContainsKey(definition.Key))
+                {
+                    continue;
+                }
+
+                _lookup.Add(definition.Key, definition);
             }
         }
 

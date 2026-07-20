@@ -7,7 +7,9 @@ namespace _Project.Features.Player.Presentation
     {
         Vector2 Move { get; }
         Vector2 Look { get; }
-        bool JumpPressedThisFrame { get; }
+        bool JumpPressed { get; }
+        bool SprintPressed { get; }
+        bool CrouchPressed { get; }
     }
 
     public sealed class PlayerInputReader :
@@ -24,7 +26,9 @@ namespace _Project.Features.Player.Presentation
 
         public Vector2 Move => _inputActions.Player.Move.ReadValue<Vector2>();
         public Vector2 Look => _inputActions.Player.Look.ReadValue<Vector2>();
-        public bool JumpPressedThisFrame => _inputActions.Player.Jump.WasPressedThisFrame();
+        public bool JumpPressed => _inputActions.Player.Jump.IsPressed();
+        public bool SprintPressed => _inputActions.Player.Sprint.IsPressed();
+        public bool CrouchPressed => _inputActions.Player.Crouch.IsPressed();
 
         public void Initialize()
         {

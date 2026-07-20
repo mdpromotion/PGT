@@ -207,7 +207,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.702, z: 0}
+  m_LocalPosition: {x: 0, y: 0.71, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -271,6 +271,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivity: 0.08
   invertY: 0
+  _standingHeight: 0.71
+  _crouchingHeight: 0.426
+  _heightSmoothSpeed: 12
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -833,8 +836,12 @@ MonoBehaviour:
     InitialRiverStrength: 0.2
     InitialCarveDepthFactor: 0.15
     EdgeSinkFactor: 0.01
-    EdgeOverlapFactor: 0.15
+    EdgeOverlapFactor: 0.2
   viewDistance: 5
+  database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
+  globalMaxVoices: 32
+  footstepSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
+  playerMovementConfig: {fileID: 11400000, guid: 7979d104b7824d049a43e5707993bce9, type: 2}
 --- !u!1 &1508698440
 GameObject:
   m_ObjectHideFlags: 0
@@ -849,7 +856,10 @@ GameObject:
   - component: {fileID: 1508698441}
   - component: {fileID: 1508698445}
   - component: {fileID: 1508698446}
+  - component: {fileID: 1508698448}
   - component: {fileID: 1508698447}
+  - component: {fileID: 1508698449}
+  - component: {fileID: 1508698450}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -864,7 +874,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1508698440}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 78d652380494c86419c1b549fa39504d, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -947,7 +957,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 100, y: 500, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 330585546}
@@ -979,7 +989,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 1
+  m_CollisionDetection: 0
 --- !u!114 &1508698446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -992,15 +1002,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c69b48f406de21869e31882342f076f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 7
-  _jumpVelocity: 5
-  _sprintSpeed: 15
   _groundMask:
     serializedVersion: 2
-    m_Bits: 0
-  _groundCheckDistance: 0.25
-  _groundCheckRadius: 0.3
+    m_Bits: 8
+  _groundCheckRadius: 0.6
+  _groundCheckOffset: 0.44
+  _groundCheckRate: 10
+  _landingFallSpeedThreshold: -3
 --- !u!114 &1508698447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508698440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f51de87e2b144c089874e2af0a7b87c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Infrastructure.WaterVolumeTracker
+  _enterMaskThreshold: 0.1
+  _exitMaskThreshold: 0.03
+--- !u!114 &1508698448
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1011,8 +1034,45 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bba3a176a2f2990b791d41363d93ff6b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Infrastructure.RigidbodyPlayerState
   _rb: {fileID: 1508698445}
+--- !u!114 &1508698449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508698440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a327c5aca04344b8b00f456089e01c06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Presentation.FootstepController
+  _soundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
+  _walkStepDistance: 2.2
+  _sprintStepDistance: 3
+  _crouchStepDistance: 1.4
+  _minSpeedForStep: 0.5
+  _debugLogging: 0
+--- !u!114 &1508698450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508698440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44f7b68558aa4aafa74d05d51b0d2f4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Infrastructure.PlayerStanceController
+  _crouchHeightMultiplier: 0.6
+  _crouchCenterOffset: {x: 0, y: 0, z: 0}
+  _stanceChangeCooldown: 0.15
+  _obstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
+  _standCheckPadding: 0.02
 --- !u!1 &1657195339
 GameObject:
   m_ObjectHideFlags: 0
