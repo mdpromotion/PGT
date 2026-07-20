@@ -9,7 +9,8 @@ namespace _Project.Features.Player.Application
             Vector3 forward,
             Vector3 right,
             Vector3 currentVelocity,
-            float moveSpeed)
+            float baseSpeed,
+            float speedMultiplier)
         {
             Vector3 planarForward = Vector3.ProjectOnPlane(forward, Vector3.up).normalized;
             Vector3 planarRight = Vector3.ProjectOnPlane(right, Vector3.up).normalized;
@@ -19,7 +20,8 @@ namespace _Project.Features.Player.Application
             if (move.sqrMagnitude > 1f)
                 move.Normalize();
 
-            Vector3 desiredVelocity = move * moveSpeed;
+            float finalSpeed = baseSpeed * speedMultiplier;
+            Vector3 desiredVelocity = move * finalSpeed;
 
             return new Vector3(
                 desiredVelocity.x,

@@ -19,7 +19,7 @@ namespace _Project.Features.Player.Infrastructure
         }
     }
 
-    public sealed class WaterVolumeTracker : MonoBehaviour
+    public sealed class WaterVolumeTracker : MonoBehaviour, IWaterState
     {
         [SerializeField] private float _enterMaskThreshold = 0.1f;
         [SerializeField] private float _exitMaskThreshold = 0.03f;

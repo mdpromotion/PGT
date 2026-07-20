@@ -54,6 +54,9 @@ namespace _Project.Features.Core.Bootstrap
         [SerializeField] 
         private int _globalMaxVoices = 32;
 
+        [SerializeField]
+        private FootstepSoundSet _footstepSoundSet;
+
         protected override void Configure(
             IContainerBuilder builder)
         {
@@ -76,12 +79,10 @@ namespace _Project.Features.Core.Bootstrap
 
 
 
-        private void RegisterPlayer(
-            IContainerBuilder builder)
+        private void RegisterPlayer(IContainerBuilder builder)
         {
             builder.Register<InputSystem_Actions>(
                 Lifetime.Singleton);
-
 
             builder.Register<PlayerInputReader>(
                     Lifetime.Singleton)
@@ -89,23 +90,26 @@ namespace _Project.Features.Core.Bootstrap
                 .As<IInitializable>()
                 .As<IDisposable>();
 
-
             builder.RegisterComponentInHierarchy<FpsCameraController>();
-
 
             builder.Register<FpsMovementUseCase>(
                 Lifetime.Singleton);
 
+            builder.RegisterComponentInHierarchy<PlayerStanceController>()
+                .As<IPlayerStanceState>();
 
             builder.RegisterComponentInHierarchy<FpsPlayerMotor>()
                 .As<IFpsPlayerMotor>();
 
-
             builder.RegisterComponentInHierarchy<RigidbodyPlayerState>()
                 .As<IPlayerReadOnly>();
 
+            builder.RegisterComponentInHierarchy<WaterVolumeTracker>()
+                .As<IWaterState>();
 
-            builder.RegisterComponentInHierarchy<WaterVolumeTracker>();
+            builder.RegisterInstance(_footstepSoundSet);
+
+            builder.RegisterComponentInHierarchy<FootstepController>();
         }
 
         private void RegisterProceduralWorld(

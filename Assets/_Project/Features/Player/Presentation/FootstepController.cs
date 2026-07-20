@@ -1,0 +1,146 @@
+﻿using System.Diagnostics;
+using _Project.Features.Player.Domain;
+using _Project.Features.Player.Infrastructure;
+using _Project.Features.Sound.Domain;
+using _Project.Features.Sound.Presentation;
+using UnityEngine;
+using VContainer;
+using Debug = UnityEngine.Debug;
+
+namespace _Project.Features.Player.Presentation
+{
+    public sealed class FootstepController : MonoBehaviour
+    {
+        [SerializeField] private FootstepSoundSet _soundSet;
+
+        [SerializeField] private float _walkStepDistance = 2.2f;
+        [SerializeField] private float _sprintStepDistance = 3f;
+        [SerializeField] private float _crouchStepDistance = 1.4f;
+        [SerializeField] private float _minSpeedForStep = 0.5f;
+
+        [Header("Debug")]
+        [SerializeField] private bool _debugLogging;
+
+        private IPlayerReadOnly _player;
+        private IFpsPlayerMotor _motor;
+        private IWaterState _water;
+        private IPlayerInputReader _input;
+        private IPlayerStanceState _stance;
+        private ISoundService _soundService;
+
+        private readonly NonRepeatingRandomKeyPicker _stepPicker = new();
+
+        private float _distanceAccumulator;
+
+        [Inject]
+        public void Construct(
+            IPlayerReadOnly player,
+            IFpsPlayerMotor motor,
+            IWaterState water,
+            IPlayerInputReader input,
+            IPlayerStanceState stance,
+            ISoundService soundService)
+        {
+            _player = player;
+            _motor = motor;
+            _water = water;
+            _input = input;
+            _stance = stance;
+            _soundService = soundService;
+        }
+
+        private void OnEnable()
+        {
+            if (_motor == null)
+                return;
+
+            _motor.OnJumped += HandleJumped;
+            _motor.OnLanded += HandleLanded;
+        }
+
+        private void OnDisable()
+        {
+            if (_motor == null)
+                return;
+
+            _motor.OnJumped -= HandleJumped;
+            _motor.OnLanded -= HandleLanded;
+        }
+
+        private void FixedUpdate()
+        {
+            if (_player == null || _motor == null || _water == null || _input == null || _soundService == null)
+                return;
+
+            bool clearGroundStep = _motor.IsGrounded && !_water.IsInWater;
+
+            if (!clearGroundStep)
+            {
+                _distanceAccumulator = 0f;
+                return;
+            }
+
+            Vector3 velocity = _player.Velocity;
+            float planarSpeed = new Vector2(velocity.x, velocity.z).magnitude;
+
+            if (planarSpeed < _minSpeedForStep)
+            {
+                _distanceAccumulator = 0f;
+                return;
+            }
+
+            bool crouching = _stance != null && _stance.IsCrouching;
+            bool sprinting = _input.SprintPressed && !crouching;
+
+            float stepDistance = crouching
+                ? _crouchStepDistance
+                : sprinting
+                    ? _sprintStepDistance
+                    : _walkStepDistance;
+
+            _distanceAccumulator += planarSpeed * Time.fixedDeltaTime;
+
+            if (_distanceAccumulator >= stepDistance)
+            {
+                _distanceAccumulator -= stepDistance;
+                PlayStep(sprinting, crouching);
+            }
+        }
+
+        private void PlayStep(bool sprinting, bool crouching)
+        {
+            SoundKey[] pool = sprinting
+                ? _soundSet.RunFootsteps
+                : _soundSet.WalkFootsteps;
+
+            if (pool == null || pool.Length == 0)
+                return;
+
+            SoundKey key = _stepPicker.Pick(pool);
+
+            _soundService.Play(key);
+        }
+
+        private void HandleJumped()
+        {
+            SoundKey[] pool = _soundSet.JumpStart;
+            if (pool == null || pool.Length == 0)
+                return;
+            
+            SoundKey key = _stepPicker.Pick(pool);
+            
+            _soundService.Play(key);
+        }
+
+        private void HandleLanded()
+        {
+            SoundKey[] pool = _soundSet.JumpLand;
+            if (pool == null || pool.Length == 0)
+                return;
+            
+            SoundKey key = _stepPicker.Pick(pool);
+            
+            _soundService.Play(key);
+        }
+    }
+}
