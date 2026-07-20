@@ -251,9 +251,7 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.Register(
                 container =>
-                    new ChunkWaterPresenter(
-                        chunkPrefab.terrainData.size.y,
-                        1),
+                    new ChunkWaterPresenter(chunkPrefab.terrainData.size.y),
                 Lifetime.Singleton);
 
 

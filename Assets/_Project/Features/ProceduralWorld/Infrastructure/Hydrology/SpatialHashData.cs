@@ -33,29 +33,11 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             GridHeight = gridHeight;
         }
 
-        public JobHandleDisposeResult DisposeWith(Unity.Jobs.JobHandle handle)
-        {
-            Unity.Jobs.JobHandle h = CellStart.Dispose(handle);
-            h = CellCount.Dispose(h);
-            h = PointIndices.Dispose(h);
-            return new JobHandleDisposeResult(h);
-        }
-
         public void Dispose()
         {
             CellStart.Dispose();
             CellCount.Dispose();
             PointIndices.Dispose();
-        }
-    }
-
-    public readonly struct JobHandleDisposeResult
-    {
-        public readonly Unity.Jobs.JobHandle Handle;
-
-        public JobHandleDisposeResult(Unity.Jobs.JobHandle handle)
-        {
-            Handle = handle;
         }
     }
 }

@@ -79,7 +79,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             _gridHeight = hash.GridHeight;
         }
 
-       public void Execute(int index)
+        public void Execute(int index)
         {
             int x = index % _resolution;
             int z = index / _resolution;
@@ -105,27 +105,21 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float maxCarveDepth = _settings.CarveDepth;
 
             float riverWidthScale = _settings.RiverWidth;
-            
+
             float overlapMultiplier = 1f + math.max(_settings.EdgeOverlapFactor, 0f);
 
-            int centerCx = (int)math.floor((world.x - _hashOrigin.x) / _cellSize);
-            int centerCz = (int)math.floor((world.y - _hashOrigin.y) / _cellSize);
+            int2 centerCell = HydroMath.WorldToCell(world, _hashOrigin, _cellSize);
 
             for (int dz = -1; dz <= 1; dz++)
             {
-                int cz = centerCz + dz;
-
-                if (cz < 0 || cz >= _gridHeight)
-                    continue;
+                int cz = centerCell.y + dz;
 
                 for (int dx = -1; dx <= 1; dx++)
                 {
-                    int cx = centerCx + dx;
+                    int cx = centerCell.x + dx;
 
-                    if (cx < 0 || cx >= _gridWidth)
+                    if (!HydroMath.TryGetCellIndex(cx, cz, _gridWidth, _gridHeight, out int cell))
                         continue;
-
-                    int cell = cz * _gridWidth + cx;
 
                     int start = _cellStart[cell];
                     int cellPointCount = _cellCount[cell];
@@ -151,9 +145,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
                         float riverProfileHeight = math.lerp(segment.HeightA, segment.HeightB, t);
 
-                        float clampedStrength = math.min(strength, maxRiverStrength);
-                        
-                        float nominalWidth = math.max(riverWidthScale * clampedStrength, 0.001f);
+                        float nominalWidth = HydroMath.RiverWidth(
+                            strength, riverWidthScale, maxRiverStrength, out float clampedStrength);
+
                         float width = nominalWidth * overlapMultiplier;
                         float widthSq = width * width;
 
@@ -163,14 +157,14 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                         float distance = math.sqrt(distanceSq);
                         float normalized = math.saturate(1f - distance / width);
 
-                        float influence = normalized * normalized * (3f - 2f * normalized);
+                        float influence = HydroMath.Smoothstep(normalized);
 
                         float abLen = math.sqrt(abLenSq);
                         float2 abDir = ab / abLen;
                         float2 perp = new float2(-abDir.y, abDir.x);
 
                         float signedLateral = math.dot(delta, perp);
-                        
+
                         float sideFraction = math.clamp(signedLateral / nominalWidth, -1f, 1f);
 
                         float leftBankHeightInterp = math.lerp(
@@ -215,7 +209,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float blendedSurfaceHeight = weightedSurfaceHeight / totalWeight;
 
             float edgeSink = maxCarveDepth * _settings.EdgeSinkFactor;
-            
+
             float cappedSurfaceHeight = math.min(blendedSurfaceHeight, originalHeight);
 
             _waterSurfaceHeight[index] = cappedSurfaceHeight - edgeSink;

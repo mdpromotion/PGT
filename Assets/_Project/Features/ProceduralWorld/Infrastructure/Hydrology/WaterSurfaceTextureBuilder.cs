@@ -29,32 +29,11 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             float sx = x * Scale;
             float sz = z * Scale;
 
-            float m = SampleBilinear(Mask, sx, sz);
-            float h = SampleBilinear(Height, sx, sz);
-            float bk = SampleBilinear(Bank, sx, sz);
+            float m = LandscapeSampler.SampleBilinear(Mask, SourceRes, sx, sz);
+            float h = LandscapeSampler.SampleBilinear(Height, SourceRes, sx, sz);
+            float bk = LandscapeSampler.SampleBilinear(Bank, SourceRes, sx, sz);
 
             Pixels[index] = new float4(math.saturate(m), h, bk, 0f);
-        }
-
-        private float SampleBilinear(NativeArray<float> source, float x, float z)
-        {
-            int x0 = math.clamp((int)x, 0, SourceRes - 1);
-            int z0 = math.clamp((int)z, 0, SourceRes - 1);
-            int x1 = math.clamp(x0 + 1, 0, SourceRes - 1);
-            int z1 = math.clamp(z0 + 1, 0, SourceRes - 1);
-
-            float tx = x - x0;
-            float tz = z - z0;
-
-            float a = source[z0 * SourceRes + x0];
-            float b = source[z0 * SourceRes + x1];
-            float c = source[z1 * SourceRes + x0];
-            float d = source[z1 * SourceRes + x1];
-
-            float ab = math.lerp(a, b, tx);
-            float cd = math.lerp(c, d, tx);
-
-            return math.lerp(ab, cd, tz);
         }
     }
 
@@ -62,12 +41,11 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
     {
         public static JobHandle Schedule(
             LandscapeData landscape,
-            int supersample,
             out NativeArray<float4> pixels,
             out int outputRes)
         {
             int sourceRes = landscape.Resolution;
-            outputRes = sourceRes * supersample;
+            outputRes = sourceRes;
 
             pixels = new NativeArray<float4>(
                 outputRes * outputRes,

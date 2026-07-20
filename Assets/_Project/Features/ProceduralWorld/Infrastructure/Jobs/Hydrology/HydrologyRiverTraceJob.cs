@@ -23,7 +23,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
         public TerrainNoiseSettings Settings;
         public int WorldSeed;
-        
+
         [ReadOnly]
         public NativeArray<float2> Offsets;
 
@@ -69,7 +69,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
             return average / Heights.Length;
         }
-        
+
         private int PickHighPoint(ref Random random, float averageHeight)
         {
             int bestId = -1;
@@ -118,7 +118,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
             return bestId >= 0 ? bestId : 0;
         }
-        
+
         private float2 ResolveBankSamplingTangent(float2 pos, float2 direction)
         {
             if (math.lengthsq(direction) > 1e-8f)
@@ -156,7 +156,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float2 direction = float2.zero;
             float strength = HydrologySettings.InitialRiverStrength;
             float previousHeight = height;
-            
+
             float meanderPhase = 0f;
             float meanderTarget = random.NextFloat(-1f, 1f);
 
@@ -166,14 +166,12 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             for (int i = 0; i < HydrologySettings.MaxTraceSteps; i++)
             {
                 float terrain = HeightSampler.Sample(pos, Settings, Offsets);
-                
+
                 float2 tangent = ResolveBankSamplingTangent(pos, direction);
                 float2 perpendicular = new float2(-tangent.y, tangent.x);
 
-                float clampedStrengthForSample = math.min(strength, HydrologySettings.MaxRiverStrength);
-                float halfWidth = math.max(
-                    HydrologySettings.RiverWidth * clampedStrengthForSample,
-                    0.001f);
+                float halfWidth = HydroMath.RiverWidth(
+                    strength, HydrologySettings.RiverWidth, HydrologySettings.MaxRiverStrength);
 
                 float2 leftPos = pos - perpendicular * halfWidth;
                 float2 rightPos = pos + perpendicular * halfWidth;
@@ -244,7 +242,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                             downhill,
                             1f - HydrologySettings.TurnSmoothing))
                         : downhill;
-                
+
                 meanderPhase = math.lerp(
                     meanderPhase,
                     meanderTarget,
@@ -254,7 +252,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                 {
                     meanderTarget = random.NextFloat(-1f, 1f);
                 }
-                
+
                 float slopeStraighten = math.saturate(slope * HydrologySettings.SlopeStraightenFactor);
                 float meanderScale = 1f - slopeStraighten;
 
@@ -284,12 +282,11 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                 if (stepsTaken < HydrologySettings.RiverStartFadeSteps)
                 {
                     float t = stepsTaken / (float)HydrologySettings.RiverStartFadeSteps;
-                    t = t * t * (3f - 2f * t);
 
                     strength = math.lerp(
                         HydrologySettings.InitialRiverStrength,
                         targetStrength,
-                        t);
+                        HydroMath.Smoothstep(t));
                 }
                 else
                 {
@@ -302,14 +299,14 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                 ApplyEndFade(points);
             }
         }
-        
+
         private static float2 ClampTurn(float2 from, float2 to, float maxAngleRadians)
         {
             float angleFrom = math.atan2(from.y, from.x);
             float angleTo = math.atan2(to.y, to.x);
 
             float delta = angleTo - angleFrom;
-            
+
             delta = math.atan2(math.sin(delta), math.cos(delta));
 
             float clampedDelta = math.clamp(delta, -maxAngleRadians, maxAngleRadians);
@@ -333,7 +330,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                 int index = count - 1 - i;
 
                 float t = steps > 1 ? 1f - i / (float)(steps - 1) : 1f;
-                float smooth = t * t * (3f - 2f * t);
+                float smooth = HydroMath.Smoothstep(t);
 
                 float2Point p = points[index];
                 p.Strength = math.lerp(p.Strength, targetStrength, smooth);
@@ -363,7 +360,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                 int index = count - 1 - i;
 
                 float t = i / (float)(fadeSteps - 1);
-                float fade = 1f - (t * t * (3f - 2f * t));
+                float fade = 1f - HydroMath.Smoothstep(t);
 
                 float2Point p = points[index];
                 p.Strength *= fade;
@@ -426,7 +423,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                     continue;
 
                 float t = fadeSteps > 0 ? math.saturate(steps / (float)fadeSteps) : 1f;
-                float smooth = t * t * (3f - 2f * t);
+                float smooth = HydroMath.Smoothstep(t);
 
                 float blended = math.lerp(p.Strength, targetStrength, smooth);
                 p.Strength = math.min(math.max(p.Strength, blended), targetStrength);
