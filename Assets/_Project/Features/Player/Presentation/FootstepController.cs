@@ -5,7 +5,6 @@ using _Project.Features.Sound.Domain;
 using _Project.Features.Sound.Presentation;
 using UnityEngine;
 using VContainer;
-using Debug = UnityEngine.Debug;
 
 namespace _Project.Features.Player.Presentation
 {
@@ -17,9 +16,6 @@ namespace _Project.Features.Player.Presentation
         [SerializeField] private float _sprintStepDistance = 3f;
         [SerializeField] private float _crouchStepDistance = 1.4f;
         [SerializeField] private float _minSpeedForStep = 0.5f;
-
-        [Header("Debug")]
-        [SerializeField] private bool _debugLogging;
 
         private IPlayerReadOnly _player;
         private IFpsPlayerMotor _motor;

@@ -838,9 +838,10 @@ MonoBehaviour:
     EdgeSinkFactor: 0.01
     EdgeOverlapFactor: 0.2
   viewDistance: 5
-  _database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
-  _globalMaxVoices: 32
-  _footstepSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
+  database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
+  globalMaxVoices: 32
+  footstepSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
+  playerMovementConfig: {fileID: 11400000, guid: 7979d104b7824d049a43e5707993bce9, type: 2}
 --- !u!1 &1508698440
 GameObject:
   m_ObjectHideFlags: 0
@@ -873,7 +874,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1508698440}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 78d652380494c86419c1b549fa39504d, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1001,17 +1002,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c69b48f406de21869e31882342f076f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseSpeed: 6
-  _sprintSpeedMultiplier: 1.66
-  _crouchSpeedMultiplier: 0.55
-  _jumpVelocity: 10
   _groundMask:
     serializedVersion: 2
     m_Bits: 8
   _groundCheckRadius: 0.6
   _groundCheckOffset: 0.44
   _groundCheckRate: 10
-  _landingFallSpeedThreshold: -2
+  _landingFallSpeedThreshold: -3
 --- !u!114 &1508698447
 MonoBehaviour:
   m_ObjectHideFlags: 0

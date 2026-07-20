@@ -11,14 +11,6 @@ namespace _Project.Features.Player.Infrastructure
     [RequireComponent(typeof(Collider))]
     public sealed class FpsPlayerMotor : MonoBehaviour, IFpsPlayerMotor
     {
-        [Header("Movement")]
-        [SerializeField] private float _baseSpeed = 6f;
-        [SerializeField] private float _sprintSpeedMultiplier = 1.66f;
-        [SerializeField] private float _crouchSpeedMultiplier = 0.55f;
-
-        [Header("Jump")]
-        [SerializeField] private float _jumpVelocity = 5f;
-
         [Header("Ground Check")]
         [SerializeField] private LayerMask _groundMask;
         [SerializeField] private float _groundCheckRadius = 0.35f;
@@ -30,7 +22,10 @@ namespace _Project.Features.Player.Infrastructure
 
         private IPlayerInputReader _input;
         private IPlayerStanceState _stance;
-        private FpsMovementUseCase _useCase;
+        private IWaterState _waterState;
+
+        private IMovementMode _groundMovement;
+        private IMovementMode _waterMovement;
 
         private Rigidbody _rb;
         private Collider _collider;
@@ -51,107 +46,176 @@ namespace _Project.Features.Player.Infrastructure
         public event Action OnJumped;
         public event Action OnLanded;
 
+
         [Inject]
         public void Construct(
             IPlayerInputReader input,
             IPlayerStanceState stance,
-            FpsMovementUseCase useCase)
+            IWaterState waterState,
+            GroundMovementUseCase groundMovement,
+            SwimmingMovementUseCase waterMovement)
         {
             _input = input;
             _stance = stance;
-            _useCase = useCase;
+            _waterState = waterState;
+
+            _groundMovement = groundMovement;
+            _waterMovement = waterMovement;
         }
+
 
         public void SetLookYaw(float yawDelta)
         {
             _pendingYawDelta += yawDelta;
         }
 
+
         private void Awake()
         {
             _rb = GetComponent<Rigidbody>();
             _collider = GetComponent<Collider>();
 
-            _rb.interpolation = RigidbodyInterpolation.Interpolate;
+            _rb.interpolation =
+                RigidbodyInterpolation.Interpolate;
 
-            _groundCheckInterval = 1f / _groundCheckRate;
+            _groundCheckInterval =
+                1f / _groundCheckRate;
         }
+
 
         private void FixedUpdate()
         {
+            bool swimming =
+                _waterState != null &&
+                _waterState.IsInWater;
+
+
+            _rb.useGravity = !swimming;
+
+
             _yaw += _pendingYawDelta;
             _pendingYawDelta = 0f;
 
-            Quaternion rotation = Quaternion.Euler(0f, _yaw, 0f);
+
+            Quaternion rotation =
+                Quaternion.Euler(
+                    0f,
+                    _yaw,
+                    0f);
+
 
             _rb.MoveRotation(rotation);
 
-            Vector3 forward = rotation * Vector3.forward;
-            Vector3 right = rotation * Vector3.right;
 
-            Vector3 velocity = _rb.linearVelocity;
+            Vector3 forward =
+                rotation *
+                Vector3.forward;
 
-            Vector3 targetVelocity = _useCase.BuildVelocity(
-                _input.Move,
-                forward,
-                right,
-                velocity,
-                _baseSpeed,
-                GetSpeedMultiplier());
+            Vector3 right =
+                rotation *
+                Vector3.right;
+
+
+            Vector3 velocity =
+                _rb.linearVelocity;
+
+
+            IMovementMode movementMode =
+                swimming
+                    ? _waterMovement
+                    : _groundMovement;
+
+
+            Vector3 targetVelocity =
+                movementMode.BuildVelocity(
+                    _input.Move,
+                    forward,
+                    right,
+                    velocity);
+
 
             UpdateGroundCheck();
 
-            bool groundedNow = _groundedCached;
 
-            if (_input.JumpPressed &&
-                groundedNow &&
-                velocity.y <= 0f)
+            bool groundedNow =
+                _groundedCached &&
+                !swimming;
+
+
+            if (swimming)
             {
-                targetVelocity.y = _jumpVelocity;
+                if (_input.JumpPressed)
+                {
+                    movementMode.TryJump(
+                        ref targetVelocity);
+                }
 
-                OnJumped?.Invoke();
-
-                groundedNow = false;
-                _groundedCached = false;
+                if (_input.CrouchPressed)
+                {
+                    movementMode.TryCrouch(
+                        ref targetVelocity);
+                }
             }
+            else
+            {
+                if (_input.JumpPressed &&
+                    groundedNow &&
+                    velocity.y <= 0f)
+                {
+                    if (movementMode.TryJump(
+                            ref targetVelocity))
+                    {
+                        OnJumped?.Invoke();
+                    }
+                }
+            }
+
+
+            if (_input.CrouchPressed)
+            {
+                movementMode.TryCrouch(
+                    ref targetVelocity);
+            }
+
 
             if (groundedNow &&
                 !_wasGrounded &&
-                _lastVerticalVelocity <= _landingFallSpeedThreshold)
+                _lastVerticalVelocity <=
+                _landingFallSpeedThreshold)
             {
                 OnLanded?.Invoke();
             }
+
 
             _wasGrounded = groundedNow;
             IsGrounded = groundedNow;
 
             _lastVerticalVelocity = velocity.y;
 
-            _rb.linearVelocity = targetVelocity;
+
+            _rb.linearVelocity =
+                targetVelocity;
         }
 
-        private float GetSpeedMultiplier()
-        {
-            if (_stance != null && _stance.IsCrouching)
-                return _crouchSpeedMultiplier;
-
-            if (_input.SprintPressed)
-                return _sprintSpeedMultiplier;
-
-            return 1f;
-        }
 
         private void UpdateGroundCheck()
         {
-            _groundCheckTimer -= Time.fixedDeltaTime;
+            _groundCheckTimer -=
+                Time.fixedDeltaTime;
+
 
             if (_groundCheckTimer > 0f)
                 return;
 
-            _groundCheckTimer = _groundCheckInterval;
 
-            _groundedCached = IsGroundedCheck();
+            _groundCheckTimer =
+                _groundCheckInterval;
+
+
+            _groundedCached =
+                IsGroundedCheck();
         }
+
 
         private bool IsGroundedCheck()
         {
@@ -162,49 +226,65 @@ namespace _Project.Features.Player.Infrastructure
                 QueryTriggerInteraction.Ignore);
         }
 
+
         private Vector3 GetGroundCheckPosition()
         {
             if (_collider != null)
             {
-                Bounds bounds = _collider.bounds;
+                Bounds bounds =
+                    _collider.bounds;
+
 
                 return new Vector3(
                     bounds.center.x,
-                    bounds.min.y + _groundCheckOffset,
+                    bounds.min.y +
+                    _groundCheckOffset,
                     bounds.center.z);
             }
+
 
             return _rb.position +
                    Vector3.down *
                    _groundCheckOffset;
         }
 
+
         private void OnDrawGizmosSelected()
         {
-            Collider col = GetComponent<Collider>();
+            Collider col =
+                GetComponent<Collider>();
+
 
             Vector3 position;
 
+
             if (col != null)
             {
-                Bounds bounds = col.bounds;
+                Bounds bounds =
+                    col.bounds;
 
-                position = new Vector3(
-                    bounds.center.x,
-                    bounds.min.y + _groundCheckOffset,
-                    bounds.center.z);
+
+                position =
+                    new Vector3(
+                        bounds.center.x,
+                        bounds.min.y +
+                        _groundCheckOffset,
+                        bounds.center.z);
             }
             else
             {
-                position = transform.position +
-                           Vector3.down *
-                           _groundCheckOffset;
+                position =
+                    transform.position +
+                    Vector3.down *
+                    _groundCheckOffset;
             }
+
 
             Gizmos.color =
                 IsGrounded
                     ? Color.green
                     : Color.red;
+
 
             Gizmos.DrawWireSphere(
                 position,

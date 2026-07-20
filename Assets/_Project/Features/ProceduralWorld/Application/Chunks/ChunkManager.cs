@@ -125,7 +125,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
             _repository.Remove(coordinate);
 
-            chunk.Landscape.Dispose();   // добавлено
+            chunk.Landscape.Dispose();
 
             _factory.Release(chunk.Terrain);
         }

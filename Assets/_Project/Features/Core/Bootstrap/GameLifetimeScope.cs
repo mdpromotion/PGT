@@ -49,14 +49,17 @@ namespace _Project.Features.Core.Bootstrap
         private int viewDistance = 3;
         
         [SerializeField] 
-        private SoundDatabase _database;
+        private SoundDatabase database;
         
         [SerializeField] 
-        private int _globalMaxVoices = 32;
+        private int globalMaxVoices = 32;
 
         [SerializeField]
-        private FootstepSoundSet _footstepSoundSet;
+        private FootstepSoundSet footstepSoundSet;
 
+        [SerializeField]
+        private PlayerMovementConfig playerMovementConfig;
+        
         protected override void Configure(
             IContainerBuilder builder)
         {
@@ -70,8 +73,8 @@ namespace _Project.Features.Core.Bootstrap
 
         private void RegisterSound(IContainerBuilder builder)
         {
-            builder.RegisterInstance(_database);
-            builder.Register(_ => new SoundPlaybackGuard(_globalMaxVoices), Lifetime.Singleton);
+            builder.RegisterInstance(database);
+            builder.Register(_ => new SoundPlaybackGuard(globalMaxVoices), Lifetime.Singleton);
             builder.RegisterComponentOnNewGameObject<SoundVoicePool>(Lifetime.Singleton, "SoundVoicePool")
                 .DontDestroyOnLoad();
             builder.Register<SoundService>(Lifetime.Singleton).As<ISoundService>();
@@ -84,30 +87,48 @@ namespace _Project.Features.Core.Bootstrap
             builder.Register<InputSystem_Actions>(
                 Lifetime.Singleton);
 
+
             builder.Register<PlayerInputReader>(
                     Lifetime.Singleton)
                 .As<IPlayerInputReader>()
                 .As<IInitializable>()
                 .As<IDisposable>();
 
+
             builder.RegisterComponentInHierarchy<FpsCameraController>();
 
-            builder.Register<FpsMovementUseCase>(
+
+            builder.RegisterInstance(
+                    playerMovementConfig)
+                .AsSelf();
+
+
+            builder.Register<GroundMovementUseCase>(
                 Lifetime.Singleton);
+
+
+            builder.Register<SwimmingMovementUseCase>(
+                Lifetime.Singleton);
+
 
             builder.RegisterComponentInHierarchy<PlayerStanceController>()
                 .As<IPlayerStanceState>();
 
+
             builder.RegisterComponentInHierarchy<FpsPlayerMotor>()
                 .As<IFpsPlayerMotor>();
+
 
             builder.RegisterComponentInHierarchy<RigidbodyPlayerState>()
                 .As<IPlayerReadOnly>();
 
+
             builder.RegisterComponentInHierarchy<WaterVolumeTracker>()
                 .As<IWaterState>();
 
-            builder.RegisterInstance(_footstepSoundSet);
+
+            builder.RegisterInstance(footstepSoundSet);
+
 
             builder.RegisterComponentInHierarchy<FootstepController>();
         }
