@@ -833,7 +833,7 @@ MonoBehaviour:
   viewDistance: 15
   database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
   globalMaxVoices: 32
-  footstepSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
+  playerSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
   playerMovementConfig: {fileID: 11400000, guid: 7979d104b7824d049a43e5707993bce9, type: 2}
 --- !u!1 &1508698440
 GameObject:
@@ -853,6 +853,7 @@ GameObject:
   - component: {fileID: 1508698447}
   - component: {fileID: 1508698449}
   - component: {fileID: 1508698450}
+  - component: {fileID: 1508698451}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -1065,6 +1066,18 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   _standCheckPadding: 0.02
+--- !u!114 &1508698451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508698440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05d544a0c9e38eb42b4081c8e617ade4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Presentation.PlayerWaterSoundController
 --- !u!1 &1657195339
 GameObject:
   m_ObjectHideFlags: 0

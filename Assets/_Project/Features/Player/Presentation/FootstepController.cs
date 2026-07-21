@@ -10,7 +10,7 @@ namespace _Project.Features.Player.Presentation
 {
     public sealed class FootstepController : MonoBehaviour
     {
-        [SerializeField] private FootstepSoundSet _soundSet;
+        [SerializeField] private PlayerSoundSet _soundSet;
 
         [SerializeField] private float _walkStepDistance = 2.2f;
         [SerializeField] private float _sprintStepDistance = 3f;
