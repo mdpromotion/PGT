@@ -6,37 +6,28 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings
     [Serializable]
     public struct HydrologySettings
     {
+        [Header("Region")]
         public int RegionSizeInChunks;
         public int RegionCoarseResolution;
-        public int RiverSourceCount;
+
+        [Header("Flow")]
+        public float FlowAccumulationThreshold;
+        public float AccumulationToStrengthScale;
+        public float MaxRiverStrength;
+
+        [Header("Carving")]
         public float CarveDepth;
         public float RiverWidth;
+        public float InitialCarveDepthFactor;
+        public float EdgeSinkFactor;
+        public float EdgeOverlapFactor;
+
+        [Header("Tracing")]
         public int MaxTraceSteps;
-
-        public float StepDistance;
-        public float TurnSmoothing;
-        public float MeanderStrength;
         public float GradientEpsilon;
-        
-        public float MeanderResponsiveness;
-        
-        public float MaxTurnAnglePerStep;
-        
-        public float SlopeStraightenFactor;
-
-        public float BaseStrengthGrowth;
-        public float SlopeStrengthFactor;
-        public float MaxRiverStrength;
-        public float ConfluenceDistance;
-        public float ConfluenceStrengthFactor;
 
         [Header("Fade in/out")]
         public int RiverStartFadeSteps;
         public float InitialRiverStrength;
-        public float InitialCarveDepthFactor;
-        public float EdgeSinkFactor;
-
-        [Header("Edge overlap")]
-        public float EdgeOverlapFactor;
     }
 }

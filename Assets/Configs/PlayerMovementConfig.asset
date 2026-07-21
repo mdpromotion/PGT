@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06ea71952e2645bf8eca9a628b36c6e7, type: 3}
   m_Name: PlayerMovementConfig
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Infrastructure.PlayerMovementConfig
-  baseSpeed: 6
-  sprintSpeedMultiplier: 1.66
+  baseSpeed: 15
+  sprintSpeedMultiplier: 15
   crouchSpeedMultiplier: 0.55
   jumpVelocity: 6
   _waterGravity: -3

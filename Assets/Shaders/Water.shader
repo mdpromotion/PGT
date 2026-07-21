@@ -57,16 +57,17 @@
             {
                 v2f o;
 
-                float3 sample = tex2Dlod(
-                    _MaskHeightTex,
-                    float4(v.uv, 0, 0)
-                ).rgb;
+                float3 sample = tex2Dlod(_MaskHeightTex, float4(v.uv, 0, 0)).rgb;
 
                 float mask = sample.r;
                 float waterHeight = sample.g;
+                float bankHeight = sample.b;
                 
+                float blend = smoothstep(0.0, _MaskThreshold * 2.0, mask);
+                float finalHeight = lerp(bankHeight, waterHeight, blend);
+
                 float4 displaced = v.vertex;
-                displaced.y = waterHeight * _HeightScale;
+                displaced.y = finalHeight * _HeightScale;
 
                 o.pos = UnityObjectToClipPos(displaced);
                 o.uv = v.uv;

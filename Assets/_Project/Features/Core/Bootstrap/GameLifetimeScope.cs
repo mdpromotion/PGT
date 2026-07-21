@@ -165,7 +165,9 @@ namespace _Project.Features.Core.Bootstrap
 
 
             builder.Register<HydrologyRegionBuilder>(
-                    Lifetime.Singleton);
+                    Lifetime.Singleton)
+                .AsSelf()
+                .As<IDisposable>();
 
 
             builder.Register<HydrologyRegionCache>(

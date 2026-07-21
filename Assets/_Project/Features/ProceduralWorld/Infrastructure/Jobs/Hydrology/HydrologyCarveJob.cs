@@ -90,7 +90,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float2 world = new float2(worldX, worldZ);
 
             float originalHeight = _heights[index];
-            _bankHeight[index] = originalHeight;
 
             float combinedMask = 0f;
             float weightedHeight = 0f;
@@ -167,15 +166,15 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
                         float sideFraction = math.clamp(signedLateral / nominalWidth, -1f, 1f);
 
-                        float leftBankHeightInterp = math.lerp(
+                        float leftBankHeight = math.lerp(
                             segment.LeftBankHeightA, segment.LeftBankHeightB, t);
 
-                        float rightBankHeightInterp = math.lerp(
+                        float rightBankHeight = math.lerp(
                             segment.RightBankHeightA, segment.RightBankHeightB, t);
 
                         float lateralHeight = sideFraction >= 0f
-                            ? math.lerp(riverProfileHeight, rightBankHeightInterp, sideFraction)
-                            : math.lerp(riverProfileHeight, leftBankHeightInterp, -sideFraction);
+                            ? rightBankHeight
+                            : leftBankHeight;
 
                         float depth = math.lerp(
                             minCarveDepth,
@@ -189,7 +188,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
                         float blendWeight = influence * influence;
                         weightedHeight += riverBottom * blendWeight;
-                        weightedSurfaceHeight += lateralHeight * blendWeight;
+                        weightedSurfaceHeight += riverProfileHeight * blendWeight;
                         totalWeight += blendWeight;
 
                         combinedMask = 1f - (1f - combinedMask) * (1f - influence);
@@ -208,24 +207,18 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float blendedHeight = weightedHeight / totalWeight;
             float blendedSurfaceHeight = weightedSurfaceHeight / totalWeight;
 
-            float edgeSink = maxCarveDepth * _settings.EdgeSinkFactor;
-
             float cappedSurfaceHeight = math.min(blendedSurfaceHeight, originalHeight);
+            
+            float edgeSink = maxCarveDepth * _settings.EdgeSinkFactor * combinedMask;
+            float sunkSurfaceHeight = cappedSurfaceHeight - edgeSink;
+            
+            _waterSurfaceHeight[index] = math.lerp(originalHeight, sunkSurfaceHeight, combinedMask);
 
-            _waterSurfaceHeight[index] = cappedSurfaceHeight - edgeSink;
-
-            float targetRiverHeight = math.min(
-                blendedHeight,
-                originalHeight - strongestDepth);
-
-            float targetHeight = math.min(
-                originalHeight,
-                math.lerp(
-                    originalHeight,
-                    targetRiverHeight,
-                    combinedMask));
+            float targetRiverHeight = math.min(blendedHeight, originalHeight - strongestDepth);
+            float targetHeight = math.min(originalHeight, math.lerp(originalHeight, targetRiverHeight, combinedMask));
 
             _heights[index] = targetHeight;
+            _bankHeight[index] = originalHeight;
         }
     }
 }
