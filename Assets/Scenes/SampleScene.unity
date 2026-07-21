@@ -819,10 +819,12 @@ MonoBehaviour:
     FlowAccumulationThreshold: 1000
     AccumulationToStrengthScale: 3
     MaxRiverStrength: 5
+    WaterHeightWindowRadius: 16
+    WaterHeightSafetyOffset: 0.1
     CarveDepth: 1
     RiverWidth: 1000
     InitialCarveDepthFactor: 1
-    EdgeOverlapFactor: 0.5
+    EdgeOverlapFactor: 0.1
     RegionMarginCells: 32
     MaxTraceSteps: 600
     GradientEpsilon: 3

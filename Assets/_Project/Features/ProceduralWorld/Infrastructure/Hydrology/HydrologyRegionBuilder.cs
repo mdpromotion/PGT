@@ -167,8 +167,27 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             };
 
             JobHandle trimHandle = trimJob.Schedule(points, 64, traceHandle);
+            
+            NativeList<float2Point> pointsSnapshot =
+                new NativeList<float2Point>(Allocator.Persistent);
 
-            JobHandle disposeHandle = rawHeights.Dispose(trimHandle);
+            JobHandle duplicateHandle = new DuplicatePointsJob
+            {
+                Source = points,
+                Dest = pointsSnapshot
+            }.Schedule(trimHandle);
+
+            JobHandle minFilterHandle = new MinFilterRiverHeightJob
+            {
+                Source = pointsSnapshot.AsDeferredJobArray(),
+                Points = points.AsDeferredJobArray(),
+                WindowRadius = _hydrologySettings.WaterHeightWindowRadius,
+                SafetyOffset = _hydrologySettings.WaterHeightSafetyOffset
+            }.Schedule(points, 64, duplicateHandle);
+
+            JobHandle snapshotDisposeHandle = pointsSnapshot.Dispose(minFilterHandle);
+            
+            JobHandle disposeHandle = rawHeights.Dispose(snapshotDisposeHandle);
             disposeHandle = filledHeights.Dispose(disposeHandle);
             disposeHandle = flowTarget.Dispose(disposeHandle);
             disposeHandle = order.Dispose(disposeHandle);

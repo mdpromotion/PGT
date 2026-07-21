@@ -7,8 +7,10 @@ using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
+using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
+using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 {
@@ -38,6 +40,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
         private readonly HydrologySettings _settings;
 
         private readonly HydrologyRegionCache _regionCache;
+        
+        private readonly WorldSettings _worldSettings;
+        private readonly TerrainNoiseSettingsProvider _terrainSettingsProvider;
 
         private readonly Dictionary<RegionCoordinate, MergedEntry> _mergedCache = new();
         private readonly List<RegionCoordinate> _mergedEvictionBuffer = new();
@@ -45,11 +50,15 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
         public HydrologyGenerator(
             ChunkGrid grid,
             HydrologySettings settings,
-            HydrologyRegionCache regionCache)
+            HydrologyRegionCache regionCache,
+            WorldSettings worldSettings,
+            TerrainNoiseSettingsProvider terrainSettingsProvider)
         {
             _grid = grid;
             _settings = settings;
             _regionCache = regionCache;
+            _worldSettings = worldSettings;
+            _terrainSettingsProvider = terrainSettingsProvider;
         }
 
         public void EvictOutside(
@@ -139,6 +148,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             state.Landscape.AttachWaterSurfaceHeight(waterSurfaceHeight);
             state.Landscape.AttachBankHeight(bankHeight);
 
+            TerrainNoiseSettings noiseSettings = _terrainSettingsProvider.Create();
+            NativeArray<float2> noiseOffsets = _terrainSettingsProvider.GetOctaveOffsets(_worldSettings.Octaves);
+
             HydrologyCarveJob job =
                 new HydrologyCarveJob(
                     state.Landscape.Heights,
@@ -148,17 +160,14 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                     context.Resolution,
                     _grid.ChunkSizeX,
                     _grid.ChunkSizeZ,
-                    new int2(
-                        context.Coordinate.X,
-                        context.Coordinate.Y),
+                    new int2(context.Coordinate.X, context.Coordinate.Y),
                     merged.Segments.AsDeferredJobArray(),
                     merged.Hash,
-                    _settings);
+                    _settings,
+                    noiseSettings,
+                    noiseOffsets);
 
-            return job.Schedule(
-                mask.Length,
-                64,
-                mergeHandle);
+            return job.Schedule(mask.Length, 64, mergeHandle);
         }
 
         private MergedEntry BuildNeighbourhood(
