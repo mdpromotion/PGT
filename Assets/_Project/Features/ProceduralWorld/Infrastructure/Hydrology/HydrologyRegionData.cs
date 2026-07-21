@@ -4,7 +4,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 {
     public enum HydrologyPointKind : byte
     {
-        River = 0
+        None = 0,
+        River = 1
     }
 
     public readonly struct HydrologyRegionData
@@ -33,9 +34,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
         public float Height;
         public float Strength;
-        
-        public float LeftBankHeight;
-        public float RightBankHeight;
 
         public int SegmentId;
 

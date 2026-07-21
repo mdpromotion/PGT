@@ -19,8 +19,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings
         public float CarveDepth;
         public float RiverWidth;
         public float InitialCarveDepthFactor;
-        public float EdgeSinkFactor;
         public float EdgeOverlapFactor;
+        public int RegionMarginCells;
 
         [Header("Tracing")]
         public int MaxTraceSteps;

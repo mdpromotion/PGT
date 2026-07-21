@@ -165,23 +165,14 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                         float signedLateral = math.dot(delta, perp);
 
                         float sideFraction = math.clamp(signedLateral / nominalWidth, -1f, 1f);
-
-                        float leftBankHeight = math.lerp(
-                            segment.LeftBankHeightA, segment.LeftBankHeightB, t);
-
-                        float rightBankHeight = math.lerp(
-                            segment.RightBankHeightA, segment.RightBankHeightB, t);
-
-                        float lateralHeight = sideFraction >= 0f
-                            ? rightBankHeight
-                            : leftBankHeight;
+                        
 
                         float depth = math.lerp(
                             minCarveDepth,
                             maxCarveDepth,
                             clampedStrength * invMaxRiverStrength);
 
-                        float riverBottom = lateralHeight - depth;
+                        float riverBottom = depth;
 
                         float localDepth = depth * influence;
                         strongestDepth = math.max(strongestDepth, localDepth);
@@ -207,12 +198,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float blendedHeight = weightedHeight / totalWeight;
             float blendedSurfaceHeight = weightedSurfaceHeight / totalWeight;
 
-            float cappedSurfaceHeight = math.min(blendedSurfaceHeight, originalHeight);
-            
-            float edgeSink = maxCarveDepth * _settings.EdgeSinkFactor * combinedMask;
-            float sunkSurfaceHeight = cappedSurfaceHeight - edgeSink;
-            
-            _waterSurfaceHeight[index] = math.lerp(originalHeight, sunkSurfaceHeight, combinedMask);
+            _waterSurfaceHeight[index] = blendedSurfaceHeight;
 
             float targetRiverHeight = math.min(blendedHeight, originalHeight - strongestDepth);
             float targetHeight = math.min(originalHeight, math.lerp(originalHeight, targetRiverHeight, combinedMask));

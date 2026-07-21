@@ -40,17 +40,19 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
         public RegionFetchResult Schedule(RegionCoordinate region)
         {
-            int size = _hydrologySettings.RegionCoarseResolution;
+            int core = _hydrologySettings.RegionCoarseResolution;
+            int margin = _hydrologySettings.RegionMarginCells;
+            int size = core + margin * 2;
             int cellCount = size * size;
 
             float regionWorldSizeX = _grid.ChunkSizeX * _hydrologySettings.RegionSizeInChunks;
             float regionWorldSizeZ = _grid.ChunkSizeZ * _hydrologySettings.RegionSizeInChunks;
-
-            float originX = region.X * regionWorldSizeX;
-            float originZ = region.Y * regionWorldSizeZ;
-
-            float stepX = regionWorldSizeX / (size - 1);
-            float stepZ = regionWorldSizeZ / (size - 1);
+            
+            float stepX = regionWorldSizeX / (core - 1);
+            float stepZ = regionWorldSizeZ / (core - 1);
+            
+            float originX = region.X * regionWorldSizeX - margin * stepX;
+            float originZ = region.Y * regionWorldSizeZ - margin * stepZ;
 
             TerrainNoiseSettings noiseSettings = _terrainSettingsProvider.Create();
             NativeArray<float2> offsets = _terrainSettingsProvider.GetOctaveOffsets(_worldSettings.Octaves);
@@ -153,8 +155,20 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 NoiseOffsets = offsets,
                 Points = points
             }.Schedule(sourcesHandle);
+            
+            TrimPointsToRegionJob trimJob = new TrimPointsToRegionJob
+            {
+                RegionOriginX = region.X * regionWorldSizeX,
+                RegionOriginZ = region.Y * regionWorldSizeZ,
+                RegionSizeX = regionWorldSizeX,
+                RegionSizeZ = regionWorldSizeZ,
+                CarveMargin = math.max(_hydrologySettings.RiverWidth * 3f, 0.001f),
+                Points = points.AsDeferredJobArray()
+            };
 
-            JobHandle disposeHandle = rawHeights.Dispose(traceHandle);
+            JobHandle trimHandle = trimJob.Schedule(points, 64, traceHandle);
+
+            JobHandle disposeHandle = rawHeights.Dispose(trimHandle);
             disposeHandle = filledHeights.Dispose(disposeHandle);
             disposeHandle = flowTarget.Dispose(disposeHandle);
             disposeHandle = order.Dispose(disposeHandle);

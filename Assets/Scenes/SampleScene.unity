@@ -179,7 +179,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 10000
   field of view: 90
   orthographic: 0
   orthographic size: 5
@@ -816,19 +816,19 @@ MonoBehaviour:
   hydrologySettings:
     RegionSizeInChunks: 32
     RegionCoarseResolution: 256
-    FlowAccumulationThreshold: 600
-    AccumulationToStrengthScale: 2
+    FlowAccumulationThreshold: 1000
+    AccumulationToStrengthScale: 3
     MaxRiverStrength: 5
     CarveDepth: 1
-    RiverWidth: 500
-    InitialCarveDepthFactor: 0.15
-    EdgeSinkFactor: 0.01
-    EdgeOverlapFactor: 0.01
+    RiverWidth: 1000
+    InitialCarveDepthFactor: 1
+    EdgeOverlapFactor: 0.5
+    RegionMarginCells: 32
     MaxTraceSteps: 600
-    GradientEpsilon: 6
-    RiverStartFadeSteps: 20
-    InitialRiverStrength: 0.2
-  viewDistance: 5
+    GradientEpsilon: 3
+    RiverStartFadeSteps: 30
+    InitialRiverStrength: 0.5
+  viewDistance: 15
   database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
   globalMaxVoices: 32
   footstepSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}

@@ -109,21 +109,13 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
             float halfWidth = HydroMath.RiverWidth(
                 strength, Settings.RiverWidth, Settings.MaxRiverStrength);
-
-            float2 leftPos = pos - perpendicular * halfWidth;
-            float2 rightPos = pos + perpendicular * halfWidth;
-
-            float leftBankHeight = HeightSampler.Sample(leftPos, NoiseSettings, NoiseOffsets);
-            float rightBankHeight = HeightSampler.Sample(rightPos, NoiseSettings, NoiseOffsets);
-
+            
             river.Add(new float2Point
             {
                 X = pos.x,
                 Z = pos.y,
                 Height = FilledHeights[index],
                 Strength = strength,
-                LeftBankHeight = leftBankHeight,
-                RightBankHeight = rightBankHeight,
                 SegmentId = segmentId,
                 Kind = HydrologyPointKind.River
             });
@@ -153,15 +145,18 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                 ? math.normalize(downhill)
                 : new float2(1f, 0f);
         }
-
-        private static void ApplyEndFade(NativeList<float2Point> points)
+        
+        private static void ApplyEndFade(NativeList<float2Point> points, float minFadeSteps = 10f, float widthFadeFactor = 1.5f)
         {
             int count = points.Length;
 
             if (count <= 1)
                 return;
+            
+            float2Point last = points[count - 1];
 
-            int fadeSteps = math.min(count, 10);
+            float estimatedFadeDistance = math.max(minFadeSteps, last.Strength * widthFadeFactor);
+            int fadeSteps = math.min(count, (int)estimatedFadeDistance);
 
             for (int i = 0; i < fadeSteps; i++)
             {
@@ -199,8 +194,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                     Z = math.lerp(a.Z, b.Z, .5f),
                     Height = math.lerp(a.Height, b.Height, .5f),
                     Strength = math.lerp(a.Strength, b.Strength, .5f),
-                    LeftBankHeight = math.lerp(a.LeftBankHeight, b.LeftBankHeight, .5f),
-                    RightBankHeight = math.lerp(a.RightBankHeight, b.RightBankHeight, .5f),
                     SegmentId = a.SegmentId,
                     Kind = HydrologyPointKind.River
                 });
