@@ -22,7 +22,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks.Generation
         private bool _needsSort;
         
         private const int MaxJobs = 10;
-        private const int MaxApplyPerFrame = 1;
+        private const int MaxApplyPerFrame = 3;
 
 
 

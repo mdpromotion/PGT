@@ -245,9 +245,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             }
 
             int initialCapacity = math.max(
-                1,
-                _settings.RiverSourceCount *
-                (_settings.MaxTraceSteps + 1) * 2);
+                64,
+                _settings.RegionCoarseResolution * _settings.RegionCoarseResolution / 8);
 
             NativeList<RiverSegment> segments =
                 new NativeList<RiverSegment>(initialCapacity, Allocator.Persistent);

@@ -814,29 +814,20 @@ MonoBehaviour:
   worldSettings: {fileID: 11400000, guid: dbe12bdf8867feb4880810240955aec2, type: 2}
   chunksParent: {fileID: 758205965}
   hydrologySettings:
-    RegionSizeInChunks: 64
+    RegionSizeInChunks: 32
     RegionCoarseResolution: 256
-    RiverSourceCount: 3
-    CarveDepth: 0.5
-    RiverWidth: 500
-    MaxTraceSteps: 300
-    StepDistance: 64
-    TurnSmoothing: 0.85
-    MeanderStrength: 0.35
-    GradientEpsilon: 6
-    MeanderResponsiveness: 0.03
-    MaxTurnAnglePerStep: 0.01
-    SlopeStraightenFactor: 0.8
-    BaseStrengthGrowth: 0.018
-    SlopeStrengthFactor: 0.9
+    FlowAccumulationThreshold: 600
+    AccumulationToStrengthScale: 2
     MaxRiverStrength: 5
-    ConfluenceDistance: 60
-    ConfluenceStrengthFactor: 1.4
-    RiverStartFadeSteps: 20
-    InitialRiverStrength: 0.2
+    CarveDepth: 1
+    RiverWidth: 500
     InitialCarveDepthFactor: 0.15
     EdgeSinkFactor: 0.01
-    EdgeOverlapFactor: 0.2
+    EdgeOverlapFactor: 0.01
+    MaxTraceSteps: 600
+    GradientEpsilon: 6
+    RiverStartFadeSteps: 20
+    InitialRiverStrength: 0.2
   viewDistance: 5
   database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
   globalMaxVoices: 32
@@ -1053,7 +1044,6 @@ MonoBehaviour:
   _sprintStepDistance: 3
   _crouchStepDistance: 1.4
   _minSpeedForStep: 0.5
-  _debugLogging: 0
 --- !u!114 &1508698450
 MonoBehaviour:
   m_ObjectHideFlags: 0

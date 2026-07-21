@@ -16,16 +16,13 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             Shader.PropertyToID("_HeightScale");
 
         private readonly float _heightScale;
-        private readonly int _supersample;
 
         private MaterialPropertyBlock _propertyBlock;
 
         public ChunkWaterPresenter(
-            float heightScale,
-            int supersample = 3)
+            float heightScale)
         {
             _heightScale = heightScale;
-            _supersample = supersample;
         }
 
         public void Apply(
@@ -47,7 +44,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
             JobHandle handle = WaterSurfaceTextureBuilder.Schedule(
                 landscape,
-                _supersample,
                 out NativeArray<float4> pixels,
                 out int outputRes);
 

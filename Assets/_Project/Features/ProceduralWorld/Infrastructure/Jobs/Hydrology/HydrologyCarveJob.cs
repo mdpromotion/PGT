@@ -79,7 +79,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             _gridHeight = hash.GridHeight;
         }
 
-       public void Execute(int index)
+        public void Execute(int index)
         {
             int x = index % _resolution;
             int z = index / _resolution;
@@ -90,7 +90,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float2 world = new float2(worldX, worldZ);
 
             float originalHeight = _heights[index];
-            _bankHeight[index] = originalHeight;
 
             float combinedMask = 0f;
             float weightedHeight = 0f;
@@ -105,27 +104,21 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float maxCarveDepth = _settings.CarveDepth;
 
             float riverWidthScale = _settings.RiverWidth;
-            
+
             float overlapMultiplier = 1f + math.max(_settings.EdgeOverlapFactor, 0f);
 
-            int centerCx = (int)math.floor((world.x - _hashOrigin.x) / _cellSize);
-            int centerCz = (int)math.floor((world.y - _hashOrigin.y) / _cellSize);
+            int2 centerCell = HydroMath.WorldToCell(world, _hashOrigin, _cellSize);
 
             for (int dz = -1; dz <= 1; dz++)
             {
-                int cz = centerCz + dz;
-
-                if (cz < 0 || cz >= _gridHeight)
-                    continue;
+                int cz = centerCell.y + dz;
 
                 for (int dx = -1; dx <= 1; dx++)
                 {
-                    int cx = centerCx + dx;
+                    int cx = centerCell.x + dx;
 
-                    if (cx < 0 || cx >= _gridWidth)
+                    if (!HydroMath.TryGetCellIndex(cx, cz, _gridWidth, _gridHeight, out int cell))
                         continue;
-
-                    int cell = cz * _gridWidth + cx;
 
                     int start = _cellStart[cell];
                     int cellPointCount = _cellCount[cell];
@@ -151,9 +144,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
                         float riverProfileHeight = math.lerp(segment.HeightA, segment.HeightB, t);
 
-                        float clampedStrength = math.min(strength, maxRiverStrength);
-                        
-                        float nominalWidth = math.max(riverWidthScale * clampedStrength, 0.001f);
+                        float nominalWidth = HydroMath.RiverWidth(
+                            strength, riverWidthScale, maxRiverStrength, out float clampedStrength);
+
                         float width = nominalWidth * overlapMultiplier;
                         float widthSq = width * width;
 
@@ -163,25 +156,25 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                         float distance = math.sqrt(distanceSq);
                         float normalized = math.saturate(1f - distance / width);
 
-                        float influence = normalized * normalized * (3f - 2f * normalized);
+                        float influence = HydroMath.Smoothstep(normalized);
 
                         float abLen = math.sqrt(abLenSq);
                         float2 abDir = ab / abLen;
                         float2 perp = new float2(-abDir.y, abDir.x);
 
                         float signedLateral = math.dot(delta, perp);
-                        
+
                         float sideFraction = math.clamp(signedLateral / nominalWidth, -1f, 1f);
 
-                        float leftBankHeightInterp = math.lerp(
+                        float leftBankHeight = math.lerp(
                             segment.LeftBankHeightA, segment.LeftBankHeightB, t);
 
-                        float rightBankHeightInterp = math.lerp(
+                        float rightBankHeight = math.lerp(
                             segment.RightBankHeightA, segment.RightBankHeightB, t);
 
                         float lateralHeight = sideFraction >= 0f
-                            ? math.lerp(riverProfileHeight, rightBankHeightInterp, sideFraction)
-                            : math.lerp(riverProfileHeight, leftBankHeightInterp, -sideFraction);
+                            ? rightBankHeight
+                            : leftBankHeight;
 
                         float depth = math.lerp(
                             minCarveDepth,
@@ -195,7 +188,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
                         float blendWeight = influence * influence;
                         weightedHeight += riverBottom * blendWeight;
-                        weightedSurfaceHeight += lateralHeight * blendWeight;
+                        weightedSurfaceHeight += riverProfileHeight * blendWeight;
                         totalWeight += blendWeight;
 
                         combinedMask = 1f - (1f - combinedMask) * (1f - influence);
@@ -214,24 +207,18 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float blendedHeight = weightedHeight / totalWeight;
             float blendedSurfaceHeight = weightedSurfaceHeight / totalWeight;
 
-            float edgeSink = maxCarveDepth * _settings.EdgeSinkFactor;
-            
             float cappedSurfaceHeight = math.min(blendedSurfaceHeight, originalHeight);
+            
+            float edgeSink = maxCarveDepth * _settings.EdgeSinkFactor * combinedMask;
+            float sunkSurfaceHeight = cappedSurfaceHeight - edgeSink;
+            
+            _waterSurfaceHeight[index] = math.lerp(originalHeight, sunkSurfaceHeight, combinedMask);
 
-            _waterSurfaceHeight[index] = cappedSurfaceHeight - edgeSink;
-
-            float targetRiverHeight = math.min(
-                blendedHeight,
-                originalHeight - strongestDepth);
-
-            float targetHeight = math.min(
-                originalHeight,
-                math.lerp(
-                    originalHeight,
-                    targetRiverHeight,
-                    combinedMask));
+            float targetRiverHeight = math.min(blendedHeight, originalHeight - strongestDepth);
+            float targetHeight = math.min(originalHeight, math.lerp(originalHeight, targetRiverHeight, combinedMask));
 
             _heights[index] = targetHeight;
+            _bankHeight[index] = originalHeight;
         }
     }
 }

@@ -70,14 +70,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         private int GetCell(RiverSegment s)
         {
             float2 mid = (s.A + s.B) * 0.5f;
-
-            int cx = (int)math.floor((mid.x - Origin.x) / CellSize);
-            int cz = (int)math.floor((mid.y - Origin.y) / CellSize);
-
-            cx = math.clamp(cx, 0, GridWidth - 1);
-            cz = math.clamp(cz, 0, GridHeight - 1);
-
-            return cz * GridWidth + cx;
+            return HydroMath.WorldToCellIndexClamped(mid, Origin, CellSize, GridWidth, GridHeight);
         }
     }
 }

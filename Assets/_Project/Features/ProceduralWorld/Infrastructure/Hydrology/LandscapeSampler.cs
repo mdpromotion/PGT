@@ -1,10 +1,12 @@
-﻿using Unity.Collections;
+﻿using Unity.Burst;
+using Unity.Collections;
 using Unity.Mathematics;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 {
     public static class LandscapeSampler
     {
+        [BurstCompile]
         public static float SampleBilinear(
             NativeArray<float> source,
             int resolution,
