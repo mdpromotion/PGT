@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c54b53558b0471996a701bde7694d9b, type: 3}
-  m_Name: FootstepSoundSet
+  m_Name: PlayerSoundSet
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Infrastructure.FootstepSoundSet
   _walkFootsteps:
   - _value: Footstep
@@ -32,3 +32,7 @@ MonoBehaviour:
   _jumpLand:
   - _value: Jump_Land
   - _value: Jump_Land1
+  _waterEnter:
+    _value: Water_Enter
+  _waterExit:
+    _value: Water_Exit

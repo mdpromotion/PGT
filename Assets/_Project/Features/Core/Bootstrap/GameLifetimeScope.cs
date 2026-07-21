@@ -54,8 +54,8 @@ namespace _Project.Features.Core.Bootstrap
         [SerializeField] 
         private int globalMaxVoices = 32;
 
-        [SerializeField]
-        private FootstepSoundSet footstepSoundSet;
+        [SerializeField] 
+        private PlayerSoundSet playerSoundSet;
 
         [SerializeField]
         private PlayerMovementConfig playerMovementConfig;
@@ -125,9 +125,11 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.RegisterComponentInHierarchy<WaterVolumeTracker>()
                 .As<IWaterState>();
+            
+            builder.RegisterComponentInHierarchy<PlayerWaterSoundController>();
 
 
-            builder.RegisterInstance(footstepSoundSet);
+            builder.RegisterInstance(playerSoundSet);
 
 
             builder.RegisterComponentInHierarchy<FootstepController>();

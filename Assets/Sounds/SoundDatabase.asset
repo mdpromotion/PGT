@@ -21,7 +21,7 @@ MonoBehaviour:
     _cooldown: 0.15
     _maxConcurrentInstances: 2
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -32,7 +32,7 @@ MonoBehaviour:
     _cooldown: 0.15
     _maxConcurrentInstances: 2
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -43,7 +43,7 @@ MonoBehaviour:
     _cooldown: 0.15
     _maxConcurrentInstances: 2
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -54,7 +54,7 @@ MonoBehaviour:
     _cooldown: 0.15
     _maxConcurrentInstances: 2
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -65,7 +65,7 @@ MonoBehaviour:
     _cooldown: 0.15
     _maxConcurrentInstances: 2
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -76,7 +76,7 @@ MonoBehaviour:
     _cooldown: 0.15
     _maxConcurrentInstances: 2
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -87,7 +87,7 @@ MonoBehaviour:
     _cooldown: 0
     _maxConcurrentInstances: 10
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -98,7 +98,7 @@ MonoBehaviour:
     _cooldown: 0
     _maxConcurrentInstances: 10
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -109,7 +109,7 @@ MonoBehaviour:
     _cooldown: 0
     _maxConcurrentInstances: 10
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -120,7 +120,7 @@ MonoBehaviour:
     _cooldown: 0
     _maxConcurrentInstances: 10
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -131,7 +131,7 @@ MonoBehaviour:
     _cooldown: 0
     _maxConcurrentInstances: 10
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -142,7 +142,7 @@ MonoBehaviour:
     _cooldown: 0
     _maxConcurrentInstances: 10
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -153,7 +153,7 @@ MonoBehaviour:
     _cooldown: 0
     _maxConcurrentInstances: 10
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -164,7 +164,7 @@ MonoBehaviour:
     _cooldown: 0
     _maxConcurrentInstances: 10
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -175,7 +175,7 @@ MonoBehaviour:
     _cooldown: 0
     _maxConcurrentInstances: 10
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
   - _key:
@@ -186,6 +186,28 @@ MonoBehaviour:
     _cooldown: 0
     _maxConcurrentInstances: 10
     _volume: 1
-    _volumeVariance: 0.5
+    _volumeVariance: 0
+    _pitchVariance: 0
+    _spatial: 0
+  - _key:
+      _value: Water_Enter
+    _category: 1
+    _clips:
+    - {fileID: 8300000, guid: 9033cc4a7b6a53a4c8e7fa906bca70fc, type: 3}
+    _cooldown: 0
+    _maxConcurrentInstances: 10
+    _volume: 1
+    _volumeVariance: 0
+    _pitchVariance: 0
+    _spatial: 1
+  - _key:
+      _value: Water_Exit
+    _category: 1
+    _clips:
+    - {fileID: 8300000, guid: 377715bbf63be3b4c9d6b386e572126d, type: 3}
+    _cooldown: 0
+    _maxConcurrentInstances: 10
+    _volume: 1
+    _volumeVariance: 0
     _pitchVariance: 0
     _spatial: 0
