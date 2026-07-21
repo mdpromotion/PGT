@@ -15,8 +15,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         public NativeArray<int2> Neighbors8;
 
         public int Size;
-
-        // результат: высоты после заполнения впадин (monotonic non-increasing к границе)
+        
         [WriteOnly]
         public NativeArray<float> FilledHeights;
 

@@ -14,13 +14,15 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings
         public float FlowAccumulationThreshold;
         public float AccumulationToStrengthScale;
         public float MaxRiverStrength;
-
+        public int WaterHeightWindowRadius;
+        public float WaterHeightSafetyOffset;
+        
         [Header("Carving")]
         public float CarveDepth;
         public float RiverWidth;
         public float InitialCarveDepthFactor;
-        public float EdgeSinkFactor;
         public float EdgeOverlapFactor;
+        public int RegionMarginCells;
 
         [Header("Tracing")]
         public int MaxTraceSteps;

@@ -24,17 +24,13 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         private readonly float _chunkSizeX;
         private readonly float _chunkSizeZ;
 
-        [ReadOnly]
-        private NativeArray<RiverSegment> _riverSegments;
+        [ReadOnly] private NativeArray<RiverSegment> _riverSegments;
 
-        [ReadOnly]
-        private NativeArray<int> _cellStart;
+        [ReadOnly] private NativeArray<int> _cellStart;
 
-        [ReadOnly]
-        private NativeArray<int> _cellCount;
+        [ReadOnly] private NativeArray<int> _cellCount;
 
-        [ReadOnly]
-        private NativeArray<int> _pointIndices;
+        [ReadOnly] private NativeArray<int> _pointIndices;
 
         private readonly float2 _hashOrigin;
         private readonly float _cellSize;
@@ -42,6 +38,11 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         private readonly int _gridHeight;
 
         private readonly HydrologySettings _settings;
+        
+        private readonly TerrainNoiseSettings _noiseSettings;
+
+        [ReadOnly] private NativeArray<float2> _noiseOffsets;
+
 
         public HydrologyCarveJob(
             NativeArray<float> heights,
@@ -54,7 +55,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             int2 chunk,
             NativeArray<RiverSegment> riverSegments,
             SpatialHashData hash,
-            HydrologySettings settings)
+            HydrologySettings settings,
+            TerrainNoiseSettings noiseSettings,
+            NativeArray<float2> noiseOffsets)
         {
             _heights = heights;
             _riverMask = riverMask;
@@ -66,6 +69,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             _chunk = chunk;
             _riverSegments = riverSegments;
             _settings = settings;
+            _noiseSettings = noiseSettings;
+            _noiseOffsets = noiseOffsets;
 
             _stepX = chunkSizeX / (resolution - 1);
             _stepZ = chunkSizeZ / (resolution - 1);
@@ -145,7 +150,10 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                         float riverProfileHeight = math.lerp(segment.HeightA, segment.HeightB, t);
 
                         float nominalWidth = HydroMath.RiverWidth(
-                            strength, riverWidthScale, maxRiverStrength, out float clampedStrength);
+                            strength,
+                            riverWidthScale,
+                            maxRiverStrength,
+                            out float clampedStrength);
 
                         float width = nominalWidth * overlapMultiplier;
                         float widthSq = width * width;
@@ -158,40 +166,68 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
                         float influence = HydroMath.Smoothstep(normalized);
 
-                        float abLen = math.sqrt(abLenSq);
-                        float2 abDir = ab / abLen;
-                        float2 perp = new float2(-abDir.y, abDir.x);
-
-                        float signedLateral = math.dot(delta, perp);
-
-                        float sideFraction = math.clamp(signedLateral / nominalWidth, -1f, 1f);
-
-                        float leftBankHeight = math.lerp(
-                            segment.LeftBankHeightA, segment.LeftBankHeightB, t);
-
-                        float rightBankHeight = math.lerp(
-                            segment.RightBankHeightA, segment.RightBankHeightB, t);
-
-                        float lateralHeight = sideFraction >= 0f
-                            ? rightBankHeight
-                            : leftBankHeight;
-
                         float depth = math.lerp(
                             minCarveDepth,
                             maxCarveDepth,
                             clampedStrength * invMaxRiverStrength);
 
-                        float riverBottom = lateralHeight - depth;
+                        float2 tangent = math.normalize(ab);
+                        float2 perpendicular = new float2(-tangent.y, tangent.x);
+                        
+                        float2 toPoint = world - closest;
+                        float signedOffset = math.dot(toPoint, perpendicular);
+
+                        float sampleDist = width * 0.5f;
+
+                        float heightLeft = HeightSampler.Sample(
+                            closest - perpendicular * sampleDist,
+                            _noiseSettings,
+                            _noiseOffsets);
+
+                        float heightRight = HeightSampler.Sample(
+                            closest + perpendicular * sampleDist,
+                            _noiseSettings,
+                            _noiseOffsets);
+                        
+                        float t01 = math.clamp(
+                            signedOffset / sampleDist,
+                            -1f,
+                            1f);
+                        
+                        float bankHeight = math.lerp(
+                            heightLeft,
+                            heightRight,
+                            (t01 + 1f) * 0.5f);
+                        
+                        float centerBankHeight = math.lerp(
+                            heightLeft,
+                            heightRight,
+                            0.5f);
+                        
+                        float bankTilt = bankHeight - centerBankHeight;
+
+                        float waterHeight = riverProfileHeight + bankTilt;
+                            
+
+                        float riverBottom = waterHeight - depth;
 
                         float localDepth = depth * influence;
-                        strongestDepth = math.max(strongestDepth, localDepth);
+
+                        strongestDepth = math.max(
+                            strongestDepth,
+                            localDepth);
 
                         float blendWeight = influence * influence;
+
                         weightedHeight += riverBottom * blendWeight;
-                        weightedSurfaceHeight += riverProfileHeight * blendWeight;
+
+                        weightedSurfaceHeight += waterHeight * blendWeight;
+
                         totalWeight += blendWeight;
 
-                        combinedMask = 1f - (1f - combinedMask) * (1f - influence);
+                        combinedMask = 1f - 
+                            (1f - combinedMask) * 
+                            (1f - influence);
                     }
                 }
             }
@@ -207,12 +243,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float blendedHeight = weightedHeight / totalWeight;
             float blendedSurfaceHeight = weightedSurfaceHeight / totalWeight;
 
-            float cappedSurfaceHeight = math.min(blendedSurfaceHeight, originalHeight);
-            
-            float edgeSink = maxCarveDepth * _settings.EdgeSinkFactor * combinedMask;
-            float sunkSurfaceHeight = cappedSurfaceHeight - edgeSink;
-            
-            _waterSurfaceHeight[index] = math.lerp(originalHeight, sunkSurfaceHeight, combinedMask);
+            _waterSurfaceHeight[index] = blendedSurfaceHeight;
 
             float targetRiverHeight = math.min(blendedHeight, originalHeight - strongestDepth);
             float targetHeight = math.min(originalHeight, math.lerp(originalHeight, targetRiverHeight, combinedMask));
