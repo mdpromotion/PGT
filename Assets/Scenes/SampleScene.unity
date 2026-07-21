@@ -820,7 +820,7 @@ MonoBehaviour:
     AccumulationToStrengthScale: 3
     MaxRiverStrength: 5
     WaterHeightWindowRadius: 16
-    WaterHeightSafetyOffset: 0.1
+    WaterHeightSafetyOffset: 0
     CarveDepth: 1
     RiverWidth: 1000
     InitialCarveDepthFactor: 1
@@ -830,7 +830,7 @@ MonoBehaviour:
     GradientEpsilon: 3
     RiverStartFadeSteps: 30
     InitialRiverStrength: 0.5
-  viewDistance: 15
+  viewDistance: 5
   database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
   globalMaxVoices: 32
   playerSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
