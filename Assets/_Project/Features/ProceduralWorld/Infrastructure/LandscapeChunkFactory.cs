@@ -12,6 +12,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
     {
         private readonly Terrain _prefab;
         private readonly ChunkGrid _grid;
+        private readonly float _treeDistance;
 
         private readonly Dictionary<Terrain, ChunkHandle> _handles = new();
 
@@ -23,11 +24,15 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
         public LandscapeChunkFactory(
             Terrain prefab,
             ChunkGrid grid,
+            int viewDistance,
             int expectedPoolCapacity = 32)
         {
             _prefab = prefab;
             _grid = grid;
             _pool = new Queue<Terrain>(expectedPoolCapacity);
+
+            float chunkSize = Mathf.Max(grid.ChunkSizeX, grid.ChunkSizeZ);
+            _treeDistance = viewDistance * chunkSize;
         }
 
         public void Connect(Terrain terrain, Terrain left, Terrain top, Terrain right, Terrain bottom)
@@ -69,6 +74,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
                 terrain.drawInstanced = true;
                 terrain.heightmapPixelError = 20;
+                terrain.treeDistance = _treeDistance;
+                terrain.treeBillboardDistance = _treeDistance;
+                terrain.treeCrossFadeLength = 0f;
 
                 TerrainChunkCoordinate marker = terrain.GetComponent<TerrainChunkCoordinate>();
                 if (!marker)
@@ -100,10 +108,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
 
             if (waterTransform == null)
             {
-                Debug.LogWarning(
-                    $"Chunk prefab '{terrain.name}' has no child named '{WaterChildName}'. " +
-                    "Water will not be rendered for this chunk.");
-
                 return null;
             }
             
@@ -186,7 +190,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
                 alphamapResolution = source.alphamapResolution,
                 baseMapResolution = source.baseMapResolution,
                 size = source.size,
-                terrainLayers = source.terrainLayers
+                terrainLayers = source.terrainLayers,
+                treePrototypes = source.treePrototypes
             };
         }
         

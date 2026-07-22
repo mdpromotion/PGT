@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Domain.Landscape;
+using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 {

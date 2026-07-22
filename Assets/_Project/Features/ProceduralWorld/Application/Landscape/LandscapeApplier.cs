@@ -13,6 +13,7 @@
         {
             private readonly ILandscapeFactory _factory;
             private readonly ITerrainWriter _writer;
+            private readonly ITreeInstanceWriter _treeWriter;
             private readonly IChunkNeighborConnector _neighborConnector;
             private readonly ChunkRepository _repository;
             private readonly ChunkWaterPresenter _waterPresenter;
@@ -23,6 +24,7 @@
             public LandscapeApplier(
                 ILandscapeFactory factory,
                 ITerrainWriter writer,
+                ITreeInstanceWriter treeWriter,
                 IChunkNeighborConnector neighborConnector,
                 ChunkRepository repository,
                 ChunkWaterPresenter waterPresenter,
@@ -30,6 +32,7 @@
             {
                 _factory = factory;
                 _writer = writer;
+                _treeWriter = treeWriter;
                 _neighborConnector = neighborConnector;
                 _repository = repository;
                 _waterPresenter = waterPresenter;
@@ -57,7 +60,8 @@
 
 
                 terrain.terrainData.SyncHeightmap();
-
+                
+                _treeWriter.Write(terrain, data);
 
                 MeshRenderer waterRenderer =
                     _factory.GetWaterRenderer(terrain);
