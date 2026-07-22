@@ -13,9 +13,7 @@ using _Project.Features.ProceduralWorld.Application.World;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure;
-using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
-using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
 using _Project.Features.ProceduralWorld.Presentation;
 using _Project.Features.Sound.Application;
@@ -41,9 +39,6 @@ namespace _Project.Features.Core.Bootstrap
 
         [SerializeField]
         private Transform chunksParent;
-        
-        [SerializeField] 
-        private HydrologySettings hydrologySettings;
 
         [SerializeField]
         private int viewDistance = 3;
@@ -123,8 +118,10 @@ namespace _Project.Features.Core.Bootstrap
                 .As<IPlayerReadOnly>();
 
 
-            builder.RegisterComponentInHierarchy<WaterVolumeTracker>()
-                .As<IWaterState>();
+            /*builder.RegisterComponentInHierarchy<WaterVolumeTracker>()
+                .As<IWaterState>();*/ 
+            // I'd like to completely refactor the hydrology feature 
+            // cause I really don't like it rn
             
             builder.RegisterComponentInHierarchy<PlayerWaterSoundController>();
 
@@ -140,12 +137,7 @@ namespace _Project.Features.Core.Bootstrap
         {
             builder.RegisterInstance(
                 worldSettings);
-
-            builder.RegisterInstance(
-                hydrologySettings);
-
-
-
+            
             builder.Register(
                     container =>
                         new ChunkGrid(
@@ -157,38 +149,14 @@ namespace _Project.Features.Core.Bootstrap
                     Lifetime.Singleton)
                 .AsSelf()
                 .As<IDisposable>();
-
-
-
+            
             builder.Register<LandscapeGenerator>(
                     Lifetime.Singleton)
                 .As<IGenerationStage>();
-
-
-
-            builder.Register<HydrologyRegionBuilder>(
-                    Lifetime.Singleton)
-                .AsSelf()
-                .As<IDisposable>();
-
-
-            builder.Register<HydrologyRegionCache>(
-                    Lifetime.Singleton);
             
-
-            builder.Register<HydrologyGenerator>(
-                    Lifetime.Singleton)
-                .As<IGenerationStage>()
-                .As<IGenerationCacheEvictor>()
-                .As<IDisposable>();
-
-
-
             builder.Register<ChunkGenerationPipeline>(
                 Lifetime.Singleton);
-
-
-
+            
             builder.RegisterBuildCallback(
                 container =>
                 {
@@ -203,26 +171,20 @@ namespace _Project.Features.Core.Bootstrap
                         pipeline.Add(stage);
                     }
                 });
-
-
-
+            
             builder.Register<IChunkGenerator>(
                     container =>
                         container.Resolve<
                             ChunkGenerationPipeline>(),
                     Lifetime.Singleton);
-
-
-
+            
             builder.Register(
                     container =>
                         new ChunkGenerationScheduler(
                             container.Resolve<
                                 IChunkGenerator>()),
                     Lifetime.Singleton);
-
-
-
+            
             builder.Register(
                     container =>
                         new LandscapeChunkFactory(
@@ -231,35 +193,20 @@ namespace _Project.Features.Core.Bootstrap
                     Lifetime.Singleton)
                 .As<ILandscapeFactory>()
                 .As<IDisposable>();
-
-
-
+            
             builder.Register<ChunkNeighborConnector>(
                     Lifetime.Singleton)
                 .As<IChunkNeighborConnector>();
-
-
-
+            
             builder.Register<UnityTerrainWriter>(
                     Lifetime.Singleton)
                 .As<ITerrainWriter>();
-
-
-
+            
             builder.Register<ChunkRepository>(
                     Lifetime.Singleton)
                 .AsSelf()
                 .As<IChunkLookup>();
-
-
-
-            builder.Register(
-                container =>
-                    new ChunkWaterPresenter(chunkPrefab.terrainData.size.y),
-                Lifetime.Singleton);
-
-
-
+            
             builder.Register(
                     container =>
                         new LandscapeApplier(
@@ -267,12 +214,9 @@ namespace _Project.Features.Core.Bootstrap
                             container.Resolve<ITerrainWriter>(),
                             container.Resolve<IChunkNeighborConnector>(),
                             container.Resolve<ChunkRepository>(),
-                            container.Resolve<ChunkWaterPresenter>(),
                             chunksParent),
                     Lifetime.Singleton);
-
-
-
+            
             builder.Register(
                     container =>
                         new ChunkManager(
@@ -284,9 +228,7 @@ namespace _Project.Features.Core.Bootstrap
                     Lifetime.Singleton)
                 .AsSelf()
                 .As<IDisposable>();
-
-
-
+            
             builder.Register(
                 container =>
                     new WorldStreamer(
@@ -296,17 +238,6 @@ namespace _Project.Features.Core.Bootstrap
                         viewDistance,
                         container.Resolve<IEnumerable<IGenerationCacheEvictor>>()),
                 Lifetime.Singleton);
-
-
-
-            builder.Register(
-                    container =>
-                        new WaterQueryService(
-                            container.Resolve<ChunkGrid>(),
-                            container.Resolve<ChunkRepository>(),
-                            chunkPrefab.terrainData.size.y),
-                    Lifetime.Singleton)
-                .As<IWaterQuery>();
 
 
             builder.RegisterComponentInHierarchy<ProceduralWorldPresenter>();

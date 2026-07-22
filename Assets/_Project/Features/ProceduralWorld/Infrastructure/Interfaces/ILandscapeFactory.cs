@@ -19,9 +19,5 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Interfaces
         void Show(Terrain terrain);
 
         void Release(Terrain terrain);
-
-        MeshRenderer GetWaterRenderer(Terrain terrain);
-
-        Hydrology.WaterState GetWaterState(Terrain terrain);
     }
 }

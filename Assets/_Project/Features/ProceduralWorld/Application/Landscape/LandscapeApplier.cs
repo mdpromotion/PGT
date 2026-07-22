@@ -3,7 +3,6 @@
     using _Project.Features.ProceduralWorld.Domain.Chunks;
     using _Project.Features.ProceduralWorld.Domain.Landscape;
     using _Project.Features.ProceduralWorld.Infrastructure.Chunks;
-    using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
     using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
     using UnityEngine;
 
@@ -15,7 +14,6 @@
             private readonly ITerrainWriter _writer;
             private readonly IChunkNeighborConnector _neighborConnector;
             private readonly ChunkRepository _repository;
-            private readonly ChunkWaterPresenter _waterPresenter;
             private readonly Transform _parent;
 
 
@@ -25,14 +23,12 @@
                 ITerrainWriter writer,
                 IChunkNeighborConnector neighborConnector,
                 ChunkRepository repository,
-                ChunkWaterPresenter waterPresenter,
                 Transform parent)
             {
                 _factory = factory;
                 _writer = writer;
                 _neighborConnector = neighborConnector;
                 _repository = repository;
-                _waterPresenter = waterPresenter;
                 _parent = parent;
             }
 
@@ -57,22 +53,7 @@
 
 
                 terrain.terrainData.SyncHeightmap();
-
-
-                MeshRenderer waterRenderer =
-                    _factory.GetWaterRenderer(terrain);
-
-                WaterState waterState =
-                    _factory.GetWaterState(terrain);
-
-                _waterPresenter.Apply(
-                    waterRenderer,
-                    waterState,
-                    data.Coordinate,
-                    data);
-
-
-
+                
                 ChunkInstance chunk =
                     new ChunkInstance(
                         data.Coordinate,
