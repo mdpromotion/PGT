@@ -17,6 +17,7 @@ using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
+using _Project.Features.ProceduralWorld.Infrastructure.Vegetation;
 using _Project.Features.ProceduralWorld.Presentation;
 using _Project.Features.Sound.Application;
 using _Project.Features.Sound.Infrastructure;
@@ -44,6 +45,9 @@ namespace _Project.Features.Core.Bootstrap
         
         [SerializeField] 
         private HydrologySettings hydrologySettings;
+        
+        [SerializeField] 
+        private TreePlacementSettings treePlacementSettings;
 
         [SerializeField]
         private int viewDistance = 3;
@@ -143,7 +147,9 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.RegisterInstance(
                 hydrologySettings);
-
+            
+            builder.RegisterInstance(
+                treePlacementSettings);
 
 
             builder.Register(
@@ -181,8 +187,12 @@ namespace _Project.Features.Core.Bootstrap
                 .As<IGenerationStage>()
                 .As<IGenerationCacheEvictor>()
                 .As<IDisposable>();
-
-
+            
+            
+            builder.Register<TreeGenerator>(
+                    Lifetime.Singleton)
+                .As<IGenerationStage>();
+            
 
             builder.Register<ChunkGenerationPipeline>(
                 Lifetime.Singleton);
@@ -227,7 +237,8 @@ namespace _Project.Features.Core.Bootstrap
                     container =>
                         new LandscapeChunkFactory(
                             chunkPrefab,
-                            container.Resolve<ChunkGrid>()),
+                            container.Resolve<ChunkGrid>(),
+                            viewDistance),
                     Lifetime.Singleton)
                 .As<ILandscapeFactory>()
                 .As<IDisposable>();
@@ -243,7 +254,11 @@ namespace _Project.Features.Core.Bootstrap
             builder.Register<UnityTerrainWriter>(
                     Lifetime.Singleton)
                 .As<ITerrainWriter>();
-
+            
+            
+            builder.Register<UnityTreeInstanceWriter>(
+                    Lifetime.Singleton)
+                .As<ITreeInstanceWriter>();
 
 
             builder.Register<ChunkRepository>(
@@ -261,15 +276,16 @@ namespace _Project.Features.Core.Bootstrap
 
 
             builder.Register(
-                    container =>
-                        new LandscapeApplier(
-                            container.Resolve<ILandscapeFactory>(),
-                            container.Resolve<ITerrainWriter>(),
-                            container.Resolve<IChunkNeighborConnector>(),
-                            container.Resolve<ChunkRepository>(),
-                            container.Resolve<ChunkWaterPresenter>(),
-                            chunksParent),
-                    Lifetime.Singleton);
+                container =>
+                    new LandscapeApplier(
+                        container.Resolve<ILandscapeFactory>(),
+                        container.Resolve<ITerrainWriter>(),
+                        container.Resolve<ITreeInstanceWriter>(),
+                        container.Resolve<IChunkNeighborConnector>(),
+                        container.Resolve<ChunkRepository>(),
+                        container.Resolve<ChunkWaterPresenter>(),
+                        chunksParent),
+                Lifetime.Singleton);
 
 
 
