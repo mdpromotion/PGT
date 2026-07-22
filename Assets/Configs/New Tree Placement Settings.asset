@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a295acb76e14c0391f4047bb932336a, type: 3}
+  m_Name: New Tree Placement Settings
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.ProceduralWorld.Infrastructure.Vegetation.TreePlacementSettings
+  CellSize: 16
+  MaxSlopeDegrees: 35
+  MinHeight: 0
+  MaxHeight: 500
+  DensityNoiseScale: 0.01
+  DensityThreshold: 0.7
+  PrototypeCount: 1
+  WorldSeed: 1
+  MinScale: 0.8
+  MaxScale: 1.2

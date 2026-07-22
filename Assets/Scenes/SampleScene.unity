@@ -830,6 +830,7 @@ MonoBehaviour:
     GradientEpsilon: 3
     RiverStartFadeSteps: 30
     InitialRiverStrength: 0.5
+  treePlacementSettings: {fileID: 11400000, guid: a68e69e9a4f3ea74bbdf95165de99850, type: 2}
   viewDistance: 5
   database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
   globalMaxVoices: 32
