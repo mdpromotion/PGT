@@ -126,8 +126,10 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             _repository.Remove(coordinate);
 
             chunk.Landscape.Dispose();
-
+            chunk.Hydrology.Dispose();
+ 
             _factory.Release(chunk.Terrain);
+
         }
     }
 }

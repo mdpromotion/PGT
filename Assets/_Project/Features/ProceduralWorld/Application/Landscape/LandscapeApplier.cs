@@ -58,7 +58,9 @@
                     new ChunkInstance(
                         data.Coordinate,
                         data,
+                        result.State.Hydrology,
                         terrain);
+
 
 
 

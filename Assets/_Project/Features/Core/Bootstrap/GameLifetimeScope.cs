@@ -11,8 +11,10 @@ using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Application.Landscape;
 using _Project.Features.ProceduralWorld.Application.World;
 using _Project.Features.ProceduralWorld.Domain;
+using _Project.Features.ProceduralWorld.Domain.Hydrology;
 using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure;
+using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
 using _Project.Features.ProceduralWorld.Presentation;
@@ -36,6 +38,12 @@ namespace _Project.Features.Core.Bootstrap
 
         [SerializeField]
         private WorldSettings worldSettings;
+        
+        [SerializeField] 
+        private HydrologySettings hydrologySettings;
+        
+        [SerializeField] 
+        private RiverCarvingSettings riverCarvingSettings;
 
         [SerializeField]
         private Transform chunksParent;
@@ -138,12 +146,30 @@ namespace _Project.Features.Core.Bootstrap
             builder.RegisterInstance(
                 worldSettings);
             
+            builder.RegisterInstance(
+                hydrologySettings);
+            
+            builder.RegisterInstance(
+                riverCarvingSettings);
+
+            
             builder.Register(
                     container =>
                         new ChunkGrid(
                             chunkPrefab.terrainData.size.x,
                             chunkPrefab.terrainData.size.z),
                     Lifetime.Singleton);
+            
+            builder.Register(
+                container =>
+                    new MacroZoneGrid(
+                        container.Resolve<ChunkGrid>(),
+                        hydrologySettings.ZoneSizeInChunks),
+                Lifetime.Singleton);
+ 
+            builder.Register<MacroZoneHydrologyCache>(
+                Lifetime.Singleton);
+
             
             builder.Register<TerrainNoiseSettingsProvider>(
                     Lifetime.Singleton)
@@ -153,6 +179,15 @@ namespace _Project.Features.Core.Bootstrap
             builder.Register<LandscapeGenerator>(
                     Lifetime.Singleton)
                 .As<IGenerationStage>();
+            
+            builder.Register<HydrologyGenerator>(
+                    Lifetime.Singleton)
+                .As<IGenerationStage>();
+ 
+            builder.Register<RiverCarvingStage>(
+                    Lifetime.Singleton)
+                .As<IGenerationStage>();
+
             
             builder.Register<ChunkGenerationPipeline>(
                 Lifetime.Singleton);
