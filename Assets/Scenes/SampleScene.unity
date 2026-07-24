@@ -813,24 +813,7 @@ MonoBehaviour:
   chunkPrefab: {fileID: 5116074535957847417, guid: 2ff94efd95661ba7789a898e4249b4c1, type: 3}
   worldSettings: {fileID: 11400000, guid: dbe12bdf8867feb4880810240955aec2, type: 2}
   chunksParent: {fileID: 758205965}
-  hydrologySettings:
-    RegionSizeInChunks: 32
-    RegionCoarseResolution: 256
-    FlowAccumulationThreshold: 1000
-    AccumulationToStrengthScale: 3
-    MaxRiverStrength: 5
-    WaterHeightWindowRadius: 16
-    WaterHeightSafetyOffset: 0
-    CarveDepth: 1
-    RiverWidth: 1000
-    InitialCarveDepthFactor: 1
-    EdgeOverlapFactor: 0.1
-    RegionMarginCells: 32
-    MaxTraceSteps: 600
-    GradientEpsilon: 3
-    RiverStartFadeSteps: 30
-    InitialRiverStrength: 0.5
-  viewDistance: 5
+  viewDistance: 1
   database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
   globalMaxVoices: 32
   playerSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
@@ -850,7 +833,6 @@ GameObject:
   - component: {fileID: 1508698445}
   - component: {fileID: 1508698446}
   - component: {fileID: 1508698448}
-  - component: {fileID: 1508698447}
   - component: {fileID: 1508698449}
   - component: {fileID: 1508698450}
   - component: {fileID: 1508698451}
@@ -950,7 +932,7 @@ Transform:
   m_GameObject: {fileID: 1508698440}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 100, y: 500, z: -10}
+  m_LocalPosition: {x: 100, y: 450, z: -10}
   m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1003,20 +985,6 @@ MonoBehaviour:
   _groundCheckOffset: 0.44
   _groundCheckRate: 10
   _landingFallSpeedThreshold: -3
---- !u!114 &1508698447
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1508698440}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f51de87e2b144c089874e2af0a7b87c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Infrastructure.WaterVolumeTracker
-  _enterMaskThreshold: 0.1
-  _exitMaskThreshold: 0.03
 --- !u!114 &1508698448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1042,11 +1010,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a327c5aca04344b8b00f456089e01c06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Presentation.FootstepController
-  _soundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
-  _walkStepDistance: 2.2
-  _sprintStepDistance: 3
-  _crouchStepDistance: 1.4
-  _minSpeedForStep: 0.5
 --- !u!114 &1508698450
 MonoBehaviour:
   m_ObjectHideFlags: 0

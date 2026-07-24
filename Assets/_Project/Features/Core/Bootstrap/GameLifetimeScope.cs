@@ -123,13 +123,13 @@ namespace _Project.Features.Core.Bootstrap
             // I'd like to completely refactor the hydrology feature 
             // cause I really don't like it rn
             
-            builder.RegisterComponentInHierarchy<PlayerWaterSoundController>();
+            /*builder.RegisterComponentInHierarchy<PlayerWaterSoundController>();
 
 
             builder.RegisterInstance(playerSoundSet);
 
 
-            builder.RegisterComponentInHierarchy<FootstepController>();
+            builder.RegisterComponentInHierarchy<FootstepController>();*/
         }
 
         private void RegisterProceduralWorld(

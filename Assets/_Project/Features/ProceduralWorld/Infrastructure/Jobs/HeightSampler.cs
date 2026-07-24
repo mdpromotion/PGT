@@ -41,26 +41,5 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs
 
             return height;
         }
-
-        public static float2 SampleDownhillDirection(
-            float2 worldPos,
-            float sampleRadius,
-            in TerrainNoiseSettings settings,
-            in NativeArray<float2> octaveOffsets,
-            out float slope)
-        {
-            float hL = Sample(worldPos + new float2(-sampleRadius, 0f), settings, octaveOffsets);
-            float hR = Sample(worldPos + new float2(sampleRadius, 0f), settings, octaveOffsets);
-            float hD = Sample(worldPos + new float2(0f, -sampleRadius), settings, octaveOffsets);
-            float hU = Sample(worldPos + new float2(0f, sampleRadius), settings, octaveOffsets);
-
-            float2 gradient = new float2(hR - hL, hU - hD);
-            slope = math.length(gradient);
-
-            if (slope < 1e-8f)
-                return float2.zero;
-
-            return -gradient / slope;
-        }
     }
 }
