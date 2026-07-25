@@ -48,6 +48,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
             NativeArray<float> accumulationOut = new NativeArray<float>(cellCount, Allocator.Persistent);
             NativeArray<sbyte> flowDirectionOut = new NativeArray<sbyte>(cellCount, Allocator.Persistent);
+            
+            NativeArray<float> riverMaskOut = new NativeArray<float>(cellCount, Allocator.Persistent, NativeArrayOptions.ClearMemory);
+            NativeArray<float> waterSurfaceHeightOut = new NativeArray<float>(cellCount, Allocator.Persistent, NativeArrayOptions.ClearMemory);
 
             float2 chunkOriginWorld = ComputeChunkWorldOrigin(context, zone);
             float2 chunkWorldSize = new float2(
@@ -75,6 +78,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 context.Coordinate,
                 accumulationOut,
                 flowDirectionOut,
+                riverMaskOut,
+                waterSurfaceHeightOut,
                 resolution,
                 onDispose: () => _cache.Release(zone));
 

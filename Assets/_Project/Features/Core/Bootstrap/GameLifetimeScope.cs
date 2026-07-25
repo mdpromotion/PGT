@@ -166,6 +166,8 @@ namespace _Project.Features.Core.Bootstrap
                         container.Resolve<ChunkGrid>(),
                         hydrologySettings.ZoneSizeInChunks),
                 Lifetime.Singleton);
+            
+            builder.Register<WaterSurfaceApplier>(Lifetime.Singleton);
  
             builder.Register<MacroZoneHydrologyCache>(
                 Lifetime.Singleton);
@@ -243,14 +245,24 @@ namespace _Project.Features.Core.Bootstrap
                 .As<IChunkLookup>();
             
             builder.Register(
+                container =>
+                    new LandscapeApplier(
+                        container.Resolve<ILandscapeFactory>(),
+                        container.Resolve<ITerrainWriter>(),
+                        container.Resolve<IChunkNeighborConnector>(),
+                        container.Resolve<ChunkRepository>(),
+                        container.Resolve<WaterSurfaceApplier>(),
+                        chunksParent),
+                Lifetime.Singleton);
+
+            builder.Register(
                     container =>
-                        new LandscapeApplier(
-                            container.Resolve<ILandscapeFactory>(),
-                            container.Resolve<ITerrainWriter>(),
-                            container.Resolve<IChunkNeighborConnector>(),
+                        new WaterQueryService(
+                            container.Resolve<ChunkGrid>(),
                             container.Resolve<ChunkRepository>(),
-                            chunksParent),
-                    Lifetime.Singleton);
+                            chunkPrefab.terrainData.size.y),
+                    Lifetime.Singleton)
+                .As<IWaterQuery>();
             
             builder.Register(
                     container =>

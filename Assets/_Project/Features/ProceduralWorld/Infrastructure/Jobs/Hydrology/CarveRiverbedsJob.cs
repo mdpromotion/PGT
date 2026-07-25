@@ -12,20 +12,32 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         public float AccumulationThreshold;
         public float FalloffRange;
         public float MaxCarveDepth;
-        
+
         public NativeArray<float> Heights;
+
+        [WriteOnly] public NativeArray<float> RiverMask;
+        [WriteOnly] public NativeArray<float> WaterSurfaceHeight;
 
         public void Execute(int index)
         {
             float accumulation = Accumulation[index];
+            float originalHeight = Heights[index];
+            
+            WaterSurfaceHeight[index] = originalHeight;
+
             if (accumulation <= AccumulationThreshold)
+            {
+                RiverMask[index] = 0f;
                 return;
+            }
 
             float t = math.saturate((accumulation - AccumulationThreshold) / math.max(FalloffRange, 0.0001f));
             float smooth = t * t * (3f - 2f * t);
 
-            float carved = Heights[index] - smooth * MaxCarveDepth;
+            float carved = originalHeight - smooth * MaxCarveDepth;
             Heights[index] = math.max(carved, 0f);
+
+            RiverMask[index] = smooth;
         }
     }
 }

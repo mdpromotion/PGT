@@ -62,12 +62,9 @@
 
                 float mask = sample.r;
 
-                return float4(mask, mask, mask, 1);
+                clip(mask - 0.001);
 
-                float edge = smoothstep(
-                    _MaskThreshold,
-                    _MaskThreshold + max(_EdgeFade, 0.0001f),
-                    mask);
+                float edge = smoothstep(0.0, max(_EdgeFade, 0.0001f), mask);
 
                 fixed4 color = _Color;
                 color.a *= _Opacity * edge;
