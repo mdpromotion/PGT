@@ -815,7 +815,7 @@ MonoBehaviour:
   hydrologySettings: {fileID: 11400000, guid: f74c879e6d091c6478ccde9ac5cfae63, type: 2}
   riverCarvingSettings: {fileID: 11400000, guid: 6327c2419ce8bc54aa10a4128e82c04e, type: 2}
   chunksParent: {fileID: 758205965}
-  viewDistance: 15
+  viewDistance: 1
   database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
   globalMaxVoices: 32
   playerSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}

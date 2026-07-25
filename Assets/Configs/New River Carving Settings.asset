@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 160a15dc92794f938e4140cf4fa68a8a, type: 3}
   m_Name: New River Carving Settings
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.ProceduralWorld.Infrastructure.Hydrology.RiverCarvingSettings
-  AccumulationThreshold: 1
-  FalloffRange: 200
-  MaxCarveDepth: 0.5
+  AccumulationThreshold: 111
+  FalloffRange: 55
+  MaxCarveDepth: 0.25

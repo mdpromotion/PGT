@@ -184,7 +184,7 @@ namespace _Project.Features.Core.Bootstrap
                     Lifetime.Singleton)
                 .As<IGenerationStage>();
  
-            builder.Register<RiverCarvingStage>(
+            builder.Register<WaterSurfaceStage>(
                     Lifetime.Singleton)
                 .As<IGenerationStage>();
 
