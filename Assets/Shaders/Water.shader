@@ -4,19 +4,16 @@
     {
         _MaskHeightTex ("Mask/Height/Bank", 2D) = "black" {}
         _Color ("Water Color", Color) = (0.005, 0.04, 0.055, 0.9)
-        _MaskThreshold ("Mask Cutoff", Range(0,1)) = 0.05
-        _EdgeFade ("Edge Fade", Range(0.001,1)) = 0.2
+        _EdgeFadeStart ("Edge Fade Start", Range(0,1)) = 0.02
+        _EdgeFadeEnd ("Edge Fade End", Range(0,1)) = 0.5
         _Opacity ("Water Opacity", Range(0,1)) = 0.85
+        _RimColor ("Bank Foam Color", Color) = (0.8, 0.9, 0.95, 1)
+        _RimWidth ("Bank Foam Width", Range(0,1)) = 0.08
     }
 
     SubShader
     {
-        Tags
-        {
-            "Queue"="Transparent"
-            "RenderType"="Transparent"
-        }
-
+        Tags { "Queue"="Transparent" "RenderType"="Transparent" }
         Blend SrcAlpha OneMinusSrcAlpha
         ZWrite Off
         Cull Off
@@ -26,27 +23,20 @@
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-
             #include "UnityCG.cginc"
 
             sampler2D _MaskHeightTex;
+            float4 _MaskHeightTex_TexelSize;
 
             fixed4 _Color;
-            float _MaskThreshold;
-            float _EdgeFade;
+            float _EdgeFadeStart;
+            float _EdgeFadeEnd;
             float _Opacity;
+            fixed4 _RimColor;
+            float _RimWidth;
 
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
-            };
-
-            struct v2f
-            {
-                float4 pos : SV_POSITION;
-                float2 uv : TEXCOORD0;
-            };
+            struct appdata { float4 vertex : POSITION; float2 uv : TEXCOORD0; };
+            struct v2f { float4 pos : SV_POSITION; float2 uv : TEXCOORD0; };
 
             v2f vert(appdata v)
             {
@@ -58,15 +48,16 @@
 
             fixed4 frag(v2f i) : SV_Target
             {
-                float3 sample = tex2D(_MaskHeightTex, i.uv).rgb;
-
-                float mask = sample.r;
-
-                clip(mask - 0.001);
-
-                float edge = smoothstep(0.0, max(_EdgeFade, 0.0001f), mask);
+                float mask = tex2D(_MaskHeightTex, i.uv).r;
+                
+                float edge = smoothstep(_EdgeFadeStart, _EdgeFadeEnd, mask);
+                clip(edge - 0.001);
+                
+                float rim = smoothstep(0.0, _RimWidth, edge) *
+                            (1.0 - smoothstep(_RimWidth, _RimWidth * 2.0, edge));
 
                 fixed4 color = _Color;
+                color.rgb = lerp(color.rgb, _RimColor.rgb, rim);
                 color.a *= _Opacity * edge;
 
                 return color;

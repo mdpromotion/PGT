@@ -1,6 +1,6 @@
 using Unity.Mathematics;
 
-namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings
+namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Landscape
 {
     public struct TerrainNoiseSettings
     {

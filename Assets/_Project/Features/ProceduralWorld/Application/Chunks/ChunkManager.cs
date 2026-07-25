@@ -6,6 +6,7 @@ using _Project.Features.ProceduralWorld.Application.Landscape;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Infrastructure;
 using _Project.Features.ProceduralWorld.Infrastructure.Chunks;
+using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 
 namespace _Project.Features.ProceduralWorld.Application.Chunks
@@ -18,12 +19,9 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
         private readonly ILandscapeFactory _factory;
         private readonly IChunkNeighborConnector _neighborConnector;
-
-
+        
         private readonly HashSet<ChunkCoordinate> _loading = new();
-
-
-
+        
         private readonly Action<ChunkGenerationResult> _applyAction;
         private readonly Action<ChunkCoordinate> _completedAction;
 
@@ -41,15 +39,17 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             _applier = applier;
             _factory = factory;
             _neighborConnector = neighborConnector;
+            
+            _applyAction = result =>
+            {
+                _applier.Apply(result);
 
-
-            _applyAction =
-                _applier.Apply;
-
-
-            _completedAction =
-                FinishLoading;
+                result.Dispose();
+            };
+ 
+            _completedAction = FinishLoading;
         }
+
 
 
 
@@ -118,18 +118,18 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
 
         public void Unload(ChunkCoordinate coordinate)
         {
-            if(!_repository.TryGet(coordinate, out ChunkInstance chunk))
+            if (!_repository.TryGet(coordinate, out ChunkInstance chunk))
                 return;
-
+ 
             _neighborConnector.Disconnect(_repository, coordinate);
-
+ 
             _repository.Remove(coordinate);
-
+ 
             chunk.Landscape.Dispose();
             chunk.Hydrology.Dispose();
  
             _factory.Release(chunk.Terrain);
-
         }
+
     }
 }

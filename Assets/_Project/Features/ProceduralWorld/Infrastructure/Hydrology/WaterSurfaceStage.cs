@@ -27,17 +27,18 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
             var carveJob = new CarveRiverbedsJob
             {
-                Accumulation = state.Hydrology.Accumulation,
+                Resolution = resolution,
                 AccumulationThreshold = _settings.AccumulationThreshold,
                 FalloffRange = _settings.FalloffRange,
                 MaxCarveDepth = _settings.MaxCarveDepth,
+                Accumulation = state.Hydrology.Accumulation,
                 Heights = state.Landscape.Heights,
                 RiverMask = state.Hydrology.RiverMask,
                 WaterSurfaceHeight = state.Hydrology.WaterSurfaceHeight,
             };
 
             JobHandle carveHandle = carveJob.Schedule(count, 64, dependency);
-            
+
             state.WaterMaskPixels = new NativeArray<Color32>(count, Allocator.Persistent);
 
             var packJob = new PackWaterSurfaceTextureJob
@@ -48,7 +49,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             };
 
             JobHandle packHandle = packJob.Schedule(count, 64, carveHandle);
-            
+
             state.WaterBounds = new NativeArray<int>(5, Allocator.Persistent);
             state.WaterAverageHeight = new NativeArray<float>(1, Allocator.Persistent);
 

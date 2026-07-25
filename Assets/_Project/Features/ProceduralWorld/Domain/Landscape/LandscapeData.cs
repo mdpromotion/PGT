@@ -1,5 +1,5 @@
-﻿using Unity.Collections;
-using _Project.Features.ProceduralWorld.Domain.Chunks;
+﻿using _Project.Features.ProceduralWorld.Domain.Chunks;
+using Unity.Collections;
 
 namespace _Project.Features.ProceduralWorld.Domain.Landscape
 {
@@ -17,15 +17,14 @@ namespace _Project.Features.ProceduralWorld.Domain.Landscape
             int resolution)
         {
             Coordinate = coordinate;
-
             Heights = heights;
-
             Resolution = resolution;
         }
 
+
         public void Dispose()
         {
-            if (Heights.IsCreated)
+            if (Heights is { IsCreated: true, Length: > 0 })
             {
                 Heights.Dispose();
             }

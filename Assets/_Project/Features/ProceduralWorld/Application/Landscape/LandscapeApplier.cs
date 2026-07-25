@@ -5,6 +5,7 @@ using _Project.Features.ProceduralWorld.Domain.Landscape;
 using _Project.Features.ProceduralWorld.Infrastructure.Chunks;
 using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
+using Unity.Collections;
 using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Application.Landscape
@@ -36,19 +37,20 @@ namespace _Project.Features.ProceduralWorld.Application.Landscape
 
         public void Apply(ChunkGenerationResult result)
         {
-            LandscapeData data = result.State.Landscape;
+            ChunkGenerationState state = result.State;
+            LandscapeData data = state.Landscape;
 
             Terrain terrain = _factory.Create(data.Coordinate, _parent);
 
             _writer.Write(terrain, data);
             terrain.terrainData.SyncHeightmap();
-
-            _waterSurfaceApplier.Apply(terrain, result.State);
+            
+            _waterSurfaceApplier.Apply(state, terrain.transform);
 
             ChunkInstance chunk = new ChunkInstance(
                 data.Coordinate,
                 data,
-                result.State.Hydrology,
+                state.Hydrology,
                 terrain);
 
             _repository.Add(chunk);

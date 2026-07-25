@@ -146,8 +146,6 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks.Generation
 
                 if(task.Cancelled)
                 {
-                    task.State.Landscape.Dispose();
-
                     completed(coordinate);
 
                     RemoveTask(i);
@@ -225,8 +223,6 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks.Generation
             foreach(GenerationTask task in _running)
             {
                 task.Handle.Complete();
-                
-                task.State.Landscape.Dispose();
             }
 
 

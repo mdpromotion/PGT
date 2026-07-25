@@ -1,49 +1,53 @@
 using System;
-using Unity.Collections;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
+using Unity.Collections;
 
 namespace _Project.Features.ProceduralWorld.Domain.Hydrology
 {
     public sealed class HydrologyData
     {
         public ChunkCoordinate Coordinate { get; }
-        public NativeArray<float> Accumulation { get; }
-        public NativeArray<sbyte> FlowDirection { get; }
-        public NativeArray<float> RiverMask { get; }
-        public NativeArray<float> WaterSurfaceHeight { get; }
         public int Resolution { get; }
+        
+        public NativeArray<float> Accumulation { get; }
+        
+        public NativeArray<float> RiverMask { get; }
+        
+        public NativeArray<float> WaterSurfaceHeight { get; }
+        
+        public NativeArray<sbyte> FlowDirection;
 
         private readonly Action _onDispose;
         private bool _disposed;
 
         public HydrologyData(
             ChunkCoordinate coordinate,
-            NativeArray<float> accumulation,
-            NativeArray<sbyte> flowDirection,
-            NativeArray<float> riverMask,
-            NativeArray<float> waterSurfaceHeight,
             int resolution,
             Action onDispose)
         {
             Coordinate = coordinate;
-            Accumulation = accumulation;
-            FlowDirection = flowDirection;
-            RiverMask = riverMask;
-            WaterSurfaceHeight = waterSurfaceHeight;
             Resolution = resolution;
             _onDispose = onDispose;
+
+            int count = resolution * resolution;
+
+            Accumulation = new NativeArray<float>(count, Allocator.Persistent);
+            RiverMask = new NativeArray<float>(count, Allocator.Persistent);
+            WaterSurfaceHeight = new NativeArray<float>(count, Allocator.Persistent);
+            FlowDirection = new NativeArray<sbyte>(resolution * resolution, Allocator.Persistent);
         }
 
         public void Dispose()
         {
             if (_disposed)
                 return;
+
             _disposed = true;
 
             if (Accumulation.IsCreated) Accumulation.Dispose();
-            if (FlowDirection.IsCreated) FlowDirection.Dispose();
             if (RiverMask.IsCreated) RiverMask.Dispose();
             if (WaterSurfaceHeight.IsCreated) WaterSurfaceHeight.Dispose();
+            if (FlowDirection.IsCreated) FlowDirection.Dispose();
 
             _onDispose?.Invoke();
         }

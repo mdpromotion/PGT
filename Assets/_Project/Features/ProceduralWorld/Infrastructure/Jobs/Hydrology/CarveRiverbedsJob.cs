@@ -9,6 +9,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
     public struct CarveRiverbedsJob : IJobParallelFor
     {
         [ReadOnly] public NativeArray<float> Accumulation;
+
+        public int Resolution;
+
         public float AccumulationThreshold;
         public float FalloffRange;
         public float MaxCarveDepth;
@@ -20,24 +23,22 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
         public void Execute(int index)
         {
-            float accumulation = Accumulation[index];
             float originalHeight = Heights[index];
-            
             WaterSurfaceHeight[index] = originalHeight;
 
-            if (accumulation <= AccumulationThreshold)
+            float strength = Accumulation[index];
+
+            float edgeStart = AccumulationThreshold;
+            float edgeEnd = AccumulationThreshold + math.max(FalloffRange, 0.0001f);
+
+            float mask = math.smoothstep(edgeStart, edgeEnd, strength);
+
+            RiverMask[index] = mask;
+
+            if (mask > 0f)
             {
-                RiverMask[index] = 0f;
-                return;
+                Heights[index] = math.max(originalHeight - mask * MaxCarveDepth, 0f);
             }
-
-            float t = math.saturate((accumulation - AccumulationThreshold) / math.max(FalloffRange, 0.0001f));
-            float smooth = t * t * (3f - 2f * t);
-
-            float carved = originalHeight - smooth * MaxCarveDepth;
-            Heights[index] = math.max(carved, 0f);
-
-            RiverMask[index] = smooth;
         }
     }
 }

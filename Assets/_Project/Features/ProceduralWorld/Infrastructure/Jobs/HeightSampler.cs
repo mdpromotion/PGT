@@ -1,4 +1,4 @@
-﻿using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
+﻿using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Landscape;
 using Unity.Collections;
 using Unity.Mathematics;
 

@@ -40,10 +40,14 @@ namespace _Project.Features.Core.Bootstrap
         private WorldSettings worldSettings;
         
         [SerializeField] 
-        private HydrologySettings hydrologySettings;
+        private MacroGridSettings macroGridSettings; 
         
         [SerializeField] 
-        private RiverCarvingSettings riverCarvingSettings;
+        private RiverCarvingSettings riverCarvingSettings; 
+        
+        [SerializeField] 
+        private Material waterMaterial;
+
 
         [SerializeField]
         private Transform chunksParent;
@@ -146,12 +150,15 @@ namespace _Project.Features.Core.Bootstrap
             builder.RegisterInstance(
                 worldSettings);
             
-            builder.RegisterInstance(
-                hydrologySettings);
+            builder.RegisterInstance(macroGridSettings);
             
-            builder.RegisterInstance(
-                riverCarvingSettings);
+            builder.RegisterInstance(riverCarvingSettings);
+            
+            builder.Register<MacroRegionCache>(Lifetime.Singleton)
+                .AsSelf()
+                .As<IDisposable>();
 
+            
             
             builder.Register(
                     container =>
@@ -161,16 +168,14 @@ namespace _Project.Features.Core.Bootstrap
                     Lifetime.Singleton);
             
             builder.Register(
-                container =>
-                    new MacroZoneGrid(
-                        container.Resolve<ChunkGrid>(),
-                        hydrologySettings.ZoneSizeInChunks),
-                Lifetime.Singleton);
-            
-            builder.Register<WaterSurfaceApplier>(Lifetime.Singleton);
- 
-            builder.Register<MacroZoneHydrologyCache>(
-                Lifetime.Singleton);
+                    container =>
+                        new WaterSurfaceApplier(
+                            container.Resolve<ChunkGrid>(),
+                            chunkPrefab.terrainData.size.y,
+                            waterMaterial),
+                    Lifetime.Singleton)
+                .AsSelf();
+
 
             
             builder.Register<TerrainNoiseSettingsProvider>(
@@ -178,17 +183,20 @@ namespace _Project.Features.Core.Bootstrap
                 .AsSelf()
                 .As<IDisposable>();
             
-            builder.Register<LandscapeGenerator>(
-                    Lifetime.Singleton)
+            builder.Register<LandscapeGenerator>(Lifetime.Singleton)
                 .As<IGenerationStage>();
-            
+ 
             builder.Register<HydrologyGenerator>(
+                    container => new HydrologyGenerator(
+                        container.Resolve<ChunkGrid>(),
+                        container.Resolve<MacroRegionCache>(),
+                        localAccumulationNormalizationRange: 16f), // подберите значение
                     Lifetime.Singleton)
                 .As<IGenerationStage>();
  
-            builder.Register<WaterSurfaceStage>(
-                    Lifetime.Singleton)
+            builder.Register<WaterSurfaceStage>(Lifetime.Singleton)
                 .As<IGenerationStage>();
+
 
             
             builder.Register<ChunkGenerationPipeline>(
@@ -245,24 +253,16 @@ namespace _Project.Features.Core.Bootstrap
                 .As<IChunkLookup>();
             
             builder.Register(
-                container =>
-                    new LandscapeApplier(
-                        container.Resolve<ILandscapeFactory>(),
-                        container.Resolve<ITerrainWriter>(),
-                        container.Resolve<IChunkNeighborConnector>(),
-                        container.Resolve<ChunkRepository>(),
-                        container.Resolve<WaterSurfaceApplier>(),
-                        chunksParent),
-                Lifetime.Singleton);
-
-            builder.Register(
                     container =>
-                        new WaterQueryService(
-                            container.Resolve<ChunkGrid>(),
+                        new LandscapeApplier(
+                            container.Resolve<ILandscapeFactory>(),
+                            container.Resolve<ITerrainWriter>(),
+                            container.Resolve<IChunkNeighborConnector>(),
                             container.Resolve<ChunkRepository>(),
-                            chunkPrefab.terrainData.size.y),
+                            container.Resolve<WaterSurfaceApplier>(),
+                            chunksParent),
                     Lifetime.Singleton)
-                .As<IWaterQuery>();
+                .AsSelf();
             
             builder.Register(
                     container =>
