@@ -13,6 +13,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         public float2 ChunkWorldSize;
 
         public int MacroPaddedSize;
+        public int MacroPaddingCells;
+        public int MacroTileCells;
+        public int MacroRiverZoneMargin;
         public float MacroCellSize;
         public float2 MacroWorldOrigin;
         [ReadOnly] public NativeArray<float> MacroAccumulation;
@@ -29,19 +32,35 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float v = Resolution > 1 ? (float)z / (Resolution - 1) : 0f;
 
             float2 worldPos = ChunkWorldOrigin + new float2(u, v) * ChunkWorldSize;
+            float2 macroCoord = (worldPos - MacroWorldOrigin) / MacroCellSize;
 
-            float localAccum = SampleMacroBilinear(worldPos);
+            float localAccum = SampleMacroBilinear(macroCoord);
 
             float strength = math.saturate(
                 (localAccum - 1f) / math.max(LocalAccumulationNormalizationRange, 0.0001f));
 
+            strength *= EdgeFade(macroCoord.x, macroCoord.y);
+
             RiverStrength[index] = strength;
         }
 
-        private float SampleMacroBilinear(float2 worldPos)
+        private float EdgeFade(float gx, float gz)
         {
-            float2 macroCoord = (worldPos - MacroWorldOrigin) / MacroCellSize;
+            if (MacroRiverZoneMargin <= 0)
+                return 1f;
 
+            float coreMin = MacroPaddingCells;
+            float coreMax = MacroPaddingCells + MacroTileCells;
+
+            float distX = math.min(gx - coreMin, coreMax - 1f - gx);
+            float distZ = math.min(gz - coreMin, coreMax - 1f - gz);
+            float dist = math.min(distX, distZ);
+
+            return math.smoothstep(0f, MacroRiverZoneMargin, dist);
+        }
+
+        private float SampleMacroBilinear(float2 macroCoord)
+        {
             float gx = math.clamp(macroCoord.x, 0f, MacroPaddedSize - 1.0001f);
             float gz = math.clamp(macroCoord.y, 0f, MacroPaddedSize - 1.0001f);
 

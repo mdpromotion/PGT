@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: New Macro Grid Settings
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.ProceduralWorld.Domain.Hydrology.MacroGridSettings
   CellSize: 512
-  TileCells: 16
-  PaddingCells: 32
+  TileCells: 64
+  PaddingCells: 24
+  RiverZoneMargin: 1
+  EdgeBiasStrength: 2

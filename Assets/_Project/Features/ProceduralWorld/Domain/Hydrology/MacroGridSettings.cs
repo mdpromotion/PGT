@@ -13,9 +13,15 @@ namespace _Project.Features.ProceduralWorld.Domain.Hydrology
 
         [Min(0)]
         public int PaddingCells = 24;
+        
+        public int RiverZoneMargin = 2;
+        
+        public float EdgeBiasStrength = 2f;
 
         public int PaddedSize => TileCells + 2 * PaddingCells;
 
         public float TileWorldSize => TileCells * CellSize;
+
+        public int CoreSize => PaddedSize - 2 * RiverZoneMargin;
     }
 }

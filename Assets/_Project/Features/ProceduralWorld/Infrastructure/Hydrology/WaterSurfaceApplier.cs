@@ -19,7 +19,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             ChunkGrid grid,
             float heightScale,
             Material sharedMaterial,
-            int meshStride = 4)
+            int meshStride = 1)
         {
             _grid = grid;
             _heightScale = heightScale;

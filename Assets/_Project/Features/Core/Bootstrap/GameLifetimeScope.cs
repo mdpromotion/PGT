@@ -190,7 +190,8 @@ namespace _Project.Features.Core.Bootstrap
                     container => new HydrologyGenerator(
                         container.Resolve<ChunkGrid>(),
                         container.Resolve<MacroRegionCache>(),
-                        localAccumulationNormalizationRange: 16f), // подберите значение
+                        container.Resolve<MacroGridSettings>(),
+                        localAccumulationNormalizationRange: 16f),
                     Lifetime.Singleton)
                 .As<IGenerationStage>();
  

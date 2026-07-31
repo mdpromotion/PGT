@@ -1,6 +1,7 @@
 ﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Mathematics;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 {
@@ -8,6 +9,10 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
     public struct ComputeMacroFlowDirectionsJob : IJobParallelFor
     {
         public int PaddedSize;
+        public int PaddingCells;
+        public int TileCells;
+        public int RiverZoneMargin;
+        public float EdgeBiasStrength;
 
         [ReadOnly] public NativeArray<float> Heights;
         [WriteOnly] public NativeArray<sbyte> FlowDirection;
@@ -20,7 +25,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float selfHeight = Heights[index];
 
             sbyte bestDir = -1;
-            float bestHeight = selfHeight;
+            float bestScore = selfHeight;
 
             for (sbyte dir = 0; dir < 8; dir++)
             {
@@ -35,14 +40,35 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                 int neighborIndex = nz * PaddedSize + nx;
                 float neighborHeight = Heights[neighborIndex];
 
-                if (neighborHeight < bestHeight)
+                float neighborScore = neighborHeight + EdgePenalty(nx, nz);
+
+                if (neighborScore < bestScore)
                 {
-                    bestHeight = neighborHeight;
+                    bestScore = neighborScore;
                     bestDir = dir;
                 }
             }
 
             FlowDirection[index] = bestDir;
+        }
+        
+        private float EdgePenalty(int x, int z)
+        {
+            if (RiverZoneMargin <= 0 || EdgeBiasStrength <= 0f)
+                return 0f;
+
+            int coreMin = PaddingCells;
+            int coreMax = PaddingCells + TileCells;
+
+            int distX = math.min(x - coreMin, coreMax - 1 - x);
+            int distZ = math.min(z - coreMin, coreMax - 1 - z);
+            int dist = math.min(distX, distZ);
+
+            if (dist >= RiverZoneMargin)
+                return 0f;
+            
+            float t = 1f - math.saturate((float)dist / RiverZoneMargin);
+            return t * t * EdgeBiasStrength;
         }
 
         public static void GetOffset(sbyte dir, out int dx, out int dz)
@@ -56,7 +82,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                 case 4: dx = 1; dz = 0; break;
                 case 5: dx = -1; dz = 1; break;
                 case 6: dx = 0; dz = 1; break;
-                default: dx = 1; dz = 1; break; // case 7
+                default: dx = 1; dz = 1; break;
             }
         }
     }

@@ -2,7 +2,6 @@
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Domain.Hydrology;
-using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -13,28 +12,26 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
     {
         private readonly ChunkGrid _chunkGrid;
         private readonly MacroRegionCache _macroRegionCache;
+        private readonly MacroGridSettings _macroGridSettings;
         private readonly float _localAccumulationNormalizationRange;
 
         public HydrologyGenerator(
             ChunkGrid chunkGrid,
             MacroRegionCache macroRegionCache,
+            MacroGridSettings macroGridSettings,
             float localAccumulationNormalizationRange)
         {
             _chunkGrid = chunkGrid;
             _macroRegionCache = macroRegionCache;
+            _macroGridSettings = macroGridSettings;
             _localAccumulationNormalizationRange = localAccumulationNormalizationRange;
         }
 
-        public JobHandle Schedule(
-            ChunkGenerationState state,
-            JobHandle dependency)
+        public JobHandle Schedule(ChunkGenerationState state, JobHandle dependency)
         {
             int resolution = state.Context.Resolution;
 
-            state.Hydrology = new HydrologyData(
-                state.Context.Coordinate,
-                resolution,
-                onDispose: null);
+            state.Hydrology = new HydrologyData(state.Context.Coordinate, resolution, onDispose: null);
 
             float2 chunkOrigin = GetChunkWorldOrigin(state.Context.Coordinate);
             float2 chunkSize = new float2(_chunkGrid.ChunkSizeX, _chunkGrid.ChunkSizeZ);
@@ -49,6 +46,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 ChunkWorldSize = chunkSize,
 
                 MacroPaddedSize = region.PaddedSize,
+                MacroPaddingCells = _macroGridSettings.PaddingCells,
+                MacroTileCells = _macroGridSettings.TileCells,
+                MacroRiverZoneMargin = _macroGridSettings.RiverZoneMargin,
                 MacroCellSize = region.CellSize,
                 MacroWorldOrigin = region.WorldOrigin,
                 MacroAccumulation = region.Accumulation,

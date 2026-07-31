@@ -86,6 +86,10 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             var flowJob = new ComputeMacroFlowDirectionsJob
             {
                 PaddedSize = paddedSize,
+                PaddingCells = _settings.PaddingCells,
+                TileCells = _settings.TileCells,
+                RiverZoneMargin = _settings.RiverZoneMargin,
+                EdgeBiasStrength = _settings.EdgeBiasStrength,
                 Heights = region.Heights,
                 FlowDirection = region.FlowDirection,
             };
