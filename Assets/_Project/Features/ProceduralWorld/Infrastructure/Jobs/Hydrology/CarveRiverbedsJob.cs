@@ -9,7 +9,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
     public struct CarveRiverbedsJob : IJobParallelFor
     {
         [ReadOnly] public NativeArray<float> Accumulation;
-        [ReadOnly] public NativeArray<float> MacroHeight; 
+        [ReadOnly] public NativeArray<float> MacroHeight;
 
         public int Resolution;
 
@@ -26,7 +26,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         {
             float originalHeight = Heights[index];
             float macroHeight = MacroHeight[index];
-
             float strength = Accumulation[index];
 
             float edgeStart = AccumulationThreshold;
@@ -44,7 +43,11 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                 Heights[index] = carvedHeight;
             }
             
-            WaterSurfaceHeight[index] = macroHeight;
+            float safeWaterHeight = math.min(macroHeight, originalHeight);
+            
+            float edgeBlend = math.saturate(mask * 5f); 
+            
+            WaterSurfaceHeight[index] = math.lerp(originalHeight, safeWaterHeight, edgeBlend);
         }
     }
 }
