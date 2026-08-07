@@ -1,0 +1,11 @@
+{
+  "name": "com.mgelabs.daynightsystem",
+  "version": "1.1.0",
+  "displayName": "MGe DayNight System",
+  "description": "A Day/Night cycle system for Unity.",
+  "unity": "2022.3",
+  "author": {
+    "name": "Marius Gebhard",
+    "url": "https://github.com/m-gebhard"
+  }
+}

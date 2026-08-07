@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 7a7779cdce6dc5145b12166b210be971
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 331418
+  packageName: DayNight System
+  packageVersion: 1.1.0
+  assetPath: Assets/MGe Labs/DayNightSystem/Scripts/Clock.cs
+  uploadId: 887124

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 94ce505b7814dc24c8d54dac27e1b618
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 331418
+  packageName: DayNight System
+  packageVersion: 1.1.0
+  assetPath: Assets/MGe Labs/DayNightSystem/Resources/Clock/Hand.mat
+  uploadId: 887124

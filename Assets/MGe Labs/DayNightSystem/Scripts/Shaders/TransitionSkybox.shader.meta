@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 51f1f196a4f0b2544bc46f59e29f9176
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 331418
+  packageName: DayNight System
+  packageVersion: 1.1.0
+  assetPath: Assets/MGe Labs/DayNightSystem/Scripts/Shaders/TransitionSkybox.shader
+  uploadId: 887124

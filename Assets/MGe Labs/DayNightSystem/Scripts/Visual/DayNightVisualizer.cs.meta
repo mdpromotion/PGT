@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 4094f71518bf85c45b024add174e5e64
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 331418
+  packageName: DayNight System
+  packageVersion: 1.1.0
+  assetPath: Assets/MGe Labs/DayNightSystem/Scripts/Visual/DayNightVisualizer.cs
+  uploadId: 887124
