@@ -191,9 +191,9 @@ MonoBehaviour:
     _spatial: 0
   - _key:
       _value: Water_Enter
-    _category: 1
+    _category: 3
     _clips:
-    - {fileID: 8300000, guid: 9033cc4a7b6a53a4c8e7fa906bca70fc, type: 3}
+    - {fileID: 8300000, guid: 08f29fdc28b155949957f3e34ed6078d, type: 3}
     _cooldown: 0
     _maxConcurrentInstances: 10
     _volume: 1
@@ -202,9 +202,9 @@ MonoBehaviour:
     _spatial: 1
   - _key:
       _value: Water_Exit
-    _category: 1
+    _category: 3
     _clips:
-    - {fileID: 8300000, guid: 377715bbf63be3b4c9d6b386e572126d, type: 3}
+    - {fileID: 8300000, guid: fc6573bdcbe4fc54a8c0eee88c8a8107, type: 3}
     _cooldown: 0
     _maxConcurrentInstances: 10
     _volume: 1
