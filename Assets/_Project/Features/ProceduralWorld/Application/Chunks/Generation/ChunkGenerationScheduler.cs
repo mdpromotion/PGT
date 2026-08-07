@@ -8,19 +8,19 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks.Generation
     public class ChunkGenerationScheduler
     {
         private readonly IChunkGenerator _pipeline;
-        
+
         private readonly LinkedList<ChunkGenerationRequest> _queue = new();
-        
+
         private readonly Dictionary<
             ChunkCoordinate,
             LinkedListNode<ChunkGenerationRequest>> _queued = new();
-        
+
         private readonly List<GenerationTask> _running = new();
         private readonly ChunkCoordinateDistanceComparer _comparer = new();
         private readonly Comparison<GenerationTask> _comparison;
-        
+
         private bool _needsSort;
-        
+
         private const int MaxJobs = 10;
         private const int MaxApplyPerFrame = 1;
 
@@ -146,7 +146,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks.Generation
 
                 if(task.Cancelled)
                 {
-                    task.State.Landscape.Dispose();
+                    task.State.DisposeAll();
 
                     completed(coordinate);
 
@@ -158,7 +158,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks.Generation
                 ChunkGenerationResult result = new ChunkGenerationResult(task.State);
 
                 apply(result);
-                
+
 
                 completed(coordinate);
 
@@ -180,6 +180,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks.Generation
 
             _running[index] =
                 _running[last];
+
 
 
             _running.RemoveAt(last);
@@ -226,7 +227,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks.Generation
             {
                 task.Handle.Complete();
                 
-                task.State.Landscape.Dispose();
+                task.State.DisposeAll();
             }
 
 

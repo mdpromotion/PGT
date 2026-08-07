@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using _Project.Features.ProceduralWorld.Domain.World;
-using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
+using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Landscape;
 using Unity.Collections;
 using Unity.Mathematics;
 using Random = Unity.Mathematics.Random;

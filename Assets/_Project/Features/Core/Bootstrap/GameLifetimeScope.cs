@@ -11,11 +11,11 @@ using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Application.Landscape;
 using _Project.Features.ProceduralWorld.Application.World;
 using _Project.Features.ProceduralWorld.Domain;
+using _Project.Features.ProceduralWorld.Domain.Hydrology;
 using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure;
 using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
-using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Settings;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
 using _Project.Features.ProceduralWorld.Presentation;
 using _Project.Features.Sound.Application;
@@ -38,12 +38,19 @@ namespace _Project.Features.Core.Bootstrap
 
         [SerializeField]
         private WorldSettings worldSettings;
+        
+        [SerializeField] 
+        private MacroGridSettings macroGridSettings; 
+        
+        [SerializeField] 
+        private RiverCarvingSettings riverCarvingSettings; 
+        
+        [SerializeField] 
+        private Material waterMaterial;
+
 
         [SerializeField]
         private Transform chunksParent;
-        
-        [SerializeField] 
-        private HydrologySettings hydrologySettings;
 
         [SerializeField]
         private int viewDistance = 3;
@@ -127,6 +134,15 @@ namespace _Project.Features.Core.Bootstrap
                 .As<IWaterState>();
             
             builder.RegisterComponentInHierarchy<PlayerWaterSoundController>();
+            
+            builder.Register(
+                    container =>
+                        new WaterQueryService(
+                            container.Resolve<ChunkGrid>(),
+                            container.Resolve<IChunkLookup>(),
+                            chunkPrefab.terrainData.size.y),
+                    Lifetime.Singleton)
+                .As<IWaterQuery>();
 
 
             builder.RegisterInstance(playerSoundSet);
@@ -140,12 +156,17 @@ namespace _Project.Features.Core.Bootstrap
         {
             builder.RegisterInstance(
                 worldSettings);
+            
+            builder.RegisterInstance(macroGridSettings);
+            
+            builder.RegisterInstance(riverCarvingSettings);
+            
+            builder.Register<MacroRegionCache>(Lifetime.Singleton)
+                .AsSelf()
+                .As<IDisposable>();
 
-            builder.RegisterInstance(
-                hydrologySettings);
-
-
-
+            
+            
             builder.Register(
                     container =>
                         new ChunkGrid(
@@ -153,42 +174,42 @@ namespace _Project.Features.Core.Bootstrap
                             chunkPrefab.terrainData.size.z),
                     Lifetime.Singleton);
             
+            builder.Register(
+                    container =>
+                        new WaterSurfaceApplier(
+                            container.Resolve<ChunkGrid>(),
+                            chunkPrefab.terrainData.size.y,
+                            waterMaterial),
+                    Lifetime.Singleton)
+                .AsSelf();
+
+
+            
             builder.Register<TerrainNoiseSettingsProvider>(
                     Lifetime.Singleton)
                 .AsSelf()
                 .As<IDisposable>();
-
-
-
-            builder.Register<LandscapeGenerator>(
+            
+            builder.Register<LandscapeGenerator>(Lifetime.Singleton)
+                .As<IGenerationStage>();
+ 
+            builder.Register<HydrologyGenerator>(
+                    container => new HydrologyGenerator(
+                        container.Resolve<ChunkGrid>(),
+                        container.Resolve<MacroRegionCache>(),
+                        container.Resolve<MacroGridSettings>(),
+                        localAccumulationNormalizationRange: 16f),
                     Lifetime.Singleton)
+                .As<IGenerationStage>();
+ 
+            builder.Register<WaterSurfaceStage>(Lifetime.Singleton)
                 .As<IGenerationStage>();
 
 
-
-            builder.Register<HydrologyRegionBuilder>(
-                    Lifetime.Singleton)
-                .AsSelf()
-                .As<IDisposable>();
-
-
-            builder.Register<HydrologyRegionCache>(
-                    Lifetime.Singleton);
             
-
-            builder.Register<HydrologyGenerator>(
-                    Lifetime.Singleton)
-                .As<IGenerationStage>()
-                .As<IGenerationCacheEvictor>()
-                .As<IDisposable>();
-
-
-
             builder.Register<ChunkGenerationPipeline>(
                 Lifetime.Singleton);
-
-
-
+            
             builder.RegisterBuildCallback(
                 container =>
                 {
@@ -203,26 +224,20 @@ namespace _Project.Features.Core.Bootstrap
                         pipeline.Add(stage);
                     }
                 });
-
-
-
+            
             builder.Register<IChunkGenerator>(
                     container =>
                         container.Resolve<
                             ChunkGenerationPipeline>(),
                     Lifetime.Singleton);
-
-
-
+            
             builder.Register(
                     container =>
                         new ChunkGenerationScheduler(
                             container.Resolve<
                                 IChunkGenerator>()),
                     Lifetime.Singleton);
-
-
-
+            
             builder.Register(
                     container =>
                         new LandscapeChunkFactory(
@@ -231,35 +246,20 @@ namespace _Project.Features.Core.Bootstrap
                     Lifetime.Singleton)
                 .As<ILandscapeFactory>()
                 .As<IDisposable>();
-
-
-
+            
             builder.Register<ChunkNeighborConnector>(
                     Lifetime.Singleton)
                 .As<IChunkNeighborConnector>();
-
-
-
+            
             builder.Register<UnityTerrainWriter>(
                     Lifetime.Singleton)
                 .As<ITerrainWriter>();
-
-
-
+            
             builder.Register<ChunkRepository>(
                     Lifetime.Singleton)
                 .AsSelf()
                 .As<IChunkLookup>();
-
-
-
-            builder.Register(
-                container =>
-                    new ChunkWaterPresenter(chunkPrefab.terrainData.size.y),
-                Lifetime.Singleton);
-
-
-
+            
             builder.Register(
                     container =>
                         new LandscapeApplier(
@@ -267,12 +267,11 @@ namespace _Project.Features.Core.Bootstrap
                             container.Resolve<ITerrainWriter>(),
                             container.Resolve<IChunkNeighborConnector>(),
                             container.Resolve<ChunkRepository>(),
-                            container.Resolve<ChunkWaterPresenter>(),
+                            container.Resolve<WaterSurfaceApplier>(),
                             chunksParent),
-                    Lifetime.Singleton);
-
-
-
+                    Lifetime.Singleton)
+                .AsSelf();
+            
             builder.Register(
                     container =>
                         new ChunkManager(
@@ -284,9 +283,7 @@ namespace _Project.Features.Core.Bootstrap
                     Lifetime.Singleton)
                 .AsSelf()
                 .As<IDisposable>();
-
-
-
+            
             builder.Register(
                 container =>
                     new WorldStreamer(
@@ -296,17 +293,6 @@ namespace _Project.Features.Core.Bootstrap
                         viewDistance,
                         container.Resolve<IEnumerable<IGenerationCacheEvictor>>()),
                 Lifetime.Singleton);
-
-
-
-            builder.Register(
-                    container =>
-                        new WaterQueryService(
-                            container.Resolve<ChunkGrid>(),
-                            container.Resolve<ChunkRepository>(),
-                            chunkPrefab.terrainData.size.y),
-                    Lifetime.Singleton)
-                .As<IWaterQuery>();
 
 
             builder.RegisterComponentInHierarchy<ProceduralWorldPresenter>();

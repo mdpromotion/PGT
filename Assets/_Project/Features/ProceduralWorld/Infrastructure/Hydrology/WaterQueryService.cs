@@ -3,7 +3,7 @@ using _Project.Features.ProceduralWorld.Application.Chunks;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
-using _Project.Features.ProceduralWorld.Domain.Landscape;
+using _Project.Features.ProceduralWorld.Domain.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Chunks;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
@@ -29,49 +29,44 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             out WaterSample sample)
         {
             ChunkCoordinate coordinate = _grid.ToChunkCoordinate(worldPosition);
-
             if (!_chunkLookup.TryGet(coordinate, out ChunkInstance chunk))
             {
                 sample = default;
                 return false;
             }
 
-            LandscapeData landscape = chunk.Landscape;
-
-            if (!landscape.RiverMask.IsCreated ||
-                !landscape.WaterSurfaceHeight.IsCreated)
+            HydrologyData hydrology = chunk.Hydrology;
+            if (!hydrology.RiverMask.IsCreated ||
+                !hydrology.WaterSurfaceHeight.IsCreated)
             {
                 sample = default;
                 return false;
             }
 
             Vector2 chunkOrigin = _grid.ToWorldOffset(coordinate);
-
             float localX = worldPosition.x - chunkOrigin.x;
             float localZ = worldPosition.z - chunkOrigin.y;
 
             float u = Mathf.Clamp01(localX / _grid.ChunkSizeX);
             float v = Mathf.Clamp01(localZ / _grid.ChunkSizeZ);
 
-            int resolution = landscape.Resolution;
-
+            int resolution = hydrology.Resolution;
             float gx = u * (resolution - 1);
             float gz = v * (resolution - 1);
 
-            float mask = LandscapeSampler.SampleBilinear(
-                landscape.RiverMask,
+            float mask = HydrologySampler.SampleBilinear(
+                hydrology.RiverMask,
                 resolution,
                 gx,
                 gz);
 
-            float normalizedSurfaceHeight = LandscapeSampler.SampleBilinear(
-                landscape.WaterSurfaceHeight,
+            float normalizedSurfaceHeight = HydrologySampler.SampleBilinear(
+                hydrology.WaterSurfaceHeight,
                 resolution,
                 gx,
                 gz);
 
             float worldSurfaceHeight = normalizedSurfaceHeight * _heightScale;
-
             sample = new WaterSample(mask, worldSurfaceHeight);
             return true;
         }

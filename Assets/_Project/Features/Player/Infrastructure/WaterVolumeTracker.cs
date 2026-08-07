@@ -3,7 +3,7 @@ using UnityEngine;
 using VContainer;
 using _Project.Features.Player.Domain;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
-using _Project.Features.ProceduralWorld.Domain.Landscape;
+using _Project.Features.ProceduralWorld.Domain.Hydrology;
 
 namespace _Project.Features.Player.Infrastructure
 {
@@ -46,7 +46,7 @@ namespace _Project.Features.Player.Infrastructure
         private void Update()
         {
             Vector3 position = _player.Position;
-            
+
             bool hasSample = _waterQuery.TryGetWaterState(
                 position,
                 out WaterSample sample);
@@ -72,7 +72,7 @@ namespace _Project.Features.Player.Infrastructure
             {
                 _isInWater = true;
                 OnEnterWater?.Invoke(
-                    new WaterEnterInfo(sample.SurfaceHeight, sample.Mask));
+                    new WaterEnterInfo(sample.WorldSurfaceHeight, sample.Mask));
             }
             else if (!submerged && _isInWater)
             {

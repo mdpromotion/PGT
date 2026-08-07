@@ -85,9 +85,7 @@ namespace _Project.Features.Player.Infrastructure
 
         private void FixedUpdate()
         {
-            bool swimming =
-                _waterState != null &&
-                _waterState.IsInWater;
+            bool swimming = _waterState.IsInWater;
 
 
             _rb.useGravity = !swimming;

@@ -2,50 +2,48 @@
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 {
-    public struct NativeMinHeap
+    internal struct NativeMinHeap
     {
-        private NativeArray<int> _indices;
         private NativeArray<float> _keys;
+        private NativeArray<int> _values;
         private int _count;
 
         public int Count => _count;
 
         public NativeMinHeap(int capacity, Allocator allocator)
         {
-            _indices = new NativeArray<int>(capacity, allocator);
             _keys = new NativeArray<float>(capacity, allocator);
+            _values = new NativeArray<int>(capacity, allocator);
             _count = 0;
         }
 
-        public void Push(int index, float key)
+        public void Push(int value, float key)
         {
             int i = _count++;
-            _indices[i] = index;
             _keys[i] = key;
+            _values[i] = value;
 
             while (i > 0)
             {
                 int parent = (i - 1) / 2;
+                if (_keys[parent] <= _keys[i]) break;
 
-                if (_keys[parent] <= _keys[i])
-                    break;
-
-                Swap(i, parent);
+                (_keys[parent], _keys[i]) = (_keys[i], _keys[parent]);
+                (_values[parent], _values[i]) = (_values[i], _values[parent]);
                 i = parent;
             }
         }
 
-        public void Pop(out int index, out float key)
+        public void Pop(out int value, out float key)
         {
-            index = _indices[0];
             key = _keys[0];
+            value = _values[0];
 
             _count--;
-            _indices[0] = _indices[_count];
             _keys[0] = _keys[_count];
+            _values[0] = _values[_count];
 
             int i = 0;
-
             while (true)
             {
                 int left = i * 2 + 1;
@@ -54,25 +52,18 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
                 if (left < _count && _keys[left] < _keys[smallest]) smallest = left;
                 if (right < _count && _keys[right] < _keys[smallest]) smallest = right;
+                if (smallest == i) break;
 
-                if (smallest == i)
-                    break;
-
-                Swap(i, smallest);
+                (_keys[smallest], _keys[i]) = (_keys[i], _keys[smallest]);
+                (_values[smallest], _values[i]) = (_values[i], _values[smallest]);
                 i = smallest;
             }
         }
 
-        private void Swap(int a, int b)
-        {
-            (_indices[a], _indices[b]) = (_indices[b], _indices[a]);
-            (_keys[a], _keys[b]) = (_keys[b], _keys[a]);
-        }
-
         public void Dispose()
         {
-            _indices.Dispose();
             _keys.Dispose();
+            _values.Dispose();
         }
     }
 }

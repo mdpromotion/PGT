@@ -1,6 +1,5 @@
 ﻿using System;
 using _Project.Features.Player.Infrastructure;
-
 namespace _Project.Features.Player.Domain
 {
     public interface IWaterState
