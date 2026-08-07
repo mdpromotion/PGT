@@ -1,4 +1,5 @@
-﻿using Unity.Collections;
+﻿using System;
+using Unity.Collections;
 using UnityEngine;
 using _Project.Features.ProceduralWorld.Domain.Hydrology;
 using _Project.Features.ProceduralWorld.Domain.Landscape;
@@ -19,6 +20,21 @@ namespace _Project.Features.ProceduralWorld.Domain.Chunks
         public ChunkGenerationState(ChunkGenerationContext context)
         {
             Context = context;
+        }
+        
+        public void DisposeAll()
+        {
+            Landscape?.Dispose();
+            Hydrology?.Dispose();
+
+            if(WaterMaskPixels.IsCreated)
+                WaterMaskPixels.Dispose();
+
+            if(WaterBounds.IsCreated)
+                WaterBounds.Dispose();
+
+            if(WaterAverageHeight.IsCreated)
+                WaterAverageHeight.Dispose();
         }
     }
 }

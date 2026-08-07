@@ -22,7 +22,7 @@ namespace _Project.Features.Player.Infrastructure
 
         private IPlayerInputReader _input;
         private IPlayerStanceState _stance;
-        //private IWaterState _waterState;
+        private IWaterState _waterState;
 
         private IMovementMode _groundMovement;
         private IMovementMode _waterMovement;
@@ -51,13 +51,13 @@ namespace _Project.Features.Player.Infrastructure
         public void Construct(
             IPlayerInputReader input,
             IPlayerStanceState stance,
-            //IWaterState waterState,
+            IWaterState waterState,
             GroundMovementUseCase groundMovement,
             SwimmingMovementUseCase waterMovement)
         {
             _input = input;
             _stance = stance;
-            //_waterState = waterState;
+            _waterState = waterState;
 
             _groundMovement = groundMovement;
             _waterMovement = waterMovement;
@@ -85,7 +85,7 @@ namespace _Project.Features.Player.Infrastructure
 
         private void FixedUpdate()
         {
-            bool swimming = false;
+            bool swimming = _waterState.IsInWater;
 
 
             _rb.useGravity = !swimming;

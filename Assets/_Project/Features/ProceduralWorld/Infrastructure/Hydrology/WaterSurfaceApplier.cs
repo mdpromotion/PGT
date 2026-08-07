@@ -1,5 +1,4 @@
-﻿using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
-using _Project.Features.ProceduralWorld.Domain;
+﻿using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using UnityEngine;
 

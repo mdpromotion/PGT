@@ -10,5 +10,10 @@
             Mask = mask;
             WorldSurfaceHeight = worldSurfaceHeight;
         }
+        
+        public bool IsSubmerged(float worldY, float maskThreshold)
+        {
+            return Mask >= maskThreshold && worldY <= WorldSurfaceHeight;
+        }
     }
 }

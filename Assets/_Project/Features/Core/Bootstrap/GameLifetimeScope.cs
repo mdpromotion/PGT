@@ -130,18 +130,25 @@ namespace _Project.Features.Core.Bootstrap
                 .As<IPlayerReadOnly>();
 
 
-            /*builder.RegisterComponentInHierarchy<WaterVolumeTracker>()
-                .As<IWaterState>();*/ 
-            // I'd like to completely refactor the hydrology feature 
-            // cause I really don't like it rn
+            builder.RegisterComponentInHierarchy<WaterVolumeTracker>()
+                .As<IWaterState>();
             
-            /*builder.RegisterComponentInHierarchy<PlayerWaterSoundController>();
+            builder.RegisterComponentInHierarchy<PlayerWaterSoundController>();
+            
+            builder.Register(
+                    container =>
+                        new WaterQueryService(
+                            container.Resolve<ChunkGrid>(),
+                            container.Resolve<IChunkLookup>(),
+                            chunkPrefab.terrainData.size.y),
+                    Lifetime.Singleton)
+                .As<IWaterQuery>();
 
 
             builder.RegisterInstance(playerSoundSet);
 
 
-            builder.RegisterComponentInHierarchy<FootstepController>();*/
+            builder.RegisterComponentInHierarchy<FootstepController>();
         }
 
         private void RegisterProceduralWorld(

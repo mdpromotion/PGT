@@ -11,12 +11,9 @@ namespace _Project.Features.ProceduralWorld.Domain.Chunks
         {
             State = state;
         }
-
-
+        
         public void Dispose()
         {
-            State.Landscape?.Dispose();
-
             if(State.WaterMaskPixels.IsCreated)
                 State.WaterMaskPixels.Dispose();
 

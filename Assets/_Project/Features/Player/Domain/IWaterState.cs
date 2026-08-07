@@ -1,6 +1,6 @@
 ﻿using System;
 using _Project.Features.Player.Infrastructure;
-/*namespace _Project.Features.Player.Domain
+namespace _Project.Features.Player.Domain
 {
     public interface IWaterState
     {
@@ -8,4 +8,4 @@ using _Project.Features.Player.Infrastructure;
         event Action<WaterEnterInfo> OnEnterWater;
         event Action OnExitWater;
     }
-}*/
+}

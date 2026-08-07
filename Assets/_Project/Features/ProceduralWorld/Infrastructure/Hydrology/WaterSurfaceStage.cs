@@ -32,6 +32,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 FalloffRange = _settings.FalloffRange,
                 MaxCarveDepth = _settings.MaxCarveDepth,
                 Accumulation = state.Hydrology.Accumulation,
+                MacroHeight = state.Hydrology.MacroHeightSample,
                 Heights = state.Landscape.Heights,
                 RiverMask = state.Hydrology.RiverMask,
                 WaterSurfaceHeight = state.Hydrology.WaterSurfaceHeight,

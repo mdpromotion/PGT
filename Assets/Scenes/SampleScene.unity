@@ -816,7 +816,7 @@ MonoBehaviour:
   riverCarvingSettings: {fileID: 11400000, guid: 6327c2419ce8bc54aa10a4128e82c04e, type: 2}
   waterMaterial: {fileID: 2100000, guid: e0a5b090e332ecd4cad4f7b4b189ff24, type: 2}
   chunksParent: {fileID: 758205965}
-  viewDistance: 5
+  viewDistance: 3
   database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
   globalMaxVoices: 32
   playerSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
@@ -838,6 +838,8 @@ GameObject:
   - component: {fileID: 1508698448}
   - component: {fileID: 1508698450}
   - component: {fileID: 1508698451}
+  - component: {fileID: 1508698452}
+  - component: {fileID: 1508698453}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -934,7 +936,7 @@ Transform:
   m_GameObject: {fileID: 1508698440}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 500, z: -10}
+  m_LocalPosition: {x: 0, y: 700, z: -10}
   m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1031,6 +1033,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05d544a0c9e38eb42b4081c8e617ade4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Presentation.PlayerWaterSoundController
+--- !u!114 &1508698452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508698440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f51de87e2b144c089874e2af0a7b87c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Infrastructure.WaterVolumeTracker
+  _enterMaskThreshold: 0.1
+  _exitMaskThreshold: 0.03
+--- !u!114 &1508698453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508698440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a327c5aca04344b8b00f456089e01c06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Presentation.FootstepController
+  _soundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
+  _walkStepDistance: 2.2
+  _sprintStepDistance: 3
+  _crouchStepDistance: 1.4
+  _minSpeedForStep: 0.5
 --- !u!1 &1657195339
 GameObject:
   m_ObjectHideFlags: 0

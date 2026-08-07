@@ -52,9 +52,11 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 MacroCellSize = region.CellSize,
                 MacroWorldOrigin = region.WorldOrigin,
                 MacroAccumulation = region.Accumulation,
+                MacroHeights = region.Heights,
                 LocalAccumulationNormalizationRange = _localAccumulationNormalizationRange,
 
                 RiverStrength = state.Hydrology.Accumulation,
+                MacroHeightSample = state.Hydrology.MacroHeightSample,
             };
 
             return job.Schedule(resolution * resolution, 64, dependency);
