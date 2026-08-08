@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: PlayerMovementConfig
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Infrastructure.PlayerMovementConfig
   baseSpeed: 5
-  sprintSpeedMultiplier: 2
+  sprintSpeedMultiplier: 3
   crouchSpeedMultiplier: 0.55
   jumpVelocity: 6
   _waterGravity: -3
-  _swimVerticalSpeed: 5
+  _swimVerticalSpeed: 10
   _waterAcceleration: 4
   _waterDrag: 3
   _waterVerticalDrag: 2

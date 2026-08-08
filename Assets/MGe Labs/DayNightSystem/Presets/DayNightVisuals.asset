@@ -1,0 +1,150 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95ce4e0b142d8ae4fad177150b161242, type: 3}
+  m_Name: DayNightVisuals
+  m_EditorClassIdentifier: 
+  skyMaterial: {fileID: 2100000, guid: d7d2af69c8c657745bde07ef53e7ee7a, type: 2}
+  skyMaterialTransitionValues:
+  - 1
+  - 0.7
+  - 0
+  - 1
+  enableFog: 1
+  fogDistances:
+  - 75
+  - 200
+  - 200
+  - 75
+  fogColor:
+    serializedVersion: 2
+    key0: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
+    key1: {r: 0.105882354, g: 0.12156863, b: 0.12156863, a: 1}
+    key2: {r: 0.4528302, g: 0.4528302, b: 0.4528302, a: 0}
+    key3: {r: 0.8117647, g: 0.8117647, b: 0.8117647, a: 0}
+    key4: {r: 0.7075472, g: 0.7075472, b: 0.7075472, a: 0}
+    key5: {r: 0.12156863, g: 0.12156863, b: 0.12156863, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 4048
+    ctime1: 9638
+    ctime2: 16384
+    ctime3: 32575
+    ctime4: 45296
+    ctime5: 55705
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 6
+    m_NumAlphaKeys: 2
+  enableSkyFog: 1
+  skyMaterialFogColor:
+    serializedVersion: 2
+    key0: {r: 0.003921569, g: 0.003921569, b: 0.003921569, a: 1}
+    key1: {r: 0.43632075, g: 0.49602005, b: 0.5, a: 1}
+    key2: {r: 0.7692239, g: 0.8057079, b: 0.8113208, a: 0}
+    key3: {r: 1, g: 1, b: 1, a: 0}
+    key4: {r: 1, g: 1, b: 1, a: 0}
+    key5: {r: 0.6468049, g: 0.8182822, b: 0.8962264, a: 0}
+    key6: {r: 0.45910463, g: 0.5377358, b: 0.5361124, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 11180
+    ctime2: 17348
+    ctime3: 22166
+    ctime4: 32575
+    ctime5: 48188
+    ctime6: 56669
+    ctime7: 65535
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 8
+    m_NumAlphaKeys: 2
+  skyFogDensities:
+  - 0.008
+  - 0.01
+  - 0.01
+  - 0.008
+  enableStars: 1
+  enableColors: 1
+  ambientLightColor:
+    serializedVersion: 2
+    key0: {r: 0.047058824, g: 0.047058824, b: 0.047058824, a: 1}
+    key1: {r: 0.77254903, g: 0.68632317, b: 0.5647059, a: 1}
+    key2: {r: 0.48235294, g: 0.48235294, b: 0.48235294, a: 0}
+    key3: {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 0}
+    key4: {r: 0.49056602, g: 0.48022538, b: 0.46511212, a: 0}
+    key5: {r: 0.047169805, g: 0.047169805, b: 0.047169805, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 6746
+    ctime1: 16384
+    ctime2: 25829
+    ctime3: 42598
+    ctime4: 49151
+    ctime5: 59367
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 6
+    m_NumAlphaKeys: 2
+  directionalLightColor:
+    serializedVersion: 2
+    key0: {r: 0.14901961, g: 0.14901961, b: 0.14901961, a: 1}
+    key1: {r: 0.4528302, g: 0.4528302, b: 0.4528302, a: 1}
+    key2: {r: 0.14901961, g: 0.14901961, b: 0.14901961, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 32768
+    ctime2: 64957
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 3
+    m_NumAlphaKeys: 2

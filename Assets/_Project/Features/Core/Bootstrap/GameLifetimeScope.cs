@@ -9,6 +9,7 @@ using _Project.Features.ProceduralWorld.Application.Chunks;
 using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Application.Landscape;
+using _Project.Features.ProceduralWorld.Application.Vegetation;
 using _Project.Features.ProceduralWorld.Application.World;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Hydrology;
@@ -17,6 +18,7 @@ using _Project.Features.ProceduralWorld.Infrastructure;
 using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
+using _Project.Features.ProceduralWorld.Infrastructure.Vegetation;
 using _Project.Features.ProceduralWorld.Presentation;
 using _Project.Features.Sound.Application;
 using _Project.Features.Sound.Infrastructure;
@@ -44,6 +46,12 @@ namespace _Project.Features.Core.Bootstrap
         
         [SerializeField] 
         private RiverCarvingSettings riverCarvingSettings; 
+        
+        [SerializeField]
+        private VegetationGridSettings vegetationGridSettings;
+
+        [SerializeField] 
+        private VegetationCatalog vegetationCatalog;
         
         [SerializeField] 
         private Material waterMaterial;
@@ -161,6 +169,22 @@ namespace _Project.Features.Core.Bootstrap
             
             builder.RegisterInstance(riverCarvingSettings);
             
+            builder.RegisterInstance(vegetationGridSettings);
+            
+            builder.RegisterInstance(vegetationCatalog);
+            
+            builder.Register(
+                    container =>
+                        new VegetationTileCache(
+                            container.Resolve<VegetationGridSettings>(),
+                            container.Resolve<WorldSettings>(),
+                            container.Resolve<ChunkGrid>()),
+                    Lifetime.Singleton)
+                .AsSelf()
+                .As<IDisposable>()
+                .As<IGenerationCacheEvictor>();
+            
+            
             builder.Register<MacroRegionCache>(Lifetime.Singleton)
                 .AsSelf()
                 .As<IDisposable>();
@@ -183,7 +207,8 @@ namespace _Project.Features.Core.Bootstrap
                     Lifetime.Singleton)
                 .AsSelf();
 
-
+            builder.Register<VegetationApplier>(Lifetime.Singleton)
+                .AsSelf();
             
             builder.Register<TerrainNoiseSettingsProvider>(
                     Lifetime.Singleton)
@@ -204,7 +229,19 @@ namespace _Project.Features.Core.Bootstrap
  
             builder.Register<WaterSurfaceStage>(Lifetime.Singleton)
                 .As<IGenerationStage>();
-
+            
+            
+            
+            builder.Register(
+                    container =>
+                        new VegetationGenerator(
+                            container.Resolve<ChunkGrid>(),
+                            container.Resolve<VegetationTileCache>(),
+                            container.Resolve<VegetationGridSettings>(),
+                            container.Resolve<WorldSettings>(),
+                            chunkPrefab.terrainData.size.y),
+                    Lifetime.Singleton)
+                .As<IGenerationStage>();
 
             
             builder.Register<ChunkGenerationPipeline>(
@@ -268,6 +305,7 @@ namespace _Project.Features.Core.Bootstrap
                             container.Resolve<IChunkNeighborConnector>(),
                             container.Resolve<ChunkRepository>(),
                             container.Resolve<WaterSurfaceApplier>(),
+                            container.Resolve<VegetationApplier>(),
                             chunksParent),
                     Lifetime.Singleton)
                 .AsSelf();

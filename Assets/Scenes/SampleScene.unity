@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: d7d2af69c8c657745bde07ef53e7ee7a, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -309,7 +309,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -814,9 +814,11 @@ MonoBehaviour:
   worldSettings: {fileID: 11400000, guid: dbe12bdf8867feb4880810240955aec2, type: 2}
   macroGridSettings: {fileID: 11400000, guid: 5454c414ee7cf2d4c81d4bbc16424904, type: 2}
   riverCarvingSettings: {fileID: 11400000, guid: 6327c2419ce8bc54aa10a4128e82c04e, type: 2}
+  vegetationGridSettings: {fileID: 11400000, guid: bf6cf9a8320f14d4287f2ad3d4cce407, type: 2}
+  vegetationCatalog: {fileID: 11400000, guid: 4fcbd9594b9ecc84c98767784051252e, type: 2}
   waterMaterial: {fileID: 2100000, guid: e0a5b090e332ecd4cad4f7b4b189ff24, type: 2}
   chunksParent: {fileID: 758205965}
-  viewDistance: 15
+  viewDistance: 7
   database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
   globalMaxVoices: 32
   playerSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
@@ -936,7 +938,7 @@ Transform:
   m_GameObject: {fileID: 1508698440}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 700, z: -10}
+  m_LocalPosition: {x: 0, y: 515, z: -10}
   m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

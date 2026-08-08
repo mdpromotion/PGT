@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 7d2987f07753cba4d821c9dad119c63c
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 331418
+  packageName: DayNight System
+  packageVersion: 1.1.0
+  assetPath: Assets/MGe Labs/DayNightSystem/DayNightSystem.asmdef
+  uploadId: 887124
