@@ -3,6 +3,7 @@ using Unity.Collections;
 using UnityEngine;
 using _Project.Features.ProceduralWorld.Domain.Hydrology;
 using _Project.Features.ProceduralWorld.Domain.Landscape;
+using _Project.Features.ProceduralWorld.Domain.Vegetation;
 
 namespace _Project.Features.ProceduralWorld.Domain.Chunks
 {
@@ -12,6 +13,7 @@ namespace _Project.Features.ProceduralWorld.Domain.Chunks
 
         public LandscapeData Landscape { get; set; }
         public HydrologyData Hydrology { get; set; }
+        public VegetationData Vegetation { get; set; }
 
         public NativeArray<Color32> WaterMaskPixels { get; set; }
         public NativeArray<int> WaterBounds { get; set; }
@@ -26,6 +28,7 @@ namespace _Project.Features.ProceduralWorld.Domain.Chunks
         {
             Landscape?.Dispose();
             Hydrology?.Dispose();
+            Vegetation?.Dispose();
 
             if(WaterMaskPixels.IsCreated)
                 WaterMaskPixels.Dispose();
