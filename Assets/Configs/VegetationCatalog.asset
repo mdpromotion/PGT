@@ -19,8 +19,8 @@ MonoBehaviour:
     MinHeight01: 0
     MaxHeight01: 1
     MinSlopeDegrees: 0
-    MaxSlopeDegrees: 35
-    UniformScaleRange: {x: 0.85, y: 1.2}
+    MaxSlopeDegrees: 15
+    UniformScaleRange: {x: 1, y: 1.2}
     RandomizeYRotation: 1
   - Category: 0
     Prefab: {fileID: 5400752399725384465, guid: af90fe2f0f252bf4b8c2ab79bcd41edf, type: 3}
@@ -28,6 +28,6 @@ MonoBehaviour:
     MinHeight01: 0
     MaxHeight01: 1
     MinSlopeDegrees: 0
-    MaxSlopeDegrees: 35
-    UniformScaleRange: {x: 0.85, y: 1.2}
+    MaxSlopeDegrees: 15
+    UniformScaleRange: {x: 1, y: 1.2}
     RandomizeYRotation: 1

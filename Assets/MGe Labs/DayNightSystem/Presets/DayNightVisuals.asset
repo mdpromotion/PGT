@@ -51,6 +51,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
+    m_ColorSpace: -1
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
   enableSkyFog: 1
@@ -81,6 +82,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
+    m_ColorSpace: -1
     m_NumColorKeys: 8
     m_NumAlphaKeys: 2
   skyFogDensities:
@@ -88,6 +90,7 @@ MonoBehaviour:
   - 0.01
   - 0.01
   - 0.008
+  sunDirection: 170
   enableStars: 1
   enableColors: 1
   ambientLightColor:
@@ -117,6 +120,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
+    m_ColorSpace: -1
     m_NumColorKeys: 6
     m_NumAlphaKeys: 2
   directionalLightColor:
@@ -146,5 +150,6 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
+    m_ColorSpace: -1
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
