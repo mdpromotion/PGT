@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Fog
+  m_Name: Skybox
   m_Shader: {fileID: 4800000, guid: 770af3ce12ec6e449bf0cae4c933aef2, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -39,12 +39,28 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _DayNightSharpness: 8
     - _FogSkyBlend: 1
-    - _FogSkyPower: 4
-    - _HorizonSharpness: 5.01
+    - _FogSkyPower: 3.42
+    - _HorizonSharpness: 8
+    - _MoonFalloff: 246
+    - _MoonSize: 0.045
+    - _StarBrightness: 1.5
+    - _StarDensity: 250
+    - _StarTwinkleSpeed: 2
+    - _SunFalloff: 46
+    - _SunGlowIntensity: 0.24
+    - _SunGlowSize: 32
+    - _SunSize: 0.076
     m_Colors:
-    - _SkyBottom: {r: 0.29999998, g: 0.29999998, b: 0.29999998, a: 1}
-    - _SkyHorizon: {r: 0.60920256, g: 0.65365785, b: 0.6981132, a: 1}
+    - _MoonColor: {r: 0.85, g: 0.87, b: 0.95, a: 1}
+    - _NightSkyBottom: {r: 0.01, g: 0.01, b: 0.02, a: 1}
+    - _NightSkyHorizon: {r: 0.049999982, g: 0.059999965, b: 0.11999995, a: 1}
+    - _NightSkyTop: {r: 0.02, g: 0.03, b: 0.079999976, a: 1}
+    - _SkyBottom: {r: 0.3, g: 0.3, b: 0.3, a: 1}
+    - _SkyHorizon: {r: 0.75, g: 0.8, b: 0.85, a: 1}
     - _SkyTop: {r: 0.24999997, g: 0.45, b: 0.85, a: 1}
+    - _SunColor: {r: 1, g: 0.95, b: 0.85, a: 1}
+    - _SunGlowColor: {r: 1, g: 0.8, b: 0.5, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
