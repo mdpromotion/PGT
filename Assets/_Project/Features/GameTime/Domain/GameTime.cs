@@ -4,7 +4,7 @@ namespace _Project.Features.GameTime.Domain
 {
     public class GameTime : IGameTime
     {
-        private const float TickPerDay = 500f;
+        private const float TickPerDay = 24_000f;
         
         public float CurrentTime { get; private set; } = TickPerDay / 4;
         public float TicksPerDay => TickPerDay;

@@ -12,7 +12,12 @@ namespace _Project.Features.GameTime.Presentation
 
         [SerializeField] private Transform _sunTransform;
         [SerializeField] private GameTimePresenterSceneConfig _sceneConfig;
-
+        
+        private Light  _sunLight;
+        
+        private const float MaximumSunIntensity = 1f;
+        private const float MinimumSunIntensity = 0.01f;
+        
         [Inject]
         public void Construct(IGameTime gameTime)
         {
@@ -22,13 +27,18 @@ namespace _Project.Features.GameTime.Presentation
         private void Start()
         {
             _gameTime.TimeChanged += OnTimeChanged;
-
+            
+            _sunLight = _sunTransform.GetComponent<Light>();
+            if (!_sunLight)
+                _sunLight = _sunTransform.gameObject.AddComponent<Light>();
+            
             RenderSettings.ambientMode = AmbientMode.Skybox;
         }
 
         private void OnTimeChanged(float time)
         {
             UpdateSun(time);
+            UpdateSunLight(time);
             UpdateFog(time);
             UpdateEnvironment(time);
         }
@@ -43,6 +53,62 @@ namespace _Project.Features.GameTime.Presentation
                 sunAngle,
                 0f,
                 0f);
+        }
+        
+        private void UpdateSunLight(float time)
+        {
+            float transitionDuration =
+                _gameTime.HoursToTicks(
+                    _sceneConfig.TransitionDurationHours);
+
+            float dayHour =
+                _gameTime.HoursToTicks(
+                    _sceneConfig.DayTransition.Hour);
+
+            float nightHour =
+                _gameTime.HoursToTicks(
+                    _sceneConfig.NightTransition.Hour);
+
+            float dayTransitionStart =
+                dayHour - transitionDuration;
+
+            float nightTransitionStart =
+                nightHour - transitionDuration;
+
+            if (IsInTransition(
+                    time,
+                    dayTransitionStart,
+                    dayHour))
+            {
+                float t = Mathf.InverseLerp(
+                    dayTransitionStart,
+                    dayHour,
+                    time);
+
+                _sunLight.intensity = t;
+
+                return;
+            }
+
+            if (IsInTransition(
+                    time,
+                    nightTransitionStart,
+                    nightHour))
+            {
+                float t = Mathf.InverseLerp(
+                    nightTransitionStart,
+                    nightHour,
+                    time);
+
+                _sunLight.intensity = MaximumSunIntensity - t;
+
+                return;
+            }
+
+            _sunLight.intensity =
+                IsDay(time, dayHour, nightHour)
+                    ? MaximumSunIntensity
+                    : MinimumSunIntensity;
         }
 
         private void UpdateEnvironment(float time)
