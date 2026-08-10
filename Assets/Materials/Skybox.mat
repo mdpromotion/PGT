@@ -40,7 +40,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _DayNightSharpness: 8
-    - _FogSkyBlend: 1
+    - _FogSkyBlend: 0
     - _FogSkyPower: 3.42
     - _HorizonSharpness: 8
     - _MoonFalloff: 246
@@ -57,7 +57,7 @@ Material:
     - _NightSkyBottom: {r: 0.01, g: 0.01, b: 0.02, a: 1}
     - _NightSkyHorizon: {r: 0.049999982, g: 0.059999965, b: 0.11999995, a: 1}
     - _NightSkyTop: {r: 0.02, g: 0.03, b: 0.079999976, a: 1}
-    - _SkyBottom: {r: 0.3, g: 0.3, b: 0.3, a: 1}
+    - _SkyBottom: {r: 0.65882355, g: 0.65882355, b: 0.65882355, a: 1}
     - _SkyHorizon: {r: 0.75, g: 0.8, b: 0.85, a: 1}
     - _SkyTop: {r: 0.24999997, g: 0.45, b: 0.85, a: 1}
     - _SunColor: {r: 1, g: 0.95, b: 0.85, a: 1}
