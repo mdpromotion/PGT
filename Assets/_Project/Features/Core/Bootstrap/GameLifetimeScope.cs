@@ -20,9 +20,12 @@ using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
 using _Project.Features.ProceduralWorld.Infrastructure.Vegetation;
 using _Project.Features.ProceduralWorld.Presentation;
+using _Project.Features.Shared.Application;
 using _Project.Features.Sound.Application;
 using _Project.Features.Sound.Infrastructure;
 using _Project.Features.Sound.Presentation;
+using _Project.Features.Tick;
+using _Project.Features.Tick.Application;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -54,6 +57,7 @@ namespace _Project.Features.Core.Bootstrap
         {
             RegisterSound(builder);
             RegisterPlayer(builder);
+            RegisterTickSystem(builder);
             RegisterProceduralWorld(builder);
         }
 
@@ -112,6 +116,17 @@ namespace _Project.Features.Core.Bootstrap
             builder.RegisterInstance(playerSoundSet);
 
             builder.RegisterComponentInHierarchy<FootstepController>();
+        }
+
+        private void RegisterTickSystem(IContainerBuilder builder)
+        {
+            builder.Register<TickController>(Lifetime.Singleton)
+                .As<IFixedTickable>()
+                .As<ITick>();
+
+            builder.Register<TickDebug>(Lifetime.Singleton)
+                .As<IInitializable>()
+                .AsSelf();
         }
 
         private void RegisterProceduralWorld(IContainerBuilder builder)
