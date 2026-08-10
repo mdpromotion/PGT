@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace _Project.Features.UI.MainMenu
 {
@@ -11,17 +10,6 @@ namespace _Project.Features.UI.MainMenu
         WorldMenu,
         StartGame,
         Settings
-    }
-    
-    public class ButtonBase : MonoBehaviour
-    {
-        public MenuType buttonType = MenuType.WorldMenu; 
-        public event Action<MenuType> ButtonClicked;
-
-        protected void OnButtonClick()
-        {
-            ButtonClicked?.Invoke(buttonType);
-        }
     }
 
     [Serializable]
@@ -34,8 +22,8 @@ namespace _Project.Features.UI.MainMenu
     
     public class MainMenuPresenter : MonoBehaviour
     {
-        [SerializeField] private ButtonBase[] Buttons;
-        [SerializeField] private List<MenuEntry> Menus;
+        [SerializeField] private MenuButton[] buttons;
+        [SerializeField] private List<MenuEntry> menus;
         
         private MainMenuModel _model;
 
@@ -51,7 +39,7 @@ namespace _Project.Features.UI.MainMenu
             
             HandleWorldMenu();
             
-            foreach (var button in Buttons)
+            foreach (var button in buttons)
             {
                 button.ButtonClicked += OnButtonClicked;
             }
@@ -92,7 +80,7 @@ namespace _Project.Features.UI.MainMenu
         
         private void SetMenuState(MenuType menuType, bool state)
         {
-            foreach (var menu in Menus)
+            foreach (var menu in menus)
             {
                 if (menu.menuType != menuType)
                     continue;
@@ -105,7 +93,7 @@ namespace _Project.Features.UI.MainMenu
 
         public void OnDestroy()
         {
-            foreach (var button in Buttons)
+            foreach (var button in buttons)
             {
                 button.ButtonClicked -= OnButtonClicked;
             }
