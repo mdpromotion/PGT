@@ -119,98 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
-<<<<<<< Updated upstream
-=======
---- !u!1 &8350072
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8350073}
-  - component: {fileID: 8350076}
-  - component: {fileID: 8350075}
-  - component: {fileID: 8350074}
-  m_Layer: 5
-  m_Name: LoadingMenu
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &8350073
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8350072}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1434069498}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &8350074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8350072}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4c34863aca5de044904a1318a032404, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.MainMenu.MainMenuView
-  _currentMenu: {fileID: 0}
---- !u!114 &8350075
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8350072}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &8350076
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8350072}
-  m_CullTransparentMesh: 1
->>>>>>> Stashed changes
 --- !u!1 &324154983
 GameObject:
   m_ObjectHideFlags: 0
@@ -308,11 +216,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-<<<<<<< Updated upstream
   m_IsActive: 1
-=======
-  m_IsActive: 0
->>>>>>> Stashed changes
 --- !u!224 &395861409
 RectTransform:
   m_ObjectHideFlags: 0
@@ -385,10 +289,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4c34863aca5de044904a1318a032404, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.MainMenu.MainMenuView
-<<<<<<< Updated upstream
-=======
-  _currentMenu: {fileID: 0}
->>>>>>> Stashed changes
 --- !u!1 &480000149
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,11 +307,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-<<<<<<< Updated upstream
   m_IsActive: 1
-=======
-  m_IsActive: 0
->>>>>>> Stashed changes
 --- !u!224 &480000150
 RectTransform:
   m_ObjectHideFlags: 0
@@ -447,10 +343,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4c34863aca5de044904a1318a032404, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.MainMenu.MainMenuView
-<<<<<<< Updated upstream
-=======
-  _currentMenu: {fileID: 0}
->>>>>>> Stashed changes
 --- !u!114 &480000152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -776,10 +668,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbdba46f41a1e2343a477d7f3a8f6187, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.MainMenu.WorldMenuButton
-<<<<<<< Updated upstream
-=======
-  _menuButton: {fileID: 0}
->>>>>>> Stashed changes
   buttonType: 0
 --- !u!1 &625430746
 GameObject:
@@ -833,10 +721,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbdba46f41a1e2343a477d7f3a8f6187, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.MainMenu.WorldMenuButton
-<<<<<<< Updated upstream
-=======
-  _menuButton: {fileID: 0}
->>>>>>> Stashed changes
   buttonType: 0
 --- !u!114 &625430749
 MonoBehaviour:
@@ -1320,10 +1204,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-<<<<<<< Updated upstream
-=======
-  - {fileID: 8350073}
->>>>>>> Stashed changes
   - {fileID: 480000150}
   - {fileID: 395861409}
   m_Father: {fileID: 0}
@@ -1348,10 +1228,7 @@ MonoBehaviour:
   buttons:
   - {fileID: 625430748}
   - {fileID: 582962579}
-<<<<<<< Updated upstream
-=======
   - {fileID: 2043364406}
->>>>>>> Stashed changes
   menus:
   - menuType: 0
     mainMenuView: {fileID: 395861412}
@@ -1550,11 +1427,6 @@ MonoBehaviour:
     TypeName: 
   autoRun: 1
   autoInjectGameObjects: []
-<<<<<<< Updated upstream
-=======
-  scopeName: 
-  <Parent>k__BackingField: {fileID: 0}
->>>>>>> Stashed changes
 --- !u!4 &1646870328
 Transform:
   m_ObjectHideFlags: 0
@@ -1852,10 +1724,7 @@ GameObject:
   - component: {fileID: 2043364404}
   - component: {fileID: 2043364403}
   - component: {fileID: 2043364402}
-<<<<<<< Updated upstream
-=======
   - component: {fileID: 2043364406}
->>>>>>> Stashed changes
   m_Layer: 5
   m_Name: Button (Legacy)
   m_TagString: Untagged
@@ -1980,8 +1849,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2043364399}
   m_CullTransparentMesh: 1
-<<<<<<< Updated upstream
-=======
 --- !u!114 &2043364406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1994,9 +1861,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbdba46f41a1e2343a477d7f3a8f6187, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.MainMenu.MenuButton
-  _menuButton: {fileID: 0}
   buttonType: 1
->>>>>>> Stashed changes
 --- !u!1 &2066261027
 GameObject:
   m_ObjectHideFlags: 0
