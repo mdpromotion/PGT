@@ -80,7 +80,17 @@ namespace _Project.Features.ProceduralWorld.Application.Vegetation
                 });
             }
 
+            terrain.preserveTreePrototypeLayers = true;
+
             terrain.terrainData.SetTreeInstances(treeInstances.ToArray(), true);
+
+            TerrainCollider terrainCollider = terrain.GetComponent<TerrainCollider>();
+
+            if (terrainCollider != null)
+            {
+                terrainCollider.enabled = false;
+                terrainCollider.enabled = true;
+            }
         }
 
         private VegetationCatalogEntry PickEntry(

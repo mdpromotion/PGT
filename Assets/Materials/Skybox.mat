@@ -40,8 +40,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _DayNightSharpness: 8
-    - _FogSkyBlend: 0
-    - _FogSkyPower: 3.42
+    - _FogSkyBlend: 1
+    - _FogSkyPower: 2.55
     - _HorizonSharpness: 8
     - _MoonFalloff: 246
     - _MoonSize: 0.045

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7038538021439106344}
   - component: {fileID: 873582998863499800}
   - component: {fileID: 7457692230273316472}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: URP_Tree_3_LOD_3(Clone)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 2307699273463831655}
   - component: {fileID: 4209343851355608364}
   - component: {fileID: 5861110969435105590}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: URP_Tree_3_LOD_1(Clone)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -193,7 +193,7 @@ GameObject:
   - component: {fileID: 7284657314162685512}
   - component: {fileID: 7274486918067708646}
   - component: {fileID: 5003510303354046604}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: URP_Tree_3_LOD_0(Clone)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -283,8 +283,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4144939046933883186}
   - component: {fileID: 7250050877548821893}
-  - component: {fileID: 7166388592533430928}
-  m_Layer: 0
+  - component: {fileID: 3592939204596778810}
+  m_Layer: 6
   m_Name: Tree3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -341,14 +341,14 @@ LODGroup:
     renderers:
     - renderer: {fileID: 7457692230273316472}
   m_Enabled: 1
---- !u!65 &7166388592533430928
-BoxCollider:
+--- !u!136 &3592939204596778810
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5400752399725384465}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 106d8bf6d506b814486e812609b43872, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -359,9 +359,11 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.51074517, y: 1.91556, z: 0.44195482}
-  m_Center: {x: -0.016532088, y: 0.95778, z: -0.044229686}
+  serializedVersion: 2
+  m_Radius: 0.23831946
+  m_Height: 1.6046154
+  m_Direction: 1
+  m_Center: {x: -0.056823373, y: 0.5868887, z: -0.054962218}
 --- !u!1 &7271073098528902193
 GameObject:
   m_ObjectHideFlags: 0
@@ -373,7 +375,7 @@ GameObject:
   - component: {fileID: 8272378013287771663}
   - component: {fileID: 5033893951869775918}
   - component: {fileID: 9215514624925247708}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: URP_Tree_3_LOD_2(Clone)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
