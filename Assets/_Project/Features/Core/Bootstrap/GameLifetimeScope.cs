@@ -1,6 +1,8 @@
-using System;
 using System.Collections.Generic;
 using _Project.Features.Camera.Infrastructure;
+using _Project.Features.GameTime.Application;
+using _Project.Features.GameTime.Domain;
+using _Project.Features.GameTime.Presentation;
 using _Project.Features.Player.Application;
 using _Project.Features.Player.Domain;
 using _Project.Features.Player.Infrastructure;
@@ -59,6 +61,7 @@ namespace _Project.Features.Core.Bootstrap
             RegisterSound(builder);
             RegisterPlayer(builder);
             RegisterTickSystem(builder);
+            RegisterGameTimeSystem(builder);
             RegisterProceduralWorld(builder);
         }
 
@@ -130,6 +133,18 @@ namespace _Project.Features.Core.Bootstrap
             builder.Register<TickDebug>(Lifetime.Singleton)
                 .As<IInitializable>()
                 .AsSelf();
+        }
+
+        private void RegisterGameTimeSystem(IContainerBuilder builder)
+        {
+            builder.Register<GameTime.Domain.GameTime>(Lifetime.Singleton)
+                .As<IGameTime>()
+                .AsSelf();
+
+            builder.Register<GameTimeController>(Lifetime.Singleton)
+                .As<IInitializable>();
+
+            builder.RegisterComponentInHierarchy<GameTimePresenter>();
         }
 
         private void RegisterProceduralWorld(IContainerBuilder builder)

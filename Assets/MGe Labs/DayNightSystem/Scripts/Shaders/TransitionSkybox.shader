@@ -77,8 +77,7 @@ Shader "DayNightSystem/TransitionSkybox"
                 float4 skyboxCoord : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
             };
-
-            // Generates a pseudo-random value based on a 3D coordinate
+            
             float rand(float3 co)
             {
                 return frac(sin(dot(co, float3(12.9898, 78.233, 45.164))) * 43758.5453);
@@ -86,7 +85,6 @@ Shader "DayNightSystem/TransitionSkybox"
 
             v2f vert(appdata v)
             {
-                // Transforms vertices and calculates skybox coordinates
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.skyboxCoord = v.vertex * _StarVisibility;
@@ -96,35 +94,27 @@ Shader "DayNightSystem/TransitionSkybox"
 
             fixed4 frag(v2f i) : SV_Target
             {
-                // Normalize the skybox coordinates
                 float3 worldPos = normalize(i.skyboxCoord.xyz);
-
-                // Sample day, night, and star textures
+                
                 float3 dayColor = texCUBE(_DayTexture, worldPos);
                 float3 nightColor = texCUBE(_NightTexture, worldPos);
                 float3 starColor = texCUBE(_StarTexture, worldPos) * _StarColor.rgb;
-
-                // Calculate twinkling effect for stars
+                
                 float noise = rand(worldPos);
                 float twinkle = 1.0 + _TwinkleIntensity * sin(_TwinkleSpeed * _Time.y * noise * 6.28);
                 starColor *= twinkle * _StarIntensity;
-
-                // Blend day and night textures based on the transition value
+                
                 float3 baseColor = lerp(dayColor, nightColor, _Transition);
-
-                // Adjust star visibility based on configurable min/max transition range
+                
                 float starVisibility = saturate(
                     (_Transition - _StarMinTransition) / max(1e-5, (_StarMaxTransition - _StarMinTransition)));
                 float3 finalColor = baseColor + starColor * starVisibility;
-
-                // Apply tint and exposure to the final color
+                
                 finalColor.rgb *= _Tint.rgb;
                 finalColor.rgb *= _Exposure;
-
-                // Apply Unity's fog effect
+                
                 UNITY_APPLY_FOG(i.fogCoord, finalColor);
-
-                // Custom fog blending based on distance
+                
                 float fogAmount = 1.0 - saturate(abs(i.skyboxCoord.y) - _FogStart) / (_FogEnd - _FogStart);
                 fogAmount = pow(fogAmount, 1.0 / _FogDensity);
                 finalColor.rgb = lerp(finalColor.rgb, _FogColor.rgb, fogAmount);

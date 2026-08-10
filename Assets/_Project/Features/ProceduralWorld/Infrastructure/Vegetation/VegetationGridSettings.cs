@@ -1,5 +1,4 @@
-﻿// Infrastructure/Vegetation/VegetationGridSettings.cs
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Vegetation
 {

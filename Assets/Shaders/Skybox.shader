@@ -100,8 +100,7 @@ Shader "Skybox/FoggySkybox"
                 OUT.positionCS = TransformObjectToHClip(IN.positionOS.xyz);
                 return OUT;
             }
-
-            // simple hash for stars
+            
             float Hash21(float2 p)
             {
                 p = frac(p * float2(234.34, 435.345));
@@ -129,38 +128,31 @@ Shader "Skybox/FoggySkybox"
             {
                 float3 viewDir = normalize(IN.viewDirWS);
                 float h = viewDir.y;
-
-                // === Main light (Directional Light "Sun") direction ===
+                
                 Light mainLight = GetMainLight();
-                float3 sunDir = normalize(mainLight.direction); // points FROM surface TOWARD the light
-
-                // Sun height above horizon, used for day/night blend
+                float3 sunDir = normalize(mainLight.direction);
+                
                 float sunHeight = sunDir.y;
                 float dayFactor = saturate(sunHeight * _DayNightSharpness * 0.5 + 0.5);
-                // sharper transition around horizon
                 dayFactor = smoothstep(0.0, 1.0, saturate((sunHeight + 0.15) * _DayNightSharpness));
-
-                // === Sky gradients ===
+                
                 half3 daySky   = GradientSky(h, _SkyTop.rgb, _SkyHorizon.rgb, _SkyBottom.rgb, _HorizonSharpness);
                 half3 nightSky = GradientSky(h, _NightSkyTop.rgb, _NightSkyHorizon.rgb, _NightSkyBottom.rgb, _HorizonSharpness);
                 half3 skyCol = lerp(nightSky, daySky, dayFactor);
-
-                // === Sun disk + glow ===
+                
                 float sunDot = saturate(dot(viewDir, sunDir));
                 float sunDisk = pow(sunDot, _SunFalloff / max(_SunSize, 0.0001));
                 float sunGlow = pow(sunDot, _SunGlowSize) * _SunGlowIntensity;
 
                 half3 sunContribution = _SunColor.rgb * sunDisk + _SunGlowColor.rgb * sunGlow;
-                sunContribution *= dayFactor > 0.02 ? 1.0 : dayFactor * 50.0; // fade sun quickly below horizon
+                sunContribution *= dayFactor > 0.02 ? 1.0 : dayFactor * 50.0;
                 sunContribution = max(sunContribution, 0);
-
-                // === Moon (opposite direction of the sun) ===
+                
                 float3 moonDir = -sunDir;
                 float moonDot = saturate(dot(viewDir, moonDir));
                 float moonDisk = pow(moonDot, _MoonFalloff / max(_MoonSize, 0.0001));
                 half3 moonContribution = _MoonColor.rgb * moonDisk * (1.0 - dayFactor);
-
-                // === Stars (only visible at night, above horizon) ===
+                
                 half3 starContribution = 0;
                 if (h > 0)
                 {
@@ -178,13 +170,11 @@ Shader "Skybox/FoggySkybox"
                 }
 
                 half3 celestialCol = skyCol + sunContribution + moonContribution + starContribution;
-
-                // === Fog blend ===
+                
                 half3 fogColor = unity_FogColor.rgb;
                 float fogAmount = 1.0 - saturate(abs(h));
                 fogAmount = pow(fogAmount, _FogSkyPower) * _FogSkyBlend;
-
-                // Don't let fog eat the sun disk itself too much (keeps it looking crisp near horizon)
+                
                 fogAmount *= saturate(1.0 - sunDisk);
 
                 half3 finalColor = lerp(celestialCol, fogColor, fogAmount);
