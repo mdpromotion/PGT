@@ -26,6 +26,7 @@ using _Project.Features.Sound.Infrastructure;
 using _Project.Features.Sound.Presentation;
 using _Project.Features.Tick;
 using _Project.Features.Tick.Application;
+using _Project.Features.Tick.Domain;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -120,6 +121,8 @@ namespace _Project.Features.Core.Bootstrap
 
         private void RegisterTickSystem(IContainerBuilder builder)
         {
+            builder.Register<TickData>(Lifetime.Singleton);
+            
             builder.Register<TickController>(Lifetime.Singleton)
                 .As<IFixedTickable>()
                 .As<ITick>();

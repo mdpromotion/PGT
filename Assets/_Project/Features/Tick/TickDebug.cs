@@ -8,7 +8,10 @@ namespace _Project.Features.Tick
     public class TickDebug : IInitializable, IDisposable
     {
         private readonly ITick _tick;
-        
+
+        private int _tickCount;
+        private double _lastLogTime;
+
         public TickDebug(ITick tick)
         {
             _tick = tick;
@@ -17,14 +20,26 @@ namespace _Project.Features.Tick
         public void Initialize()
         {
             _tick.Tick += Tick;
+            _lastLogTime = Time.realtimeSinceStartupAsDouble;
             Debug.Log("Tick Debug Started");
         }
 
+        
         public void Tick()
         {
-            Debug.Log("tick");
+            _tickCount++;
+
+            double now = Time.realtimeSinceStartupAsDouble;
+            double elapsed = now - _lastLogTime;
+
+            if (elapsed >= 1.0)
+            {
+                Debug.Log($"Ticks per second: {_tickCount / elapsed:F2}");
+                _tickCount = 0;
+                _lastLogTime = now;
+            }
         }
-        
+
         public void Dispose()
         {
             _tick.Tick -= Tick;

@@ -1,5 +1,6 @@
 using System;
 using _Project.Features.Shared.Application;
+using _Project.Features.Tick.Domain;
 using UnityEngine;
 using VContainer.Unity;
 
@@ -7,10 +8,15 @@ namespace _Project.Features.Tick.Application
 {
     public class TickController : IFixedTickable, ITick
     {
-        private const float TickInterval = 1f / 20f;
+        private readonly float TickInterval;
         private float _elapsed;
         
         public event Action Tick;
+
+        public TickController(TickData tickData)
+        {
+            TickInterval = tickData.TickInterval;
+        }
         
         public void FixedTick()
         {
