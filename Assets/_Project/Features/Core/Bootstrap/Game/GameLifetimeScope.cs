@@ -33,7 +33,7 @@ using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
-namespace _Project.Features.Core.Bootstrap
+namespace _Project.Features.Core.Bootstrap.Game
 {
     public class GameLifetimeScope : LifetimeScope
     {

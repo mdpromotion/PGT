@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using _Project.Features.UI.Application;
 using UnityEngine;
 using VContainer;
 
@@ -26,17 +27,17 @@ namespace _Project.Features.UI.MainMenu
         [SerializeField] private List<MenuEntry> menus;
         
         private MainMenuModel _model;
+        private StartGameUseCase _startGameUseCase;
 
         [Inject]
-        public void Construct(MainMenuModel model)
+        public void Construct(MainMenuModel model, StartGameUseCase startGameUseCase)
         {
             _model = model;
+            _startGameUseCase = startGameUseCase;
         }
 
         public void Start()
         {
-            _model = new MainMenuModel();
-            
             HandleWorldMenu();
             
             foreach (var button in buttons)
@@ -68,9 +69,9 @@ namespace _Project.Features.UI.MainMenu
             SetMenuState(MenuType.WorldMenu, state);
         }
 
-        private void HandleStartGame()
+        private async void HandleStartGame()
         {
-            
+            await _startGameUseCase.ExecuteAsync();
         }
 
         private void HandleSettings()
