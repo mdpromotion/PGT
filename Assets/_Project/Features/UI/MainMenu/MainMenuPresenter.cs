@@ -71,6 +71,7 @@ namespace _Project.Features.UI.MainMenu
 
         private async void HandleStartGame()
         {
+            SetMenuState(MenuType.StartGame, false);
             await _startGameUseCase.ExecuteAsync();
         }
 
@@ -83,6 +84,8 @@ namespace _Project.Features.UI.MainMenu
         {
             foreach (var menu in menus)
             {
+                menu.mainMenuView.ToggleMenu(false);
+                
                 if (menu.menuType != menuType)
                     continue;
                 
