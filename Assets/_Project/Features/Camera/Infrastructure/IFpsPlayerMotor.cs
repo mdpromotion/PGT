@@ -1,6 +1,6 @@
 using System;
 
-namespace _Project.Features.Player.Presentation
+namespace _Project.Features.Camera.Infrastructure
 {
     public interface IFpsPlayerMotor
     {
