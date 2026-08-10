@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Seed: 1
   Octaves: 3
-  Scale: 3000
+  Scale: 4000
   Persistence: 1
   Lacunarity: 1.5
   RedistributionPower: 0.5
