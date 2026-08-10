@@ -15,11 +15,11 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 1
-  m_FogColor: {r: 0, g: 0, b: 0, a: 1}
+  m_FogColor: {r: 0.5660378, g: 0.5660378, b: 0.5660378, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.01
   m_LinearFogStart: 0
-  m_LinearFogEnd: 300
+  m_LinearFogEnd: 1200
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
@@ -4766,7 +4766,7 @@ MonoBehaviour:
   vegetationCatalog: {fileID: 11400000, guid: 4fcbd9594b9ecc84c98767784051252e, type: 2}
   waterMaterial: {fileID: 2100000, guid: e0a5b090e332ecd4cad4f7b4b189ff24, type: 2}
   chunksParent: {fileID: 758205965}
-  viewDistance: 20
+  viewDistance: 5
   database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
   globalMaxVoices: 32
   playerSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}

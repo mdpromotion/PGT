@@ -34,9 +34,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlphaFadeDistance: 0.5
     - _AmbientStrength: 0.8
     - _BobSpeed: 1
     - _BobStrength: 0
+    - _DepthMaxDistance: 3
     - _EdgeSoftness: 0.05
     - _FresnelPower: 3
     - _LightStrength: 0.35
@@ -57,8 +59,9 @@ Material:
     - _WaveSpeed: 0.1
     - _WaveStrength: 0.15
     m_Colors:
-    - _Color: {r: 0, g: 0.3651498, b: 0.5283019, a: 0.9}
+    - _Color: {r: 0, g: 0.41799712, b: 0.6037736, a: 0.9}
     - _FlowSpeed: {r: 0.03, g: 0.02, b: -0.02, a: 0.015}
+    - _ShallowColor: {r: 0.09999997, g: 0.5, b: 0.5, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &4725450775249370979
