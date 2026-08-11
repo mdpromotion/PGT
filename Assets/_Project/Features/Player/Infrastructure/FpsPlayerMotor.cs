@@ -59,8 +59,6 @@ namespace _Project.Features.Player.Infrastructure
 
             _rb.interpolation =
                 RigidbodyInterpolation.Interpolate;
-            
-            Freeze(true);
         }
 
         public void SetVelocity(Vector3 velocity)

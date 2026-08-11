@@ -5,7 +5,7 @@ namespace _Project.Features.Player.Application
     public interface IPlayerController
     {
         void SetLookYaw(float yawDelta);
-        void Freeze();
+        void Freeze(bool state);
         
         bool IsGrounded { get; }
 

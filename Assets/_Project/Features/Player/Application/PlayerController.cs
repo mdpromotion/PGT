@@ -74,6 +74,9 @@ namespace _Project.Features.Player.Application
                     0f);
             
             _playerMotor.SetRotation(rotation);
+
+            if (_isFrozen)
+                return;
             
             Vector3 forward =
                 rotation *
@@ -140,11 +143,12 @@ namespace _Project.Features.Player.Application
             {
                 OnLanded?.Invoke();
             }
-
-
+            
             _wasGrounded = groundedNow;
 
             _lastVerticalVelocity = velocity.y;
+            
+            _playerMotor.SetVelocity(targetVelocity);
         }
         
         public void SetLookYaw(float yawDelta)
@@ -152,9 +156,9 @@ namespace _Project.Features.Player.Application
             _pendingYawDelta += yawDelta;
         }
 
-        public void Freeze()
+        public void Freeze(bool state)
         {
-            _isFrozen = true;
+            _isFrozen = state;
             _playerMotor.Freeze(_isFrozen);
         }
         
