@@ -1,3 +1,4 @@
+using _Project.Features.Player.Application;
 using _Project.Features.Player.Domain;
 using _Project.Features.Player.Presentation;
 using UnityEngine;
@@ -35,7 +36,7 @@ namespace _Project.Features.Camera.Infrastructure
 
         private IPlayerInputReader _input;
 
-        private IFpsPlayerMotor _motor;
+        private IPlayerController _controller;
 
         private IPlayerStanceState _stance;
 
@@ -49,12 +50,12 @@ namespace _Project.Features.Camera.Infrastructure
         [Inject]
         public void Construct(
             IPlayerInputReader input,
-            IFpsPlayerMotor motor,
+            IPlayerController controller,
             IPlayerStanceState stance)
         {
             _input = input;
 
-            _motor = motor;
+            _controller = controller;
 
             _stance = stance;
         }
@@ -74,7 +75,7 @@ namespace _Project.Features.Camera.Infrastructure
         private void Update()
         {
             if (_input == null ||
-                _motor == null ||
+                _controller == null ||
                 _stance == null)
             {
                 return;
@@ -95,7 +96,7 @@ namespace _Project.Features.Camera.Infrastructure
                 sensitivity;
 
 
-            _motor.SetLookYaw(
+            _controller.SetLookYaw(
                 look.x);
 
 

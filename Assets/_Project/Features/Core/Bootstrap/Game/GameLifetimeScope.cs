@@ -100,6 +100,10 @@ namespace _Project.Features.Core.Bootstrap.Game
 
             builder.RegisterComponentInHierarchy<FpsPlayerMotor>()
                 .As<IFpsPlayerMotor>();
+            
+            builder.Register<PlayerController>(Lifetime.Singleton)
+                .As<IFixedTickable>()
+                .As<IPlayerController>();
 
             builder.RegisterComponentInHierarchy<RigidbodyPlayerState>()
                 .As<IPlayerReadOnly>();
@@ -118,7 +122,7 @@ namespace _Project.Features.Core.Bootstrap.Game
                 .As<IWaterQuery>();
 
             builder.RegisterInstance(playerSoundSet);
-
+            
             builder.RegisterComponentInHierarchy<FootstepController>();
         }
 

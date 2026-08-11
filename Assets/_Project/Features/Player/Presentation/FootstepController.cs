@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using _Project.Features.Camera.Infrastructure;
+using _Project.Features.Player.Application;
 using _Project.Features.Player.Domain;
 using _Project.Features.Player.Infrastructure;
 using _Project.Features.Sound.Domain;
@@ -19,7 +20,7 @@ namespace _Project.Features.Player.Presentation
         [SerializeField] private float _minSpeedForStep = 0.5f;
 
         private IPlayerReadOnly _player;
-        private IFpsPlayerMotor _motor;
+        private IPlayerController _controller;
         private IWaterState _water;
         private IPlayerInputReader _input;
         private IPlayerStanceState _stance;
@@ -32,14 +33,14 @@ namespace _Project.Features.Player.Presentation
         [Inject]
         public void Construct(
             IPlayerReadOnly player,
-            IFpsPlayerMotor motor,
+            IPlayerController controller,
             IWaterState water,
             IPlayerInputReader input,
             IPlayerStanceState stance,
             ISoundService soundService)
         {
             _player = player;
-            _motor = motor;
+            _controller = controller;
             _water = water;
             _input = input;
             _stance = stance;
@@ -48,28 +49,28 @@ namespace _Project.Features.Player.Presentation
 
         private void OnEnable()
         {
-            if (_motor == null)
+            if (_controller == null)
                 return;
 
-            _motor.OnJumped += HandleJumped;
-            _motor.OnLanded += HandleLanded;
+            _controller.OnJumped += HandleJumped;
+            _controller.OnLanded += HandleLanded;
         }
 
         private void OnDisable()
         {
-            if (_motor == null)
+            if (_controller == null)
                 return;
 
-            _motor.OnJumped -= HandleJumped;
-            _motor.OnLanded -= HandleLanded;
+            _controller.OnJumped -= HandleJumped;
+            _controller.OnLanded -= HandleLanded;
         }
 
         private void FixedUpdate()
         {
-            if (_player == null || _motor == null || _water == null || _input == null || _soundService == null)
+            if (_player == null || _controller == null || _water == null || _input == null || _soundService == null)
                 return;
 
-            bool clearGroundStep = _motor.IsGrounded && !_water.IsInWater;
+            bool clearGroundStep = _controller.IsGrounded && !_water.IsInWater;
 
             if (!clearGroundStep)
             {
