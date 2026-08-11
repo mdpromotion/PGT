@@ -62,7 +62,6 @@ namespace _Project.Features.Player.Application
 
         public void Ready()
         {
-            Debug.Log("Ready");
             _playerMotor.TeleportToPosition(_safePosition);
         }
         
@@ -170,7 +169,6 @@ namespace _Project.Features.Player.Application
 
         public void Freeze(bool state)
         {
-            Debug.Log(state);
             _isFrozen = state;
             _playerMotor.Freeze(_isFrozen);
         }
