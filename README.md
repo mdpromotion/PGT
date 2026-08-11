@@ -1,14 +1,14 @@
 # PGT (Procedural-Generation Test)
 
-[English Version](#english-version) | [Русская версия](#русская-версия)
+[English Version](#-english-version) | [Русская версия](#-русская-версия)
 
 ---
 
-<a name="english-version"></a>
+<a id="-english-version"></a>
 
 # 🇬🇧 English Version
 
-**PGT (Procedural-Generation Test)** is a technical prototype focused on procedural world generation and exploration systems in Unity. The project explores scalable approaches for building infinite worlds, including procedural landscapes, hydrology, runtime chunk streaming, and performance-oriented architecture designed for large-scale environments.
+**PGT (Procedural-Generation Test)** is a technical prototype focused on procedural world generation and exploration systems in Unity. The project explores scalable approaches for building infinite worlds, including procedural landscapes, hydrology, vegetation, dynamic lighting, runtime chunk streaming, and performance-oriented architecture designed for large-scale environments.
 
 The main goal of PGT is experimenting with the technologies and systems required to create dynamic procedural worlds while maintaining stable runtime performance and clean, extensible code architecture.
 
@@ -31,6 +31,7 @@ The main goal of PGT is experimenting with the technologies and systems required
 - **Unity Mathematics** — High-performance mathematical operations.
 - **Native Collections** — Low-allocation runtime data processing.
 - **ScriptableObjects** — Data-driven configuration of world, generation, and gameplay systems.
+- **Unity Addressables** — Asset management and async scene/content loading.
 
 ## 🧪 Performance & Optimization
 - **Chunk Streaming** — Dynamic loading and unloading of world regions around the player.
@@ -39,6 +40,7 @@ The main goal of PGT is experimenting with the technologies and systems required
 - **Memory Management** — Controlled lifetime of native resources and minimized runtime allocations.
 - **Unity Profiler** — Continuous profiling and optimization of critical systems.
 - **Low-GC Runtime** — Designed to reduce managed allocations during gameplay.
+- **Configurable Graphics Presets** — Low, Medium, and High quality settings for scalable performance across hardware.
 
 ---
 
@@ -49,31 +51,41 @@ The main goal of PGT is experimenting with the technologies and systems required
 - `Application` — Use cases and feature-specific logic
 - `Domain` — Core rules, models, and independent systems
 - `Infrastructure` — Unity-specific implementations and external integrations
-- `Installer` — Dependency Injection registrations
 - `Presentation` — Runtime views and MonoBehaviours
 - `Data` — Configurations and ScriptableObject assets
 
 ## 🌎 World Systems
 
 - **Infinite Procedural World** — Dynamic landscape generation and streaming around the player.
-- **Procedural Hydrology System** — Generated rivers with terrain carving, natural flow paths, and water surface data.
-- **Chunk-Based Water Rendering** — Runtime water visualization using generated masks, height data, and custom shaders.
+- **Procedural Hydrology System** — Terrain-aware river generation with natural flow paths, terrain carving, and smooth riverbed/shoreline transitions.
+- **Chunk-Based Water Rendering** — Wave movement, depth-aware coloration, shoreline fading, reflections, and fog integration.
+- **Procedural Vegetation** — Automatic tree placement across generated terrain, with multiple tree variants, LODs, and collision.
+- **Dynamic Sky & Day/Night Cycle** — Sun and moon visuals, procedural stars, rotating sun, and smoothly transitioning ambient lighting and fog over time.
+- **Volumetric Fog** — Depth-aware atmospheric fog integrated with lighting and time-of-day.
 - **Landscape Generation Pipeline** — Multithreaded world generation using Unity Jobs + Burst Compiler.
 - **World Streaming System** — Automatic loading, unloading, and prioritization of nearby regions.
 - **Environmental Interaction** — Player movement, sprinting, swimming, diving, and exploration mechanics.
-- **Sound System** — Data-driven audio playback with configurable sound definitions and pooled audio sources.
+- **Sound System** — Data-driven audio playback with configurable sound definitions, movement audio, and water enter/exit feedback.
+- **Main Menu & Loading Flow** — Dedicated main menu scene with a loading screen and a safe, staged player spawn.
+- **Debug Tools** — In-game FPS counter accessible through a debug menu.
 - **Performance-Oriented Architecture** — Systems designed around scalability, profiling, and predictable runtime behavior.
 
 ## ✨ Current Features
 
 - **Infinite Procedural World** — Large-scale procedural landscape generation around the player.
 - **Procedural Rivers** — Natural river generation with terrain carving and improved water continuity.
-- **Water System** — Runtime generated water surfaces with custom rendering support.
+- **Water System** — Runtime generated water surfaces with wave, depth, reflection, and fog-aware rendering.
+- **Vegetation System** — Procedurally placed trees with LODs and collision across generated terrain.
+- **Dynamic Sky & Lighting** — Full day/night cycle with sun/moon visuals, stars, and transitioning ambient light and fog.
+- **Volumetric Fog** — Atmospheric fog that reacts to lighting and time of day.
+- **Graphics Presets** — Configurable Low/Medium/High quality settings.
+- **Main Menu & Startup Flow** — Start Game flow, loading screen, and safe player spawn.
 - **Chunk Streaming** — Dynamic world loading and unloading based on player location.
 - **Chunk Scheduler** — Background generation pipeline with prioritization and cancellation support.
 - **Landscape Continuity** — Seamless connection between generated world regions.
 - **Player Exploration Systems** — Movement, sprinting, swimming, and diving.
-- **Environmental Audio** — Sound feedback for player actions and world interaction.
+- **Environmental Audio** — Sound feedback for player actions, movement, and water interaction.
+- **Debug Menu** — In-game FPS counter.
 - **Performance-Oriented Architecture** — Continuous optimization of generation speed, memory usage, and runtime stability.
 
 ## 🎯 Project Goals
@@ -86,11 +98,11 @@ The main goal of PGT is experimenting with the technologies and systems required
 
 ---
 
-<a name="русская-версия"></a>
+<a id="-русская-версия"></a>
 
 # 🇷🇺 Русская версия
 
-**PGT (Procedural-Generation Test)** — технический прототип, посвящённый процедурной генерации мира и созданию систем исследования в Unity. Проект исследует подходы к построению масштабируемых бесконечных миров: генерацию ландшафта, гидрологию, стриминг чанков и производительную архитектуру для больших процедурных окружений.
+**PGT (Procedural-Generation Test)** — технический прототип, посвящённый процедурной генерации мира и созданию систем исследования в Unity. Проект исследует подходы к построению масштабируемых бесконечных миров: генерацию ландшафта, гидрологию, растительность, динамическое освещение, стриминг чанков и производительную архитектуру для больших процедурных окружений.
 
 Главная цель PGT — экспериментирование с технологиями, необходимыми для создания динамических процедурных миров, сохраняя высокую производительность и чистую расширяемую структуру проекта.
 
@@ -116,6 +128,7 @@ The main goal of PGT is experimenting with the technologies and systems required
 - **Unity Mathematics** — высокопроизводительная математическая библиотека.
 - **Native Collections** — эффективная работа с памятью без лишних аллокаций.
 - **ScriptableObjects** — data-driven настройка параметров мира и игровых систем.
+- **Unity Addressables** — управление ассетами и асинхронная загрузка сцен/контента.
 
 ## 🧪 Оптимизация
 
@@ -125,6 +138,7 @@ The main goal of PGT is experimenting with the technologies and systems required
 - **Контроль памяти** — управление временем жизни Native ресурсов и снижение количества аллокаций.
 - **Unity Profiler** — постоянный анализ и оптимизация критических систем.
 - **Минимизация GC** — снижение количества managed-аллокаций во время выполнения.
+- **Настраиваемые пресеты графики** — уровни Low, Medium и High для масштабируемой производительности.
 
 ---
 
@@ -135,31 +149,41 @@ The main goal of PGT is experimenting with the technologies and systems required
 - `Application` — сценарии использования и логика фичи
 - `Domain` — основные правила, модели и независимые системы
 - `Infrastructure` — Unity-реализации и внешние зависимости
-- `Installer` — регистрация зависимостей
 - `Presentation` — слой представления и MonoBehaviour
 - `Data` — конфигурации и ScriptableObject-ресурсы
 
 ## 🌎 Системы мира
 
 - **Бесконечный процедурный мир** — динамическая генерация и стриминг ландшафта вокруг игрока.
-- **Гидрологическая система** — процедурные реки с изменением рельефа, естественными маршрутами течения и генерацией воды.
-- **Система воды** — визуализация воды в чанках через процедурные данные и собственный шейдер.
+- **Гидрологическая система** — процедурные реки с учётом рельефа, естественными маршрутами течения и плавными переходами русла и берега.
+- **Система воды** — волны, зависимая от глубины окраска, затухание у берега, отражения и интеграция с туманом.
+- **Процедурная растительность** — автоматическое размещение деревьев на сгенерированной территории, несколько вариантов деревьев с LOD и коллизиями.
+- **Динамическое небо и цикл дня/ночи** — визуализация солнца и луны, процедурные звёзды, вращение солнца, плавные переходы освещения и тумана во времени.
+- **Объёмный туман** — атмосферный туман, зависящий от глубины и реагирующий на освещение и время суток.
 - **Генерация ландшафта** — многопоточная генерация мира на Unity Jobs + Burst Compiler.
 - **Стриминг мира** — автоматическая загрузка, выгрузка и приоритизация областей.
 - **Взаимодействие с окружением** — движение, бег, плавание, погружение и исследование мира.
-- **Звуковая система** — data-driven воспроизведение звуков с пулом AudioSource.
+- **Звуковая система** — data-driven воспроизведение звуков, аудио движения и звуки входа/выхода из воды.
+- **Главное меню и загрузка** — отдельная сцена главного меню с экраном загрузки и безопасным поэтапным спавном игрока.
+- **Инструменты отладки** — счётчик FPS в игре через отладочное меню.
 - **Архитектура, ориентированная на производительность** — постоянная работа над масштабируемостью и стабильностью.
 
 ## ✨ Реализовано на данный момент
 
 - **Бесконечный процедурный мир** с генерацией областей вокруг игрока.
 - **Процедурные реки** с естественной генерацией, изменением рельефа и улучшенной связностью.
-- **Система воды** с процедурным созданием поверхности и визуализацией через шейдеры.
+- **Система воды** с волнами, глубиной, отражениями и интеграцией с туманом.
+- **Система растительности** — процедурно размещённые деревья с LOD и коллизиями.
+- **Динамическое небо и освещение** — полный цикл дня/ночи с солнцем, луной, звёздами и плавными переходами.
+- **Объёмный туман**, реагирующий на освещение и время суток.
+- **Пресеты графики** — настраиваемые уровни Low/Medium/High.
+- **Главное меню и запуск игры** — стартовый флоу, экран загрузки и безопасный спавн игрока.
 - **Стриминг чанков** с динамической загрузкой и выгрузкой мира.
 - **Планировщик генерации** с очередью задач, приоритизацией и отменой ненужных вычислений.
 - **Связность ландшафта** между процедурно созданными регионами.
 - **Системы исследования мира** — движение, бег, плавание и погружение.
-- **Звуковая система** с настройкой звуковых событий и управлением воспроизведением.
+- **Звуковая система** с настройкой звуковых событий, аудио движения и взаимодействия с водой.
+- **Отладочное меню** со счётчиком FPS.
 - **Производительная архитектура** с постоянной оптимизацией времени генерации и использования памяти.
 
 ## 🎯 Цели проекта
