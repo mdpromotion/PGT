@@ -21,7 +21,6 @@ namespace _Project.Features.Tick
         {
             _tick.Tick += Tick;
             _lastLogTime = Time.realtimeSinceStartupAsDouble;
-            Debug.Log("Tick Debug Started");
         }
 
         
@@ -34,7 +33,6 @@ namespace _Project.Features.Tick
 
             if (elapsed >= 1.0)
             {
-                Debug.Log($"Ticks per second: {_tickCount / elapsed:F2}");
                 _tickCount = 0;
                 _lastLogTime = now;
             }
