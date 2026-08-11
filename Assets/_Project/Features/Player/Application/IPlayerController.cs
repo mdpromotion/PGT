@@ -9,6 +9,9 @@ namespace _Project.Features.Player.Application
         
         bool IsGrounded { get; }
 
+        bool Prepare();
+        void Ready();
+
         event Action OnJumped;
         event Action OnLanded;
     }

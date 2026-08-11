@@ -1,10 +1,5 @@
-using System;
-using _Project.Features.Camera.Infrastructure;
-using _Project.Features.Player.Application;
-using _Project.Features.Player.Domain;
 using _Project.Features.Player.Presentation;
 using UnityEngine;
-using VContainer;
 
 namespace _Project.Features.Player.Infrastructure
 {
@@ -13,32 +8,21 @@ namespace _Project.Features.Player.Infrastructure
     public sealed class FpsPlayerMotor : MonoBehaviour, IFpsPlayerMotor
     {
         [Header("Ground Check")]
-        [SerializeField] private LayerMask _groundMask;
-        [SerializeField] private float _groundCheckRadius = 0.35f;
-        [SerializeField] private float _groundCheckOffset = 0.05f;
-
-        [Header("Landing")]
-        [SerializeField] private float _landingFallSpeedThreshold = -3f;
-
-        private IPlayerInputReader _input;
+        [SerializeField] private LayerMask groundMask;
+        [SerializeField] private float groundCheckRadius = 0.35f;
+        [SerializeField] private float groundCheckOffset = 0.05f;
 
         private Rigidbody _rb;
         private Collider _collider;
-        
-        public Vector3 CurrentVelocity => _rb.linearVelocity;
-        
-        [Inject]
-        public void Construct(
-            IPlayerInputReader input)
-        {
-            _input = input;
-        }
-        
+
+        public Vector3 CurrentVelocity =>
+            _rb.linearVelocity;
+
         public void Freeze(bool state)
         {
             if (!_rb)
                 return;
-            
+
             if (state)
             {
                 _rb.isKinematic = true;
@@ -50,7 +34,6 @@ namespace _Project.Features.Player.Infrastructure
                 _rb.useGravity = true;
             }
         }
-
 
         private void Awake()
         {
@@ -76,11 +59,60 @@ namespace _Project.Features.Player.Infrastructure
         {
             return Physics.CheckSphere(
                 GetGroundCheckPosition(),
-                _groundCheckRadius,
-                _groundMask,
+                groundCheckRadius,
+                groundMask,
                 QueryTriggerInteraction.Ignore);
         }
 
+        public bool TryGetSafeGroundPosition(
+            out Vector3 position)
+        {
+            Bounds bounds =
+                _collider.bounds;
+
+            Vector3 origin =
+                new Vector3(
+                    bounds.center.x,
+                    bounds.min.y +
+                    groundCheckOffset,
+                    bounds.center.z);
+
+            if (Physics.Raycast(
+                    origin,
+                    Vector3.down,
+                    out RaycastHit hit,
+                    Mathf.Infinity,
+                    groundMask,
+                    QueryTriggerInteraction.Ignore))
+            {
+                float bottomOffset =
+                    _rb.position.y -
+                    bounds.min.y;
+
+                position =
+                    new Vector3(
+                        _rb.position.x,
+                        hit.point.y +
+                        bottomOffset,
+                        _rb.position.z);
+
+                return true;
+            }
+
+            position = default;
+
+            return false;
+        }
+
+        public void TeleportToPosition(
+            Vector3 position)
+        {
+            _rb.position =
+                position;
+
+            _rb.linearVelocity =
+                Vector3.zero;
+        }
 
         private Vector3 GetGroundCheckPosition()
         {
@@ -89,18 +121,16 @@ namespace _Project.Features.Player.Infrastructure
                 Bounds bounds =
                     _collider.bounds;
 
-
                 return new Vector3(
                     bounds.center.x,
                     bounds.min.y +
-                    _groundCheckOffset,
+                    groundCheckOffset,
                     bounds.center.z);
             }
 
-
             return _rb.position +
                    Vector3.down *
-                   _groundCheckOffset;
+                   groundCheckOffset;
         }
     }
 }

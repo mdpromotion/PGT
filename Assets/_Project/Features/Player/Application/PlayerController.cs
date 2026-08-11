@@ -29,7 +29,8 @@ namespace _Project.Features.Player.Application
         private readonly IPlayerInputReader _input;
         private readonly IFpsPlayerMotor _playerMotor;
         private readonly IWaterState _waterState;
-        
+
+        private Vector3 _safePosition;
         
         private const float LandingFallSpeedThreshold = -3f;
         private const float GroundCheckRate = 10f;
@@ -38,7 +39,8 @@ namespace _Project.Features.Player.Application
         public event Action OnLanded;
 
 
-        public PlayerController(IFpsPlayerMotor playerMotor, 
+        public PlayerController(
+            IFpsPlayerMotor playerMotor, 
             GroundMovementUseCase groundMovement, 
             SwimmingMovementUseCase waterMovement,
             IPlayerInputReader input,
@@ -52,7 +54,17 @@ namespace _Project.Features.Player.Application
             
             _groundCheckInterval = 1 / GroundCheckRate;
         }
-        
+
+        public bool Prepare()
+        {
+            return _playerMotor.TryGetSafeGroundPosition(out _safePosition);
+        }
+
+        public void Ready()
+        {
+            Debug.Log("Ready");
+            _playerMotor.TeleportToPosition(_safePosition);
+        }
         
         public void FixedTick()
         {
@@ -158,6 +170,7 @@ namespace _Project.Features.Player.Application
 
         public void Freeze(bool state)
         {
+            Debug.Log(state);
             _isFrozen = state;
             _playerMotor.Freeze(_isFrozen);
         }

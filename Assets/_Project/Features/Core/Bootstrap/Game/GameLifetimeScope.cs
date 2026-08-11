@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using _Project.Features.Camera.Infrastructure;
+using _Project.Features.Core.Application;
 using _Project.Features.GameTime.Application;
 using _Project.Features.GameTime.Domain;
 using _Project.Features.GameTime.Presentation;
@@ -57,12 +58,13 @@ namespace _Project.Features.Core.Bootstrap.Game
         [SerializeField] private PlayerMovementConfig playerMovementConfig;
 
         protected override void Configure(IContainerBuilder builder)
-        {
+        { 
             RegisterSound(builder);
             RegisterPlayer(builder);
             RegisterTickSystem(builder);
             RegisterGameTimeSystem(builder);
             RegisterProceduralWorld(builder);
+            RegisterCore(builder);
         }
 
         private void RegisterSound(IContainerBuilder builder)
@@ -267,6 +269,12 @@ namespace _Project.Features.Core.Bootstrap.Game
                     Lifetime.Singleton);
 
             builder.RegisterComponentInHierarchy<ProceduralWorldPresenter>();
+        }
+        
+        private void RegisterCore(IContainerBuilder builder)
+        {
+            builder.Register<CoreGameLoop>(Lifetime.Singleton)
+                .As<IInitializable>();
         }
     }
 }
