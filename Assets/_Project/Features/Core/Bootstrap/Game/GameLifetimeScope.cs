@@ -30,6 +30,8 @@ using _Project.Features.Sound.Presentation;
 using _Project.Features.Tick;
 using _Project.Features.Tick.Application;
 using _Project.Features.Tick.Domain;
+using _Project.Features.UI.DebugMenu;
+using _Project.Features.UI.Infrastructure;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -65,6 +67,7 @@ namespace _Project.Features.Core.Bootstrap.Game
             RegisterGameTimeSystem(builder);
             RegisterProceduralWorld(builder);
             RegisterCore(builder);
+            RegisterUI(builder);
         }
 
         private void RegisterSound(IContainerBuilder builder)
@@ -275,6 +278,15 @@ namespace _Project.Features.Core.Bootstrap.Game
         {
             builder.Register<CoreGameLoop>(Lifetime.Singleton)
                 .As<IInitializable>();
+        }
+
+        private void RegisterUI(IContainerBuilder builder)
+        {
+            builder.Register<FPSCounter>(Lifetime.Singleton)
+                .As<ITickable>()
+                .As<IFPSCounter>();
+            
+            builder.RegisterComponentInHierarchy<DebugMenuPresenter>();
         }
     }
 }
