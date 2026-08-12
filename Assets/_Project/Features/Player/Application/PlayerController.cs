@@ -38,7 +38,7 @@ namespace _Project.Features.Player.Application
         private const float LandingFallSpeedThreshold = -3f;
         private const float GroundCheckRate = 10f;
 
-        private IGameState _gameState;
+        private readonly IGameState _gameState;
         
         public event Action OnJumped;
         public event Action OnLanded;
@@ -76,7 +76,7 @@ namespace _Project.Features.Player.Application
         {
             if (_gameState.Paused)
                 return;
-            
+
             UpdateGroundCheck();
             
             bool swimming = _waterState.IsInWater;

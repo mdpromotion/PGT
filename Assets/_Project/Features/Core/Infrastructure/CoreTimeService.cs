@@ -1,10 +1,12 @@
+using System;
 using _Project.Features.Core.Domain;
 using UnityEngine;
 using VContainer;
+using VContainer.Unity;
 
-namespace _Project.Features.Core.Presentation
+namespace _Project.Features.Core.Infrastructure
 {
-    public class CoreTimePresenter : MonoBehaviour
+    public class CoreTimeService : IInitializable, IDisposable
     {
         private IGameState _gameState;
 
@@ -14,9 +16,8 @@ namespace _Project.Features.Core.Presentation
             _gameState = gameState;
         }
 
-        private void Awake()
+        public void Initialize()
         {
-            print(_gameState.Paused);
             _gameState.PausedChanged += OnPause;
         }
 
@@ -25,7 +26,7 @@ namespace _Project.Features.Core.Presentation
             Time.timeScale = state ? 0 : 1;
         }
 
-        private void OnDestroy()
+        public void Dispose()
         {
             _gameState.PausedChanged -= OnPause;
         }

@@ -14,23 +14,27 @@ namespace _Project.Features.Core.Application
         private readonly IPlayerController _player;
         private readonly SceneTransitionService _sceneTransitionService;
         private readonly IGameState _gameState;
+        private readonly IGameStateController _gameStateController;
         private readonly ICursorService _cursorService;
 
         public CoreGameLoop(
             IPlayerController player, 
             SceneTransitionService sceneTransitionService, 
             IGameState gameState,
+            IGameStateController gameStateController,
             ICursorService cursorService)
         {
             _player = player;
             _sceneTransitionService = sceneTransitionService;
             _gameState = gameState;
+            _gameStateController = gameStateController;
             _cursorService = cursorService;
         }
 
         public void Initialize()
         {
             InitializeAsync().Forget();
+            _gameStateController.SetPaused(false);
             _cursorService.LockCursor(true);
 
             _gameState.PausedChanged += OnPausedChanged;
@@ -55,8 +59,6 @@ namespace _Project.Features.Core.Application
 
             _player.Ready();
             _player.Freeze(false);
-            
-            Debug.Log("Player ready");
 
             await _sceneTransitionService.CompleteAsync();
         }

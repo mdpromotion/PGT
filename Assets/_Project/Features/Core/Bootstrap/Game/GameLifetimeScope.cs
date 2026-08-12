@@ -291,10 +291,11 @@ namespace _Project.Features.Core.Bootstrap.Game
             builder.Register<CursorLockService>(Lifetime.Singleton)
                 .As<ICursorService>();
             
+            builder.Register<CoreTimeService>(Lifetime.Singleton)
+                .As<IInitializable>();
+            
             builder.Register<CoreGameLoop>(Lifetime.Singleton)
                 .As<IInitializable>();
-
-            builder.RegisterComponentInHierarchy<CoreTimePresenter>();
         }
 
         private void RegisterUI(IContainerBuilder builder)

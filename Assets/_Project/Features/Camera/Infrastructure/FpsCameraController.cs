@@ -77,8 +77,6 @@ namespace _Project.Features.Camera.Infrastructure
             if (_gameState.Paused)
                 return;
             
-            print(Time.deltaTime);
-            
             UpdateLook();
 
             UpdateCameraHeight();
