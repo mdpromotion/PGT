@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using _Project.Features.Camera.Infrastructure;
 using _Project.Features.Core.Application;
+using _Project.Features.Core.Infrastructure;
 using _Project.Features.GameTime.Application;
 using _Project.Features.GameTime.Domain;
 using _Project.Features.GameTime.Presentation;
@@ -58,6 +59,9 @@ namespace _Project.Features.Core.Bootstrap.Game
 
         [Header("Player")]
         [SerializeField] private PlayerMovementConfig playerMovementConfig;
+        
+        [Header("Performance")]
+        [SerializeField] private FrameBudgetConfig frameBudgetConfig;
 
         protected override void Configure(IContainerBuilder builder)
         { 
@@ -276,6 +280,13 @@ namespace _Project.Features.Core.Bootstrap.Game
         
         private void RegisterCore(IContainerBuilder builder)
         {
+            builder.RegisterInstance(frameBudgetConfig);
+
+            builder.Register<FrameBudget>(
+                    Lifetime.Singleton)
+                .As<IFrameBudget>()
+                .As<ITickable>();
+            
             builder.Register<CoreGameLoop>(Lifetime.Singleton)
                 .As<IInitializable>();
         }

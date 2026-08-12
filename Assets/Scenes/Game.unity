@@ -4925,6 +4925,7 @@ MonoBehaviour:
   globalMaxVoices: 32
   playerSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
   playerMovementConfig: {fileID: 11400000, guid: 7979d104b7824d049a43e5707993bce9, type: 2}
+  frameBudgetConfig: {fileID: 11400000, guid: e40bd9147fe5bad4a8625ae5ebf358cb, type: 2}
 --- !u!1 &1508698440
 GameObject:
   m_ObjectHideFlags: 0
