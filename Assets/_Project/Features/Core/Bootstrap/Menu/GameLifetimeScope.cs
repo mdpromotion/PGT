@@ -1,5 +1,3 @@
-using _Project.Features.UI.Application;
-using _Project.Features.UI.Infrastructure;
 using _Project.Features.UI.MainMenu;
 using VContainer;
 using VContainer.Unity;

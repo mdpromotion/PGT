@@ -1,7 +1,7 @@
 using UnityEngine;
 using VContainer.Unity;
 
-namespace _Project.Features.Player.Presentation
+namespace _Project.Features.Core.Presentation
 {
     public interface IPlayerInputReader
     {
@@ -12,14 +12,20 @@ namespace _Project.Features.Player.Presentation
         bool CrouchPressed { get; }
     }
 
-    public sealed class PlayerInputReader :
+    public interface IPlayerUIInputReader
+    {
+        bool InGameMenuPressed { get; }
+    }
+
+    public sealed class InputReader :
         IPlayerInputReader,
+        IPlayerUIInputReader,
         IInitializable,
         System.IDisposable
     {
         private readonly InputSystem_Actions _inputActions;
 
-        public PlayerInputReader(InputSystem_Actions inputActions)
+        public InputReader(InputSystem_Actions inputActions)
         {
             _inputActions = inputActions;
         }
@@ -29,6 +35,7 @@ namespace _Project.Features.Player.Presentation
         public bool JumpPressed => _inputActions.Player.Jump.IsPressed();
         public bool SprintPressed => _inputActions.Player.Sprint.IsPressed();
         public bool CrouchPressed => _inputActions.Player.Crouch.IsPressed();
+        public bool InGameMenuPressed => _inputActions.UI.InGameMenu.IsPressed();
 
         public void Initialize()
         {

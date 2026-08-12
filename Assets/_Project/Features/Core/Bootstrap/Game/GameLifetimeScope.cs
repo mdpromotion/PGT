@@ -34,7 +34,6 @@ using _Project.Features.Tick.Domain;
 using _Project.Features.UI.DebugMenu;
 using _Project.Features.UI.Infrastructure;
 using _Project.Features.UI.InGameMenu;
-using _Project.Features.UI.MainMenu.View;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -91,12 +90,6 @@ namespace _Project.Features.Core.Bootstrap.Game
 
         private void RegisterPlayer(IContainerBuilder builder)
         {
-            builder.Register<InputSystem_Actions>(Lifetime.Singleton);
-
-            builder.Register<PlayerInputReader>(Lifetime.Singleton)
-                .As<IPlayerInputReader>()
-                .As<IInitializable>();
-
             builder.RegisterComponentInHierarchy<FpsCameraController>();
 
             builder.RegisterInstance(playerMovementConfig)

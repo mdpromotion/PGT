@@ -33,7 +33,7 @@ namespace _Project.Features.UI.MainMenu
         private LoadSceneController _loadSceneController;
         private SceneTransitionService _sceneTransitionService;
 
-        private bool _isLoading = false;
+        private bool _isLoading;
 
         [Inject]
         public void Construct(MainMenuModel model, LoadSceneController loadSceneController, SceneTransitionService sceneTransitionService)
