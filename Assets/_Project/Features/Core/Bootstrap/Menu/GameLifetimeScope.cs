@@ -6,14 +6,11 @@ using VContainer.Unity;
 
 namespace _Project.Features.Core.Bootstrap.Menu
 {
-    public class GameLifetimeScope : LifetimeScope
+    public class GameLifetimeScope : ChildLifetimeScope
     {
         protected override void Configure(IContainerBuilder builder)
         {
             builder.Register<MainMenuModel>(Lifetime.Singleton);
-            
-            builder.Register<ILoadSceneService, LoadSceneService>(Lifetime.Singleton);
-            builder.Register<StartGameUseCase>(Lifetime.Singleton);
             
             builder.RegisterComponentInHierarchy<MainMenuPresenter>();
         }
