@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using _Project.Features.Camera.Infrastructure;
 using _Project.Features.Core.Application;
+using _Project.Features.Core.Domain;
 using _Project.Features.Core.Infrastructure;
+using _Project.Features.Core.Presentation;
+using _Project.Features.Cursor.Presentation;
 using _Project.Features.GameTime.Application;
 using _Project.Features.GameTime.Domain;
 using _Project.Features.GameTime.Presentation;
@@ -81,8 +84,7 @@ namespace _Project.Features.Core.Bootstrap.Game
 
             builder.Register(_ => new SoundPlaybackGuard(globalMaxVoices), Lifetime.Singleton);
 
-            builder.RegisterComponentOnNewGameObject<SoundVoicePool>(Lifetime.Singleton, "SoundVoicePool")
-                .DontDestroyOnLoad();
+            builder.RegisterComponentOnNewGameObject<SoundVoicePool>(Lifetime.Singleton, "SoundVoicePool");
 
             builder.Register<SoundService>(Lifetime.Singleton)
                 .As<ISoundService>();
@@ -275,15 +277,24 @@ namespace _Project.Features.Core.Bootstrap.Game
         
         private void RegisterCore(IContainerBuilder builder)
         {
+            builder.Register<GameState>(Lifetime.Singleton)
+                .As<IGameStateController>()
+                .As<IGameState>();
+            
             builder.RegisterInstance(frameBudgetConfig);
 
             builder.Register<FrameBudget>(
                     Lifetime.Singleton)
                 .As<IFrameBudget>()
                 .As<ITickable>();
+
+            builder.Register<CursorLockService>(Lifetime.Singleton)
+                .As<ICursorService>();
             
             builder.Register<CoreGameLoop>(Lifetime.Singleton)
                 .As<IInitializable>();
+
+            builder.RegisterComponentInHierarchy<CoreTimePresenter>();
         }
 
         private void RegisterUI(IContainerBuilder builder)

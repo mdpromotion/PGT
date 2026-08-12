@@ -1,6 +1,7 @@
 using System;
 using _Project.Features.Camera.Infrastructure;
 using _Project.Features.Core;
+using _Project.Features.Core.Domain;
 using _Project.Features.Core.Presentation;
 using _Project.Features.Player.Domain;
 using _Project.Features.Player.Presentation;
@@ -36,6 +37,8 @@ namespace _Project.Features.Player.Application
         
         private const float LandingFallSpeedThreshold = -3f;
         private const float GroundCheckRate = 10f;
+
+        private IGameState _gameState;
         
         public event Action OnJumped;
         public event Action OnLanded;
@@ -46,13 +49,15 @@ namespace _Project.Features.Player.Application
             GroundMovementUseCase groundMovement, 
             SwimmingMovementUseCase waterMovement,
             IPlayerInputReader input,
-            IWaterState waterState)
+            IWaterState waterState,
+            IGameState gameState)
         {
             _playerMotor = playerMotor;
             _groundMovement = groundMovement;
             _waterMovement = waterMovement;
             _input = input;
             _waterState = waterState;
+            _gameState = gameState;
             
             _groundCheckInterval = 1 / GroundCheckRate;
         }
@@ -69,6 +74,9 @@ namespace _Project.Features.Player.Application
         
         public void FixedTick()
         {
+            if (_gameState.Paused)
+                return;
+            
             UpdateGroundCheck();
             
             bool swimming = _waterState.IsInWater;

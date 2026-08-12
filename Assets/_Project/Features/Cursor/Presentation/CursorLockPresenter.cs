@@ -2,14 +2,14 @@ using UnityEngine;
 
 namespace _Project.Features.Cursor.Presentation
 {
-    public sealed class CursorLockPresenter : MonoBehaviour
+    public interface ICursorService
     {
-        private void Awake()
-        {
-            LockCursor(true);
-        }
-
-        private void LockCursor(bool state)
+        void LockCursor(bool state);
+    }
+    
+    public sealed class CursorLockService : ICursorService
+    {
+        public void LockCursor(bool state)
         {
             UnityEngine.Cursor.lockState = state ? CursorLockMode.Locked : CursorLockMode.None;
             UnityEngine.Cursor.visible = !state;

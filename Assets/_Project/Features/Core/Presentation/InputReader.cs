@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
-using VContainer.Unity;
+using UnityEngine.InputSystem;
+using IInitializable = VContainer.Unity.IInitializable;
 
 namespace _Project.Features.Core.Presentation
 {
@@ -14,14 +16,14 @@ namespace _Project.Features.Core.Presentation
 
     public interface IPlayerUIInputReader
     {
-        bool InGameMenuPressed { get; }
+        event Action PauseClicked;
     }
 
     public sealed class InputReader :
         IPlayerInputReader,
         IPlayerUIInputReader,
         IInitializable,
-        System.IDisposable
+        IDisposable
     {
         private readonly InputSystem_Actions _inputActions;
 
@@ -35,15 +37,25 @@ namespace _Project.Features.Core.Presentation
         public bool JumpPressed => _inputActions.Player.Jump.IsPressed();
         public bool SprintPressed => _inputActions.Player.Sprint.IsPressed();
         public bool CrouchPressed => _inputActions.Player.Crouch.IsPressed();
-        public bool InGameMenuPressed => _inputActions.UI.InGameMenu.IsPressed();
+        
+        public event Action PauseClicked;
 
         public void Initialize()
         {
             _inputActions.Enable();
+            
+            _inputActions.UI.InGameMenu.canceled += OnPauseReleased;
+        }
+
+        private void OnPauseReleased(InputAction.CallbackContext context)
+        {
+            PauseClicked?.Invoke();
         }
 
         public void Dispose()
         {
+            _inputActions.UI.InGameMenu.canceled -= OnPauseReleased;
+            
             _inputActions.Disable();
             _inputActions.Dispose();
         }

@@ -1,4 +1,6 @@
 using System;
+using _Project.Features.Core.Domain;
+using _Project.Features.Core.Presentation;
 using _Project.Features.UI.Application;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -21,10 +23,13 @@ namespace _Project.Features.UI.Menus.InGameMenu
     {
         [SerializeField] private ButtonBase resumeButton;
         [SerializeField] private ButtonBase exitButton;
+        [SerializeField] private InGameMenuView pauseMenu;
         
         private LoadSceneController _loadSceneController;
+        private IPlayerUIInputReader _playerUIInputReader;
+        private IGameStateController _gameStateController;
 
-        private bool _isVisible = false;
+        private bool _isVisible;
         
         private void Awake()
         {
@@ -33,20 +38,29 @@ namespace _Project.Features.UI.Menus.InGameMenu
         }
 
         [Inject]
-        public void Construct(LoadSceneController loadSceneController)
+        public void Construct(LoadSceneController loadSceneController, IPlayerUIInputReader playerUIInputReader, IGameStateController gameStateController)
         {
             _loadSceneController = loadSceneController;
+            _playerUIInputReader = playerUIInputReader;
+            _gameStateController = gameStateController;
+            
+            _playerUIInputReader.PauseClicked += OnPauseClicked;
         }
 
         private void OnPauseClicked()
         {
-            // soon
+            _isVisible = !_isVisible;
+            pauseMenu.Toggle(_isVisible);
+            
+            _gameStateController.SetPaused(_isVisible);
         }
 
         private void OnResumeClicked()
         {
-            print("resume");
-            // soon
+            _isVisible = false;
+            pauseMenu.Toggle(_isVisible);
+            
+            _gameStateController.SetPaused(false);
         }
 
         private void OnExitClicked()
@@ -58,6 +72,7 @@ namespace _Project.Features.UI.Menus.InGameMenu
         {
             resumeButton.ButtonClicked -= OnResumeClicked;
             exitButton.ButtonClicked -= OnExitClicked;
+            _playerUIInputReader.PauseClicked -= OnPauseClicked;
         }
     }
 }
