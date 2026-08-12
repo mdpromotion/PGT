@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using _Project.Features.Camera.Infrastructure;
 using _Project.Features.Core.Application;
+using _Project.Features.Core.Domain;
 using _Project.Features.Core.Infrastructure;
+using _Project.Features.Core.Presentation;
+using _Project.Features.Cursor.Presentation;
 using _Project.Features.GameTime.Application;
 using _Project.Features.GameTime.Domain;
 using _Project.Features.GameTime.Presentation;
@@ -31,8 +34,9 @@ using _Project.Features.Sound.Presentation;
 using _Project.Features.Tick;
 using _Project.Features.Tick.Application;
 using _Project.Features.Tick.Domain;
-using _Project.Features.UI.DebugMenu;
 using _Project.Features.UI.Infrastructure;
+using _Project.Features.UI.Menus.DebugMenu;
+using _Project.Features.UI.Menus.InGameMenu;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -80,8 +84,7 @@ namespace _Project.Features.Core.Bootstrap.Game
 
             builder.Register(_ => new SoundPlaybackGuard(globalMaxVoices), Lifetime.Singleton);
 
-            builder.RegisterComponentOnNewGameObject<SoundVoicePool>(Lifetime.Singleton, "SoundVoicePool")
-                .DontDestroyOnLoad();
+            builder.RegisterComponentOnNewGameObject<SoundVoicePool>(Lifetime.Singleton, "SoundVoicePool");
 
             builder.Register<SoundService>(Lifetime.Singleton)
                 .As<ISoundService>();
@@ -89,12 +92,6 @@ namespace _Project.Features.Core.Bootstrap.Game
 
         private void RegisterPlayer(IContainerBuilder builder)
         {
-            builder.Register<InputSystem_Actions>(Lifetime.Singleton);
-
-            builder.Register<PlayerInputReader>(Lifetime.Singleton)
-                .As<IPlayerInputReader>()
-                .As<IInitializable>();
-
             builder.RegisterComponentInHierarchy<FpsCameraController>();
 
             builder.RegisterInstance(playerMovementConfig)
@@ -280,12 +277,22 @@ namespace _Project.Features.Core.Bootstrap.Game
         
         private void RegisterCore(IContainerBuilder builder)
         {
+            builder.Register<GameState>(Lifetime.Singleton)
+                .As<IGameStateController>()
+                .As<IGameState>();
+            
             builder.RegisterInstance(frameBudgetConfig);
 
             builder.Register<FrameBudget>(
                     Lifetime.Singleton)
                 .As<IFrameBudget>()
                 .As<ITickable>();
+
+            builder.Register<CursorLockService>(Lifetime.Singleton)
+                .As<ICursorService>();
+            
+            builder.Register<CoreTimeService>(Lifetime.Singleton)
+                .As<IInitializable>();
             
             builder.Register<CoreGameLoop>(Lifetime.Singleton)
                 .As<IInitializable>();
@@ -298,6 +305,7 @@ namespace _Project.Features.Core.Bootstrap.Game
                 .As<IFPSCounter>();
             
             builder.RegisterComponentInHierarchy<DebugMenuPresenter>();
+            builder.RegisterComponentInHierarchy<InGameMenuPresenter>();
         }
     }
 }

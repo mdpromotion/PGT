@@ -1,20 +1,20 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace _Project.Features.UI.MainMenu.View
+namespace _Project.Features.UI.Menus.LoadingScreen.View
 {
     [RequireComponent(typeof(Transform))]
     public class LoadingBarView : MonoBehaviour
     {
         [Header("Rotation")]
-        [SerializeField] private float _rotationDuration = 1f;
-        [SerializeField] private RotateMode _rotateMode = RotateMode.FastBeyond360;
+        [SerializeField] private float rotationDuration = 1f;
+        [SerializeField] private RotateMode rotateMode = RotateMode.FastBeyond360;
 
         [Header("Pulse")]
-        [SerializeField] private bool _usePulse = true;
-        [SerializeField] private float _pulseScale = 1.15f;
-        [SerializeField] private float _pulseDuration = 0.6f;
-        [SerializeField] private Ease _pulseEase = Ease.InOutSine;
+        [SerializeField] private bool usePulse = true;
+        [SerializeField] private float pulseScale = 1.15f;
+        [SerializeField] private float pulseDuration = 0.6f;
+        [SerializeField] private Ease pulseEase = Ease.InOutSine;
 
         private Transform _loadingBar;
         private Tween _rotationTween;
@@ -40,17 +40,17 @@ namespace _Project.Features.UI.MainMenu.View
             KillAnimation();
             
             _rotationTween = _loadingBar
-                .DOLocalRotate(new Vector3(0f, 0f, -360f), _rotationDuration, _rotateMode)
+                .DOLocalRotate(new Vector3(0f, 0f, -360f), rotationDuration, rotateMode)
                 .SetEase(Ease.Linear)
                 .SetLoops(-1, LoopType.Restart)
                 .SetUpdate(UpdateType.Normal, true)
                 .SetTarget(_loadingBar);
 
-            if (_usePulse)
+            if (usePulse)
             {
                 _pulseTween = _loadingBar
-                    .DOScale(_pulseScale, _pulseDuration)
-                    .SetEase(_pulseEase)
+                    .DOScale(pulseScale, pulseDuration)
+                    .SetEase(pulseEase)
                     .SetLoops(-1, LoopType.Yoyo)
                     .SetUpdate(UpdateType.Normal, true)
                     .SetId(_loadingBar);

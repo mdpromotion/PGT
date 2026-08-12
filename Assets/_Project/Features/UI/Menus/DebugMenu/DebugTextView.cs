@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace _Project.Features.UI.DebugMenu
+namespace _Project.Features.UI.Menus.DebugMenu
 {
     [RequireComponent(typeof(Text))]
     public class DebugTextView : MonoBehaviour

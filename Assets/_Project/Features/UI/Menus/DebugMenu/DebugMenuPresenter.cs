@@ -1,9 +1,8 @@
-using System;
 using _Project.Features.UI.Infrastructure;
 using UnityEngine;
 using VContainer;
 
-namespace _Project.Features.UI.DebugMenu
+namespace _Project.Features.UI.Menus.DebugMenu
 {
     public class DebugMenuPresenter : MonoBehaviour
     { 
