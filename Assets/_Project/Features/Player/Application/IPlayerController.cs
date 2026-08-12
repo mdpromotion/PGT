@@ -7,6 +7,8 @@ namespace _Project.Features.Player.Application
         void SetLookYaw(float yawDelta);
         void Freeze(bool state);
         
+        float LookYaw { get; }
+        
         bool IsGrounded { get; }
 
         bool Prepare();

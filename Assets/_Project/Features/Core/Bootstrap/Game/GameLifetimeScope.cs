@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using _Project.Features.Camera.Application;
 using _Project.Features.Camera.Infrastructure;
 using _Project.Features.Core.Application;
 using _Project.Features.Core.Domain;
@@ -63,6 +64,7 @@ namespace _Project.Features.Core.Bootstrap.Game
 
         [Header("Player")]
         [SerializeField] private PlayerMovementConfig playerMovementConfig;
+        [SerializeField] private PlayerCameraConfig playerCameraConfig;
         
         [Header("Performance")]
         [SerializeField] private FrameBudgetConfig frameBudgetConfig;
@@ -71,6 +73,7 @@ namespace _Project.Features.Core.Bootstrap.Game
         { 
             RegisterSound(builder);
             RegisterPlayer(builder);
+            RegisterCamera(builder);
             RegisterTickSystem(builder);
             RegisterGameTimeSystem(builder);
             RegisterProceduralWorld(builder);
@@ -92,8 +95,6 @@ namespace _Project.Features.Core.Bootstrap.Game
 
         private void RegisterPlayer(IContainerBuilder builder)
         {
-            builder.RegisterComponentInHierarchy<FpsCameraController>();
-
             builder.RegisterInstance(playerMovementConfig)
                 .AsSelf();
 
@@ -132,6 +133,17 @@ namespace _Project.Features.Core.Bootstrap.Game
             builder.RegisterComponentInHierarchy<FootstepController>();
         }
 
+        private void RegisterCamera(IContainerBuilder builder)
+        {
+            builder.RegisterInstance(playerCameraConfig);
+            
+            builder.RegisterComponentInHierarchy<CameraMotor>()
+                .As<ICameraMotor>();
+
+            builder.Register<CameraController>(Lifetime.Singleton)
+                .As<ILateTickable>();
+        }
+        
         private void RegisterTickSystem(IContainerBuilder builder)
         {
             builder.Register<TickData>(Lifetime.Singleton);
