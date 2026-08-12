@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using _Project.Features.Core.Infrastructure;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 
@@ -22,14 +23,16 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks.Generation
         private bool _needsSort;
 
         private const int MaxJobs = 10;
-        private const int MaxApplyPerFrame = 1;
-
+        
+        private readonly IFrameBudget _frameBudget;
 
 
         public ChunkGenerationScheduler(
-            IChunkGenerator pipeline)
+            IChunkGenerator pipeline,
+            IFrameBudget frameBudget)
         {
             _pipeline = pipeline;
+            _frameBudget = frameBudget;
 
 
             _comparison =
@@ -125,46 +128,48 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks.Generation
             Action<ChunkGenerationResult> apply,
             Action<ChunkCoordinate> completed)
         {
-            int applied = 0;
-
-            for(int i = 0; i < _running.Count;)
+            for (int i = 0; i < _running.Count;)
             {
-                if(applied >= MaxApplyPerFrame)
-                    break;
-
                 GenerationTask task = _running[i];
 
-                if(!task.Handle.IsCompleted)
+                if (!task.Handle.IsCompleted)
                 {
                     i++;
                     continue;
                 }
-
-                task.Handle.Complete();
-
-                ChunkCoordinate coordinate = task.State.Context.Coordinate;
-
-                if(task.Cancelled)
+                
+                if (!_frameBudget.TryBeginOperation(
+                        out IFrameBudgetOperation operation))
                 {
-                    task.State.DisposeAll();
+                    break;
+                }
+
+                using (operation)
+                {
+                    task.Handle.Complete();
+
+                    ChunkCoordinate coordinate = task.State.Context.Coordinate;
+
+                    if (task.Cancelled)
+                    {
+                        task.State.DisposeAll();
+
+                        completed(coordinate);
+
+                        RemoveTask(i);
+
+                        continue;
+                    }
+
+                    ChunkGenerationResult result = new ChunkGenerationResult(task.State);
+
+                    apply(result);
+
 
                     completed(coordinate);
 
                     RemoveTask(i);
-
-                    continue;
                 }
-
-                ChunkGenerationResult result = new ChunkGenerationResult(task.State);
-
-                apply(result);
-
-
-                completed(coordinate);
-
-                RemoveTask(i);
-
-                applied++;
             }
         }
 

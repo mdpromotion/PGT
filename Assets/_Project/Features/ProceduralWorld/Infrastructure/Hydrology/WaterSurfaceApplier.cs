@@ -1,10 +1,12 @@
-﻿using _Project.Features.ProceduralWorld.Domain;
+﻿using System.Collections.Generic;
+using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
+using _Project.Features.ProceduralWorld.Domain.Hydrology;
 using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 {
-    public sealed class WaterSurfaceApplier
+    public sealed class WaterSurfaceApplier : System.IDisposable
     {
         private static readonly int MaskHeightTexId = Shader.PropertyToID("_MaskHeightTex");
         private const string WaterChildName = "Water";
@@ -13,6 +15,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
         private readonly float _heightScale;
         private readonly Material _sharedMaterial;
         private readonly int _meshStride;
+
+        private readonly Dictionary<Terrain, WaterHandle> _handles = new();
 
         public WaterSurfaceApplier(
             ChunkGrid grid,
@@ -25,46 +29,68 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             _sharedMaterial = sharedMaterial;
             _meshStride = meshStride;
         }
-        
-        public void Apply(ChunkGenerationState state, Transform chunkRoot)
+
+        public void Apply(ChunkGenerationState state, Terrain terrain)
         {
-            Transform water = chunkRoot.Find(WaterChildName);
-            if (water == null)
-            {
-                Debug.LogError(
-                    $"WaterSurfaceApplier: '{chunkRoot.name}' has no child named '{WaterChildName}'.");
+            WaterHandle handle = GetOrCreateHandle(terrain);
+
+            if (handle == null)
                 return;
-            }
 
             bool hasWater =
                 state.WaterBounds.IsCreated &&
                 state.WaterBounds.Length > 0 &&
                 state.WaterBounds[0] == 1;
 
-            water.gameObject.SetActive(hasWater);
+            handle.Root.gameObject.SetActive(hasWater);
 
             if (hasWater)
-                UpdateWaterSurface(water, state);
+                UpdateWaterSurface(handle, state);
         }
 
-        private void UpdateWaterSurface(Transform water, ChunkGenerationState state)
+        private WaterHandle GetOrCreateHandle(Terrain terrain)
         {
+            if (_handles.TryGetValue(terrain, out WaterHandle handle))
+                return handle;
+
+            Transform water = terrain.transform.Find(WaterChildName);
+            if (!water)
+            {
+                Debug.LogError(
+                    $"WaterSurfaceApplier: '{terrain.name}' has no child named '{WaterChildName}'.");
+                return null;
+            }
+
             MeshFilter filter = water.GetComponent<MeshFilter>();
-            if (filter == null)
+            if (!filter)
             {
                 Debug.LogError($"WaterSurfaceApplier: '{WaterChildName}' has no MeshFilter.");
-                return;
+                return null;
             }
 
-            Mesh mesh = filter.sharedMesh;
-            if (mesh == null || mesh.name != "WaterSurface")
+            Renderer renderer = water.GetComponent<Renderer>();
+            if (!renderer)
             {
-                mesh = new Mesh { name = "WaterSurface" };
-                filter.sharedMesh = mesh;
+                Debug.LogError($"WaterSurfaceApplier: '{WaterChildName}' has no Renderer.");
+                return null;
             }
 
+            Mesh mesh = new Mesh { name = "WaterSurface" };
+            filter.sharedMesh = mesh;
+
+            if (!renderer.sharedMaterial)
+                renderer.sharedMaterial = _sharedMaterial;
+
+            handle = new WaterHandle(water, filter, renderer, mesh);
+            _handles.Add(terrain, handle);
+
+            return handle;
+        }
+
+        private void UpdateWaterSurface(WaterHandle handle, ChunkGenerationState state)
+        {
             WaterMeshBuilder.Build(
-                mesh,
+                handle.Mesh,
                 state.Hydrology.WaterSurfaceHeight,
                 state.Context.Resolution,
                 _grid.ChunkSizeX,
@@ -72,32 +98,47 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 _heightScale,
                 _meshStride);
 
-            var texture = new Texture2D(
-                state.Context.Resolution,
-                state.Context.Resolution,
-                TextureFormat.RGBA32,
-                mipChain: false,
-                linear: true)
+            int resolution = state.Context.Resolution;
+
+            if (!handle.MaskTexture ||
+                handle.MaskTexture.width != resolution ||
+                handle.MaskTexture.height != resolution)
             {
-                wrapMode = TextureWrapMode.Clamp,
-                filterMode = FilterMode.Bilinear,
-            };
+                if (handle.MaskTexture)
+                    Object.Destroy(handle.MaskTexture);
 
-            texture.SetPixelData(state.WaterMaskPixels, 0);
-            texture.Apply(updateMipmaps: false, makeNoLongerReadable: true);
+                handle.MaskTexture = new Texture2D(
+                    resolution,
+                    resolution,
+                    TextureFormat.RGBA32,
+                    mipChain: false,
+                    linear: true)
+                {
+                    wrapMode = TextureWrapMode.Clamp,
+                    filterMode = FilterMode.Bilinear,
+                };
+            }
 
-            var renderer = water.GetComponent<Renderer>();
-            if (renderer.sharedMaterial == null)
-                renderer.sharedMaterial = _sharedMaterial;
+            handle.MaskTexture.SetPixelData(state.WaterMaskPixels, 0);
+            handle.MaskTexture.Apply(updateMipmaps: false, makeNoLongerReadable: false);
 
-            var block = new MaterialPropertyBlock();
-            renderer.GetPropertyBlock(block);
-            block.SetTexture(MaskHeightTexId, texture);
-            renderer.SetPropertyBlock(block);
+            handle.Renderer.GetPropertyBlock(handle.PropertyBlock);
+            handle.PropertyBlock.SetTexture(MaskHeightTexId, handle.MaskTexture);
+            handle.Renderer.SetPropertyBlock(handle.PropertyBlock);
         }
 
-        private static void DisposeTransient(ChunkGenerationState state)
+        public void Dispose()
         {
+            foreach (WaterHandle handle in _handles.Values)
+            {
+                if (handle.MaskTexture)
+                    Object.Destroy(handle.MaskTexture);
+
+                if (handle.Mesh)
+                    Object.Destroy(handle.Mesh);
+            }
+
+            _handles.Clear();
         }
     }
 }

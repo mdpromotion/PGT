@@ -11,9 +11,12 @@ namespace _Project.Features.ProceduralWorld.Application.Vegetation
     {
         private readonly VegetationCatalog _catalog;
         private readonly Dictionary<GameObject, int> _prototypeIndexByPrefab = new();
+        private readonly Dictionary<Terrain, VegetationHandle> _handles = new();
 
         private TreePrototype[] _prototypes;
         private bool _prototypesInitialized;
+        
+        private readonly List<CandidateWeight> _candidateBuffer = new();
 
         public VegetationApplier(VegetationCatalog catalog)
         {
@@ -22,7 +25,9 @@ namespace _Project.Features.ProceduralWorld.Application.Vegetation
 
         public void Apply(ChunkGenerationState state, Terrain terrain)
         {
-            EnsurePrototypesAssigned(terrain);
+            VegetationHandle handle = GetOrCreateHandle(terrain);
+
+            EnsurePrototypesAssigned(handle, terrain);
 
             IReadOnlyList<VegetationCatalogEntry> treeEntries =
                 _catalog.GetByCategory(VegetationCategory.Tree);
@@ -31,7 +36,12 @@ namespace _Project.Features.ProceduralWorld.Application.Vegetation
                 return;
 
             var instances = state.Vegetation.Instances;
-            var treeInstances = new List<TreeInstance>(instances.Length);
+
+            List<TreeInstance> treeInstances = handle.TreeInstanceBuffer;
+            treeInstances.Clear();
+
+            if (treeInstances.Capacity < instances.Length)
+                treeInstances.Capacity = instances.Length;
 
             float3 terrainSize = terrain.terrainData.size;
             Vector3 terrainPosition = terrain.transform.position;
@@ -84,13 +94,24 @@ namespace _Project.Features.ProceduralWorld.Application.Vegetation
 
             terrain.terrainData.SetTreeInstances(treeInstances.ToArray(), true);
 
-            TerrainCollider terrainCollider = terrain.GetComponent<TerrainCollider>();
+            TerrainCollider terrainCollider = handle.Collider;
 
-            if (terrainCollider != null)
+            if (terrainCollider)
             {
                 terrainCollider.enabled = false;
                 terrainCollider.enabled = true;
             }
+        }
+
+        private VegetationHandle GetOrCreateHandle(Terrain terrain)
+        {
+            if (_handles.TryGetValue(terrain, out VegetationHandle handle))
+                return handle;
+
+            handle = new VegetationHandle(terrain.GetComponent<TerrainCollider>());
+            _handles.Add(terrain, handle);
+
+            return handle;
         }
 
         private VegetationCatalogEntry PickEntry(
@@ -99,12 +120,17 @@ namespace _Project.Features.ProceduralWorld.Application.Vegetation
             float slopeDegrees,
             uint seed)
         {
+            _candidateBuffer.Clear();
+
             float totalWeight = 0f;
             for (int i = 0; i < entries.Count; i++)
             {
                 var e = entries[i];
-                if (e.Matches(height01, slopeDegrees))
-                    totalWeight += e.Weight;
+                if (!e.Matches(height01, slopeDegrees))
+                    continue;
+
+                totalWeight += e.Weight;
+                _candidateBuffer.Add(new CandidateWeight(e, totalWeight));
             }
 
             if (totalWeight <= 0f)
@@ -113,43 +139,51 @@ namespace _Project.Features.ProceduralWorld.Application.Vegetation
             var rng = new Unity.Mathematics.Random(seed == 0 ? 1u : seed);
             float roll = rng.NextFloat(0f, totalWeight);
 
-            float accumulated = 0f;
-            for (int i = 0; i < entries.Count; i++)
+            for (int i = 0; i < _candidateBuffer.Count; i++)
             {
-                var e = entries[i];
-                if (!e.Matches(height01, slopeDegrees))
-                    continue;
-
-                accumulated += e.Weight;
-                if (roll <= accumulated)
-                    return e;
+                if (roll <= _candidateBuffer[i].AccumulatedWeight)
+                    return _candidateBuffer[i].Entry;
             }
 
             return null;
         }
-        
-        private void EnsurePrototypesAssigned(Terrain terrain)
+
+        private void EnsurePrototypesAssigned(VegetationHandle handle, Terrain terrain)
         {
-            if (_prototypesInitialized)
+            if (!_prototypesInitialized)
             {
-                terrain.terrainData.treePrototypes = _prototypes;
+                IReadOnlyList<VegetationCatalogEntry> treeEntries =
+                    _catalog.GetByCategory(VegetationCategory.Tree);
+
+                _prototypes = new TreePrototype[treeEntries.Count];
+                _prototypeIndexByPrefab.Clear();
+
+                for (int i = 0; i < treeEntries.Count; i++)
+                {
+                    _prototypes[i] = new TreePrototype { prefab = treeEntries[i].Prefab };
+                    _prototypeIndexByPrefab[treeEntries[i].Prefab] = i;
+                }
+
+                _prototypesInitialized = true;
+            }
+            
+            if (handle.PrototypesAssigned)
                 return;
-            }
-
-            IReadOnlyList<VegetationCatalogEntry> treeEntries =
-                _catalog.GetByCategory(VegetationCategory.Tree);
-
-            _prototypes = new TreePrototype[treeEntries.Count];
-            _prototypeIndexByPrefab.Clear();
-
-            for (int i = 0; i < treeEntries.Count; i++)
-            {
-                _prototypes[i] = new TreePrototype { prefab = treeEntries[i].Prefab };
-                _prototypeIndexByPrefab[treeEntries[i].Prefab] = i;
-            }
 
             terrain.terrainData.treePrototypes = _prototypes;
-            _prototypesInitialized = true;
+            handle.PrototypesAssigned = true;
+        }
+
+        private readonly struct CandidateWeight
+        {
+            public readonly VegetationCatalogEntry Entry;
+            public readonly float AccumulatedWeight;
+
+            public CandidateWeight(VegetationCatalogEntry entry, float accumulatedWeight)
+            {
+                Entry = entry;
+                AccumulatedWeight = accumulatedWeight;
+            }
         }
     }
 }
