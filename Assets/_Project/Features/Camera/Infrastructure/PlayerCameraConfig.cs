@@ -10,5 +10,6 @@ namespace _Project.Features.Camera.Infrastructure
         public float standingHeight = 1.7f;
         public float crouchingHeight = 1.15f;
         public float heightSmoothSpeed = 12f;
+        public float lookSmoothTime = 0.03f;
     }
 }

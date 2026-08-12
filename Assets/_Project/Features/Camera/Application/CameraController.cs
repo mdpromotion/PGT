@@ -20,6 +20,9 @@ namespace _Project.Features.Camera.Application
         private float _pitch;
         private float _currentHeight;
         
+        private float _smoothedYaw;
+        private float _yawVelocity;
+        
         public CameraController(
             ICameraMotor cameraMotor,  
             PlayerCameraConfig cameraConfig,
@@ -50,15 +53,25 @@ namespace _Project.Features.Camera.Application
         
         private void UpdateLook()
         {
-            Vector2 look = _input.Look * _cameraConfig.sensitivity;
-            
-            _controller.SetLookYaw(look.x);
-            
-            float y = _cameraConfig.invertY ? look.y : -look.y;
-            
+            Vector2 rawLook = _input.Look * _cameraConfig.sensitivity;
+
+            _controller.SetLookYaw(rawLook.x);
+
+            float y = _cameraConfig.invertY ? rawLook.y : -rawLook.y;
+
             _pitch = Mathf.Clamp(_pitch + y, -89f, 89f);
 
-            _cameraMotor.SetRotation(Quaternion.Euler(_pitch, 0f, 0f));
+            float rawYaw = _controller.LookYaw;
+
+            _smoothedYaw = Mathf.SmoothDampAngle(
+                _smoothedYaw,
+                rawYaw,
+                ref _yawVelocity,
+                _cameraConfig.lookSmoothTime,
+                Mathf.Infinity,
+                Time.deltaTime);
+
+            _cameraMotor.SetRotation(Quaternion.Euler(_pitch, _smoothedYaw, 0f));
         }
         
         private void UpdateCameraHeight()

@@ -14,7 +14,9 @@ namespace _Project.Features.Player.Application
     {
         private float _yaw;
         private float _pendingYawDelta;
-        
+
+        public float LookYaw => _yaw;
+
         private float _lastVerticalVelocity;
         
         private bool _wasGrounded;

@@ -17,3 +17,4 @@ MonoBehaviour:
   standingHeight: 1
   crouchingHeight: 0.65
   heightSmoothSpeed: 12
+  lookSmoothTime: 0.03
