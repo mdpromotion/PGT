@@ -76,15 +76,20 @@ namespace _Project.Features.Camera.Application
         
         private void UpdateCameraHeight()
         {
-            float targetHeight = Mathf.Lerp(_cameraConfig.standingHeight, _cameraConfig.crouchingHeight, _stance.CrouchBlend);
+            float targetHeight = Mathf.Lerp(
+                _cameraConfig.standingHeight,
+                _cameraConfig.crouchingHeight,
+                _stance.CrouchBlend);
 
-            _currentHeight = Mathf.Lerp(_currentHeight, targetHeight, _cameraConfig.heightSmoothSpeed * Time.deltaTime);
-            
-            Vector3 position = _cameraMotor.Position;
-            
-            position.y = _currentHeight;
-            
-            _cameraMotor.SetPosition(position);
+            _currentHeight = Mathf.Lerp(
+                _currentHeight,
+                targetHeight,
+                _cameraConfig.heightSmoothSpeed * Time.deltaTime);
+
+            Vector3 offset = _cameraMotor.FollowOffset;
+            offset.y = _currentHeight;
+
+            _cameraMotor.SetFollowOffset(offset);
         }
     }
 }
