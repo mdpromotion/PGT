@@ -86,7 +86,7 @@ namespace _Project.Features.ProceduralWorld.Application.Vegetation
 
             TerrainCollider terrainCollider = terrain.GetComponent<TerrainCollider>();
 
-            if (terrainCollider != null)
+            if (terrainCollider)
             {
                 terrainCollider.enabled = false;
                 terrainCollider.enabled = true;

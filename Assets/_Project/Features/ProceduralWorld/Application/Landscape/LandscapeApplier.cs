@@ -48,7 +48,7 @@ namespace _Project.Features.ProceduralWorld.Application.Landscape
             _writer.Write(terrain, data);
             terrain.terrainData.SyncHeightmap();
 
-            _waterSurfaceApplier.Apply(state, terrain.transform);
+            _waterSurfaceApplier.Apply(state, terrain);
             _vegetationApplier.Apply(state, terrain);
 
             ChunkInstance chunk = new ChunkInstance(data.Coordinate, data, state.Hydrology, terrain);
