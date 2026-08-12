@@ -770,11 +770,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: feacde975e52977f29c5cc9f2493dbaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensitivity: 0.08
-  invertY: 0
-  _standingHeight: 0.71
-  _crouchingHeight: 0.426
-  _heightSmoothSpeed: 12
 --- !u!1 &340773445
 GameObject:
   m_ObjectHideFlags: 0
@@ -5304,6 +5299,7 @@ MonoBehaviour:
   globalMaxVoices: 32
   playerSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
   playerMovementConfig: {fileID: 11400000, guid: 7979d104b7824d049a43e5707993bce9, type: 2}
+  playerCameraConfig: {fileID: 11400000, guid: 35e02f3997b27394ea5df05e5d138461, type: 2}
   frameBudgetConfig: {fileID: 11400000, guid: e40bd9147fe5bad4a8625ae5ebf358cb, type: 2}
 --- !u!1 &1508698440
 GameObject:
