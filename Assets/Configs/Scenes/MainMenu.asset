@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0c8616733de44618b001ec3abb0f860, type: 3}
   m_Name: MainMenu
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Core.Infrastructure.SceneConfig
-  sceneName: Menu
+  sceneType: 1
   scenePath: Assets/Scenes/Menu.unity

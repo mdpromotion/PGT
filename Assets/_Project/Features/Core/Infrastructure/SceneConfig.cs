@@ -6,6 +6,7 @@ namespace _Project.Features.Core.Infrastructure
     [Serializable]
     public enum SceneType
     {
+        None,
         Menu,
         Game
     }

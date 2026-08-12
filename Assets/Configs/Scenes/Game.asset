@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0c8616733de44618b001ec3abb0f860, type: 3}
   m_Name: Game
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Core.Infrastructure.SceneConfig
-  sceneType: 1
+  sceneType: 2
   scenePath: Assets/Scenes/Game.unity
