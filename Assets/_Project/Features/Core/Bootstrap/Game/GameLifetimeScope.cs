@@ -33,6 +33,8 @@ using _Project.Features.Tick.Application;
 using _Project.Features.Tick.Domain;
 using _Project.Features.UI.DebugMenu;
 using _Project.Features.UI.Infrastructure;
+using _Project.Features.UI.InGameMenu;
+using _Project.Features.UI.MainMenu.View;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -298,6 +300,7 @@ namespace _Project.Features.Core.Bootstrap.Game
                 .As<IFPSCounter>();
             
             builder.RegisterComponentInHierarchy<DebugMenuPresenter>();
+            builder.RegisterComponentInHierarchy<InGameMenuPresenter>();
         }
     }
 }

@@ -1601,13 +1601,14 @@ GameObject:
   - component: {fileID: 568935759}
   - component: {fileID: 568935761}
   - component: {fileID: 568935760}
+  - component: {fileID: 568935762}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &568935759
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1668,6 +1669,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 568935758}
   m_CullTransparentMesh: 1
+--- !u!114 &568935762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 568935758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c09f9c2d93ceca41a7ee4063552c0e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.InGameMenu.MenuView
 --- !u!1 &607055429
 GameObject:
   m_ObjectHideFlags: 0
@@ -2206,8 +2219,9 @@ GameObject:
   - component: {fileID: 808630453}
   - component: {fileID: 808630452}
   - component: {fileID: 808630451}
+  - component: {fileID: 808630454}
   m_Layer: 5
-  m_Name: Button (Legacy)
+  m_Name: ExitButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2315,6 +2329,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 808630449}
   m_CullTransparentMesh: 1
+--- !u!114 &808630454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 808630449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78e2d30d67110f240964767af11273f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.InGameMenu.MenuExitButton
 --- !u!1 &827020119
 GameObject:
   m_ObjectHideFlags: 0
@@ -3367,6 +3393,7 @@ GameObject:
   - component: {fileID: 1059603773}
   - component: {fileID: 1059603772}
   - component: {fileID: 1059603776}
+  - component: {fileID: 1059603777}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -3472,6 +3499,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.DebugMenu.DebugMenuPresenter
   _textView: {fileID: 213071687}
+--- !u!114 &1059603777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059603771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9867c9e09f724d643bc9fd98061817dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.InGameMenu.MenuPresenter
+  resumeButton: {fileID: 1129833388}
+  exitButton: {fileID: 808630454}
 --- !u!1 &1099977204
 GameObject:
   m_ObjectHideFlags: 0
@@ -3563,8 +3604,9 @@ GameObject:
   - component: {fileID: 1129833387}
   - component: {fileID: 1129833386}
   - component: {fileID: 1129833385}
+  - component: {fileID: 1129833388}
   m_Layer: 5
-  m_Name: Button (Legacy) (1)
+  m_Name: ResumeButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3672,6 +3714,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1129833383}
   m_CullTransparentMesh: 1
+--- !u!114 &1129833388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1129833383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 019d2c93131484c4c94cb51e3714de3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.InGameMenu.MenuResumeButton
 --- !u!1 &1222087535
 GameObject:
   m_ObjectHideFlags: 0
