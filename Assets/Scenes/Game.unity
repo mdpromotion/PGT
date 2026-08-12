@@ -3513,6 +3513,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.InGameMenu.MenuPresenter
   resumeButton: {fileID: 1129833388}
   exitButton: {fileID: 808630454}
+  pauseMenu: {fileID: 568935762}
 --- !u!1 &1099977204
 GameObject:
   m_ObjectHideFlags: 0
@@ -4867,8 +4868,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1448567561}
-  - component: {fileID: 1448567562}
   - component: {fileID: 1448567563}
+  - component: {fileID: 1448567564}
   m_Layer: 0
   m_Name: Core
   m_TagString: Untagged
@@ -4891,18 +4892,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1448567562
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1448567559}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 895ca48c27662d2038eb4642593a9807, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.ProceduralWorld.Presentation.HydrologyRegionVisualizer
 --- !u!114 &1448567563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4917,6 +4906,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.GameTime.Presentation.GameTimePresenter
   _sunTransform: {fileID: 1262901866}
   _sceneConfig: {fileID: 11400000, guid: 233f3d3b2048c22459cd9f4181702bf6, type: 2}
+--- !u!114 &1448567564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1448567559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b96aa7e1bdac6e244b289b2c3b277995, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Core.Presentation.CoreTimePresenter
 --- !u!1 &1459328500
 GameObject:
   m_ObjectHideFlags: 0
