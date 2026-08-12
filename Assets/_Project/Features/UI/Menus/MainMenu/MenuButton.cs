@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace _Project.Features.UI.MainMenu
+namespace _Project.Features.UI.Menus.MainMenu
 {
     [RequireComponent(typeof(Button))]
     public class MenuButton : MonoBehaviour

@@ -1,4 +1,4 @@
-using _Project.Features.UI.MainMenu;
+using _Project.Features.UI.Menus.MainMenu;
 using VContainer;
 using VContainer.Unity;
 

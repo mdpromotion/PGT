@@ -2,7 +2,7 @@
 using _Project.Features.Core.Presentation;
 using _Project.Features.UI.Application;
 using _Project.Features.UI.Infrastructure;
-using _Project.Features.UI.LoadingScreen.View;
+using _Project.Features.UI.Menus.LoadingScreen.View;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;

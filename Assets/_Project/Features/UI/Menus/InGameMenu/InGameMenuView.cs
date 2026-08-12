@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace _Project.Features.UI.InGameMenu
+namespace _Project.Features.UI.Menus.InGameMenu
 {
     public class InGameMenuView : MonoBehaviour
     {

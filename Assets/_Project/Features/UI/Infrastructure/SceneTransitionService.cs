@@ -1,5 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
-using _Project.Features.UI.LoadingScreen.View;
+﻿using _Project.Features.UI.Menus.LoadingScreen.View;
+using Cysharp.Threading.Tasks;
 
 namespace _Project.Features.UI.Infrastructure
 {
@@ -31,8 +31,6 @@ namespace _Project.Features.UI.Infrastructure
 
             if (!string.IsNullOrEmpty(fromSceneAddress))
                 await _loadSceneService.UnloadAsync(fromSceneAddress);
-
-            _currentSceneAddress = toSceneAddress;
         }
         
         public async UniTask CompleteAsync()

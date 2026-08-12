@@ -1,12 +1,11 @@
 using System;
 using _Project.Features.UI.Application;
-using _Project.Features.UI.Infrastructure;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
 
-namespace _Project.Features.UI.InGameMenu
+namespace _Project.Features.UI.Menus.InGameMenu
 {
     [RequireComponent(typeof(Button))]
     public class ButtonBase : MonoBehaviour

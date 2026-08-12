@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace _Project.Features.UI.MainMenu.View
+namespace _Project.Features.UI.Menus.MainMenu.View
 {
     [RequireComponent(typeof(Text))]
     public class GameNameText : MonoBehaviour

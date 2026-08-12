@@ -1,10 +1,8 @@
-using System;
-using UnityEngine;
 using UnityEngine.UI;
 
-namespace _Project.Features.UI.InGameMenu
+namespace _Project.Features.UI.Menus.InGameMenu
 {
-    public class InGameMenuResumeButton : ButtonBase
+    public class InGameMenuExitButton : ButtonBase
     {
         private Button _button;
         

@@ -2,7 +2,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace _Project.Features.UI.LoadingScreen.View
+namespace _Project.Features.UI.Menus.LoadingScreen.View
 {
     [RequireComponent(typeof(Canvas))]
     [RequireComponent(typeof(CanvasGroup))]

@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using _Project.Features.UI.Application;
 using _Project.Features.UI.Infrastructure;
-using _Project.Features.UI.MainMenu.View;
+using _Project.Features.UI.Menus.MainMenu.View;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
 
-namespace _Project.Features.UI.MainMenu
+namespace _Project.Features.UI.Menus.MainMenu
 {
     public enum MenuType
     {
