@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-namespace _Project.Features.UI.MainMenu
+namespace _Project.Features.UI.MainMenu.View
 {
     public class MainMenuView : MonoBehaviour
     {

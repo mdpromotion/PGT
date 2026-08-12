@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using _Project.Features.UI.Application;
+using _Project.Features.UI.MainMenu.View;
 using UnityEngine;
 using VContainer;
 

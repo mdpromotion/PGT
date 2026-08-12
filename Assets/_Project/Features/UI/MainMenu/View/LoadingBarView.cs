@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace _Project.Features.UI.MainMenu
+namespace _Project.Features.UI.MainMenu.View
 {
     [RequireComponent(typeof(Transform))]
     public class LoadingBarView : MonoBehaviour

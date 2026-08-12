@@ -1422,6 +1422,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1560082949}
   - component: {fileID: 1560082951}
+  - component: {fileID: 1560082952}
   - component: {fileID: 1560082950}
   m_Layer: 5
   m_Name: Text (Legacy)
@@ -1491,6 +1492,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1560082948}
   m_CullTransparentMesh: 1
+--- !u!114 &1560082952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1560082948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e1ac968a5b492a4d87904f880019af0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.MainMenu.View.GameNameText
 --- !u!1 &1646870326
 GameObject:
   m_ObjectHideFlags: 0
@@ -1549,6 +1562,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1675959104}
   - component: {fileID: 1675959107}
+  - component: {fileID: 1675959108}
   - component: {fileID: 1675959106}
   - component: {fileID: 1675959105}
   m_Layer: 5
@@ -1625,7 +1639,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: pgt-11082026
+  m_Text: 
 --- !u!222 &1675959107
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1634,6 +1648,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1675959103}
   m_CullTransparentMesh: 1
+--- !u!114 &1675959108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1675959103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 740ac9f8af5f2d944a3ca1b83be33fde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.MainMenu.VersionTextView
 --- !u!1 &1692723537
 GameObject:
   m_ObjectHideFlags: 0
