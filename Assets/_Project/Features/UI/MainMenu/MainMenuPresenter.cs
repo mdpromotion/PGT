@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using _Project.Features.UI.Application;
+using _Project.Features.UI.Infrastructure;
 using _Project.Features.UI.MainMenu.View;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
 
@@ -28,23 +30,31 @@ namespace _Project.Features.UI.MainMenu
         [SerializeField] private List<MenuEntry> menus;
         
         private MainMenuModel _model;
-        private StartGameUseCase _startGameUseCase;
+        private LoadSceneController _loadSceneController;
+        private SceneTransitionService _sceneTransitionService;
+
+        private bool _isLoading = false;
 
         [Inject]
-        public void Construct(MainMenuModel model, StartGameUseCase startGameUseCase)
+        public void Construct(MainMenuModel model, LoadSceneController loadSceneController, SceneTransitionService sceneTransitionService)
         {
             _model = model;
-            _startGameUseCase = startGameUseCase;
+            _loadSceneController = loadSceneController;
+            _sceneTransitionService = sceneTransitionService;
         }
 
         public void Start()
         {
+            _isLoading = false;
+            
             HandleWorldMenu();
             
             foreach (var button in buttons)
             {
                 button.ButtonClicked += OnButtonClicked;
             }
+            
+            _sceneTransitionService.CompleteAsync().Forget();
         }
 
         public void OnButtonClicked(MenuType buttonType)
@@ -70,10 +80,16 @@ namespace _Project.Features.UI.MainMenu
             SetMenuState(MenuType.WorldMenu, state);
         }
 
-        private async void HandleStartGame()
+        private void HandleStartGame()
         {
-            SetMenuState(MenuType.StartGame, false);
-            await _startGameUseCase.ExecuteAsync();
+            if (_isLoading)
+            {
+                print("here");
+                return;
+            }
+            
+            _loadSceneController.LoadGameScene().Forget();
+            _isLoading = true;
         }
 
         private void HandleSettings()

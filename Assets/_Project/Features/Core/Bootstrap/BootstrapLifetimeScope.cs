@@ -35,7 +35,7 @@ namespace _Project.Features.Core.Bootstrap
             
             builder.Register<SceneTransitionService>(Lifetime.Singleton);
             
-            builder.Register<LoadSceneUseCase>(Lifetime.Singleton);
+            builder.Register<LoadSceneController>(Lifetime.Singleton);
         }
     }
 }

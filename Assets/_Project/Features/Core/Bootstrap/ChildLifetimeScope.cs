@@ -7,7 +7,7 @@ namespace _Project.Features.Core.Bootstrap
         protected override void Awake()
         {
             if (BootstrapLifetimeScope.Instance != null)
-                EnqueueParent(BootstrapLifetimeScope.Instance); // вот эта строчка — единственная связь с Bootstrap
+                EnqueueParent(BootstrapLifetimeScope.Instance);
 
             base.Awake();
         }
