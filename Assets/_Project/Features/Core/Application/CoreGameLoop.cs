@@ -2,6 +2,7 @@ using System;
 using _Project.Features.Core.Domain;
 using _Project.Features.Cursor.Presentation;
 using _Project.Features.Player.Application;
+using _Project.Features.ProceduralWorld.Application.Chunks;
 using _Project.Features.UI.Infrastructure;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -16,19 +17,22 @@ namespace _Project.Features.Core.Application
         private readonly IGameState _gameState;
         private readonly IGameStateController _gameStateController;
         private readonly ICursorService _cursorService;
+        private readonly IChunkManager _chunkManager;
 
         public CoreGameLoop(
             IPlayerController player, 
             SceneTransitionService sceneTransitionService, 
             IGameState gameState,
             IGameStateController gameStateController,
-            ICursorService cursorService)
+            ICursorService cursorService,
+            IChunkManager chunkManager)
         {
             _player = player;
             _sceneTransitionService = sceneTransitionService;
             _gameState = gameState;
             _gameStateController = gameStateController;
             _cursorService = cursorService;
+            _chunkManager = chunkManager;
         }
 
         public void Initialize()
@@ -49,13 +53,11 @@ namespace _Project.Features.Core.Application
         {
             _player.Freeze(true);
 
-            await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
+            while (!_chunkManager.IsReady)
+                await UniTask.Delay(TimeSpan.FromSeconds(0.1f));
 
             while (!_player.Prepare())
-            {
-                Debug.Log("Player isn't prepared, I'll try again in 1 second");
-                await UniTask.Delay(TimeSpan.FromSeconds(1));
-            }
+                await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
 
             _player.Ready();
             _player.Freeze(false);

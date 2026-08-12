@@ -261,7 +261,9 @@ namespace _Project.Features.Core.Bootstrap.Game
             // Streaming / management
             builder.Register<ChunkGenerationScheduler>(Lifetime.Singleton);
 
-            builder.Register<ChunkManager>(Lifetime.Singleton);
+            builder.Register<ChunkManager>(Lifetime.Singleton)
+                .As<IChunkManager>()
+                .AsSelf();
 
             builder.Register(
                     container => new WorldStreamer(

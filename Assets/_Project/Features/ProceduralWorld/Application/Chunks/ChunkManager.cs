@@ -9,11 +9,15 @@ using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 
 namespace _Project.Features.ProceduralWorld.Application.Chunks
 {
-    public class ChunkManager : IDisposable
+    public interface IChunkManager
+    {
+        bool IsReady { get; }
+    }
+    
+    public class ChunkManager : IChunkManager, IDisposable
     {
         private readonly ChunkGenerationScheduler _scheduler;
         private readonly ChunkRepository _repository;
-        private readonly LandscapeApplier _applier;
 
         private readonly ILandscapeFactory _factory;
         private readonly IChunkNeighborConnector _neighborConnector;
@@ -23,7 +27,8 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
         private readonly Action<ChunkGenerationResult> _applyAction;
         private readonly Action<ChunkCoordinate> _completedAction;
 
-
+        public bool IsReady { get; private set; }
+        
 
         public ChunkManager(
             ChunkGenerationScheduler scheduler,
@@ -34,13 +39,12 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
         {
             _scheduler = scheduler;
             _repository = repository;
-            _applier = applier;
             _factory = factory;
             _neighborConnector = neighborConnector;
             
             _applyAction = result =>
             {
-                _applier.Apply(result);
+                applier.Apply(result);
 
                 result.Dispose();
             };
@@ -75,24 +79,15 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             if(_repository.Contains(coordinate))
                 return;
 
-
-            if(_loading.Contains(coordinate))
+            if(!_loading.Add(coordinate))
                 return;
-
-
-
-            _loading.Add(coordinate);
-
-
 
             _scheduler.Enqueue(
                 new ChunkGenerationRequest(
                     coordinate,
                     257));
         }
-
-
-
+        
         public void CancelLoad(
             ChunkCoordinate coordinate)
         {
@@ -102,18 +97,19 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
             _scheduler.Cancel(
                 coordinate);
         }
-
-
-
-        public void FinishLoading(
+        
+        private void FinishLoading(
             ChunkCoordinate coordinate)
         {
             _loading.Remove(
                 coordinate);
+
+            if (!IsReady && _repository.Contains(coordinate))
+            {
+                IsReady = true;
+            }
         }
-
-
-
+        
         public void Unload(ChunkCoordinate coordinate)
         {
             if (!_repository.TryGet(coordinate, out ChunkInstance chunk))
