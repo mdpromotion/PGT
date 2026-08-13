@@ -9,8 +9,8 @@ namespace _Project.Features.UI.Menus.SettingsMenu
         
         public void Toggle(bool state)
         {
-            ToggleMenuRequested?.Invoke(state);
             gameObject.SetActive(state);
+            ToggleMenuRequested?.Invoke(state);
         }
     }
 }

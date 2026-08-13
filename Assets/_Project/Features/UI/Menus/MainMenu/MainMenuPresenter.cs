@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using _Project.Features.UI.Application;
 using _Project.Features.UI.Infrastructure;
 using _Project.Features.UI.Menus.MainMenu.View;
+using _Project.Features.UI.Menus.SettingsMenu;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
@@ -28,17 +29,18 @@ namespace _Project.Features.UI.Menus.MainMenu
     {
         [SerializeField] private MenuButton[] buttons;
         [SerializeField] private List<MenuEntry> menus;
+        [SerializeField] private SettingsMenuView settingsMenuView;
         
-        private MainMenuModel _model;
         private LoadSceneController _loadSceneController;
         private SceneTransitionService _sceneTransitionService;
 
         private bool _isLoading;
+        private bool _isWorldMenuVisible;
+        private bool _isSettingsMenuVisible;
 
         [Inject]
-        public void Construct(MainMenuModel model, LoadSceneController loadSceneController, SceneTransitionService sceneTransitionService)
+        public void Construct(LoadSceneController loadSceneController, SceneTransitionService sceneTransitionService)
         {
-            _model = model;
             _loadSceneController = loadSceneController;
             _sceneTransitionService = sceneTransitionService;
         }
@@ -53,6 +55,8 @@ namespace _Project.Features.UI.Menus.MainMenu
             {
                 button.ButtonClicked += OnButtonClicked;
             }
+            
+            settingsMenuView.ToggleMenuRequested += OnStateChanged;
             
             _sceneTransitionService.CompleteAsync().Forget();
         }
@@ -76,8 +80,8 @@ namespace _Project.Features.UI.Menus.MainMenu
 
         private void HandleWorldMenu()
         {
-            bool state = _model.ToggleWorldMenu();
-            SetMenuState(MenuType.WorldMenu, state);
+            _isWorldMenuVisible= !_isWorldMenuVisible;
+            SetMenuState(MenuType.WorldMenu, _isWorldMenuVisible);
         }
 
         private void HandleStartGame()
@@ -94,7 +98,13 @@ namespace _Project.Features.UI.Menus.MainMenu
 
         private void HandleSettings()
         {
-            // soon
+            _isSettingsMenuVisible = !_isSettingsMenuVisible;
+            settingsMenuView.Toggle(_isSettingsMenuVisible);
+        }
+
+        private void OnStateChanged(bool state)
+        {
+            _isSettingsMenuVisible = state;
         }
         
         private void SetMenuState(MenuType menuType, bool state)
@@ -118,6 +128,7 @@ namespace _Project.Features.UI.Menus.MainMenu
             {
                 button.ButtonClicked -= OnButtonClicked;
             }
+            settingsMenuView.ToggleMenuRequested -= OnStateChanged;
         }
     }
 }

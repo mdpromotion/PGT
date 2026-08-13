@@ -1,4 +1,5 @@
 using _Project.Features.UI.Menus.MainMenu;
+using _Project.Features.UI.Menus.SettingsMenu;
 using VContainer;
 using VContainer.Unity;
 
@@ -8,9 +9,8 @@ namespace _Project.Features.Core.Bootstrap.Menu
     {
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.Register<MainMenuModel>(Lifetime.Singleton);
-            
             builder.RegisterComponentInHierarchy<MainMenuPresenter>();
+            builder.RegisterComponentInHierarchy<SettingsMenuPresenter>();
         }
     }
 }

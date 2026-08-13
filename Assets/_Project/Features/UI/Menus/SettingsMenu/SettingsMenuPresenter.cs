@@ -21,6 +21,7 @@ namespace _Project.Features.UI.Menus.SettingsMenu
     {
         [SerializeField] private List<SettingsMenuDropdown> dropdowns;
         [SerializeField] private SettingsMenuView settingsMenu;
+        [SerializeField] private SettingsMenuExitButton exitButton;
 
         private readonly Dictionary<SettingsMenuMode, int> _cachedValues = new();
 
@@ -41,6 +42,7 @@ namespace _Project.Features.UI.Menus.SettingsMenu
             InitCache();
             
             settingsMenu.ToggleMenuRequested += OnToggled;
+            exitButton.ButtonClicked += ForceCloseMenu;
             
             foreach (var dropdown in dropdowns)
             {
@@ -57,24 +59,37 @@ namespace _Project.Features.UI.Menus.SettingsMenu
         private void OnToggled(bool state)
         {
             if (state)
+                OpenMenu();
+            else
+                CloseMenu();
+        }
+
+        private void OpenMenu()
+        {
+            InitCache();
+
+            foreach (var dropdown in dropdowns)
+            {
+                if (_cachedValues.TryGetValue(dropdown.Mode, out var value))
+                {
+                    dropdown.SetValueWithoutNotify(value);
+                }
+            }
+        }
+
+        private void CloseMenu()
+        {
+            if (_cachedValues.Count == 0)
             {
                 InitCache();
+            }
+            ApplyCachedValues();
+        }
 
-                foreach (var dropdown in dropdowns)
-                {
-                    if (_cachedValues.TryGetValue(dropdown.Mode, out var value))
-                    {
-                        dropdown.SetValueWithoutNotify(value);
-                    }
-                }
-            }
-            else
-            {
-                if (_cachedValues.Count > 0)
-                {
-                    ApplyCachedValues();
-                }
-            }
+        private void ForceCloseMenu()
+        {
+            settingsMenu.Toggle(false);
+            CloseMenu();
         }
 
         private void OnValueChanged(SettingsMenuMode mode, int value)
@@ -97,6 +112,7 @@ namespace _Project.Features.UI.Menus.SettingsMenu
                 dropdown.ValueChanged -= OnValueChanged;
             }
             
+            exitButton.ButtonClicked -= ForceCloseMenu;
             settingsMenu.ToggleMenuRequested -= OnToggled;
         }
     }

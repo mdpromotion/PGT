@@ -1,11 +1,9 @@
-using System;
 using _Project.Features.Core.Domain;
 using _Project.Features.Core.Presentation;
 using _Project.Features.UI.Application;
 using _Project.Features.UI.Menus.SettingsMenu;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.UI;
 using VContainer;
 
 namespace _Project.Features.UI.Menus.InGameMenu
@@ -31,6 +29,7 @@ namespace _Project.Features.UI.Menus.InGameMenu
             resumeButton.ButtonClicked += OnResumeClicked;
             settingsButton.ButtonClicked += OnSettingsClicked;
             exitButton.ButtonClicked += OnExitClicked; 
+            settingsMenu.ToggleMenuRequested += OnStateChanged;
         }
 
         [Inject]
@@ -77,6 +76,14 @@ namespace _Project.Features.UI.Menus.InGameMenu
         private void OnExitClicked()
         {
             _loadSceneController.LoadMenuScene().Forget();
+        }
+
+        private void OnStateChanged(bool state)
+        {
+            _isSettingsVisible = state;
+            _isVisible = !state;
+            
+            pauseMenu.Toggle(_isVisible);
         }
 
         private void OnDestroy()
