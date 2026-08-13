@@ -17,11 +17,9 @@ namespace _Project.Features.Graphics.Presentation
         public void Construct(GraphicsState state)
         {
             _graphicsState = state;
+
             ApplyGraphicsSettings();
-        }
-        
-        private void Awake()
-        {
+            
             _graphicsState.GraphicsChanged += ApplyGraphicsSettings;
         }
 

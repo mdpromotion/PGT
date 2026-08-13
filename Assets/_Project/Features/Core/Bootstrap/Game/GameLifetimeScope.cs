@@ -9,6 +9,7 @@ using _Project.Features.Cursor.Presentation;
 using _Project.Features.GameTime.Application;
 using _Project.Features.GameTime.Domain;
 using _Project.Features.GameTime.Presentation;
+using _Project.Features.Graphics.Presentation;
 using _Project.Features.Player.Application;
 using _Project.Features.Player.Domain;
 using _Project.Features.Player.Infrastructure;
@@ -310,6 +311,8 @@ namespace _Project.Features.Core.Bootstrap.Game
             
             builder.Register<CoreGameLoop>(Lifetime.Singleton)
                 .As<IInitializable>();
+            
+            builder.RegisterComponentInHierarchy<SceneSettingsPresenter>();
         }
 
         private void RegisterUI(IContainerBuilder builder)
