@@ -743,8 +743,8 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
-  m_Antialiasing: 0
+  m_RenderPostProcessing: 1
+  m_Antialiasing: 1
   m_AntialiasingQuality: 2
   m_StopNaN: 0
   m_Dithering: 0
@@ -3892,7 +3892,6 @@ GameObject:
   - component: {fileID: 1262901866}
   - component: {fileID: 1262901865}
   - component: {fileID: 1262901864}
-  - component: {fileID: 1262901867}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -4009,21 +4008,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1262901867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1262901863}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c8bca95f7c947b4db5fb152a0d693d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: com.cqf.urpvolumetricfog.runtime::VolumetricAdditionalLight
-  anisotropy: 0.25
-  scattering: 1
-  radius: 0.2
 --- !u!1 &1263786811
 GameObject:
   m_ObjectHideFlags: 0
@@ -4928,6 +4912,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1448567561}
   - component: {fileID: 1448567563}
+  - component: {fileID: 1448567564}
   m_Layer: 0
   m_Name: Core
   m_TagString: Untagged
@@ -4964,6 +4949,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.GameTime.Presentation.GameTimePresenter
   _sunTransform: {fileID: 1262901866}
   _sceneConfig: {fileID: 11400000, guid: 233f3d3b2048c22459cd9f4181702bf6, type: 2}
+--- !u!114 &1448567564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1448567559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13dc669a95e005f419b6bd3c28c38fa5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Core.Presentation.SceneSettingsPresenter
+  mainLight: {fileID: 1262901865}
+  mainCamera: {fileID: 330585553}
 --- !u!1 &1459328500
 GameObject:
   m_ObjectHideFlags: 0
