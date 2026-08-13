@@ -20,9 +20,9 @@ namespace _Project.Features.UI.Infrastructure
         
         public ShadowDistanceEntry GetShadowDistanceEntry(float shadowDistance) =>
             shadowDistanceEntries.First(m => Mathf.Approximately(m.shadowDistance, shadowDistance));
-        
-        public ViewDistanceEntry GetViewDistanceEntry(int viewDistance) =>
-            viewDistanceEntries.First(m => m.viewDistance == viewDistance);
+
+        public ViewDistanceEntry GetViewDistanceEntry(int viewDistance)
+            => viewDistanceEntries.First(m => m.viewDistance == viewDistance);
     }
 
     [Serializable]

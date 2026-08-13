@@ -8,9 +8,16 @@ namespace _Project.Features.Graphics.Infrastucture
 {
     public interface IGraphicsConfigResolver
     {
-        List<SettingsEntry> ConvertFromGraphicData(
+        void ConvertFromGraphicData(
             GraphicsData data,
-            List<SettingsEntry> cachedValues);
+            Dictionary<SettingsMenuMode, int> cachedValues);
+
+        void ConvertFromGraphicState(
+            GraphicsState data,
+            Dictionary<SettingsMenuMode, int> cachedValues);
+        
+        GraphicsData ConvertToGraphicData(
+            IReadOnlyDictionary<SettingsMenuMode, int> cachedValues);
 
         GraphicsData? GetDefaultGraphicsData(GraphicsType graphicsType);
     }
@@ -21,12 +28,33 @@ namespace _Project.Features.Graphics.Infrastucture
         [SerializeField] private List<GraphicsPreset> presets;
         [SerializeField] private GraphicsQualityConfig qualityConfig;
 
-        public List<SettingsEntry> ConvertFromGraphicData(
+        public void ConvertFromGraphicData(
             GraphicsData data,
-            List<SettingsEntry> cachedValues)
+            Dictionary<SettingsMenuMode, int> cachedValues)
         {
-            var result = cachedValues ?? new List<SettingsEntry>();
+            var shadowDistanceType = qualityConfig
+                .GetShadowDistanceEntry(data.ShadowQualityMode.ShadowDistance)
+                .graphicsType;
 
+            Debug.Log(data.ViewDistance);
+            
+            var viewDistanceType = qualityConfig
+                .GetViewDistanceEntry(data.ViewDistance)
+                .graphicsType;
+
+            cachedValues[SettingsMenuMode.Quality] = (int)data.QualityMode;
+            cachedValues[SettingsMenuMode.ShadowQuality] = (int)data.ShadowQualityMode.ShadowQuality;
+            cachedValues[SettingsMenuMode.ShadowDistance] = (int)shadowDistanceType;
+            cachedValues[SettingsMenuMode.AntiAliasing] = (int)data.AntiAliasingMode;
+            cachedValues[SettingsMenuMode.WindowMode] = (int)data.WindowMode;
+            cachedValues[SettingsMenuMode.VSync] = data.VSync ? 1 : 0;
+            cachedValues[SettingsMenuMode.ViewDistance] = (int)viewDistanceType;
+        }
+        
+        public void ConvertFromGraphicState(
+            GraphicsState data,
+            Dictionary<SettingsMenuMode, int> cachedValues)
+        {
             var shadowDistanceType = qualityConfig
                 .GetShadowDistanceEntry(data.ShadowQualityMode.ShadowDistance)
                 .graphicsType;
@@ -35,33 +63,78 @@ namespace _Project.Features.Graphics.Infrastucture
                 .GetViewDistanceEntry(data.ViewDistance)
                 .graphicsType;
 
-            SetOrAdd(result, SettingsMenuMode.Quality, (int)data.QualityMode);
-            SetOrAdd(result, SettingsMenuMode.ShadowQuality, (int)data.ShadowQualityMode.ShadowQuality);
-            SetOrAdd(result, SettingsMenuMode.ShadowDistance, (int)shadowDistanceType);
-            SetOrAdd(result, SettingsMenuMode.AntiAliasing, (int)data.AntiAliasingMode);
-            SetOrAdd(result, SettingsMenuMode.WindowMode, (int)data.WindowMode);
-            SetOrAdd(result, SettingsMenuMode.VSync, data.VSync ? 1 : 0);
-            SetOrAdd(result, SettingsMenuMode.ViewDistance, (int)viewDistanceType);
+            cachedValues[SettingsMenuMode.Quality] = (int)data.QualityMode;
+            cachedValues[SettingsMenuMode.ShadowQuality] = (int)data.ShadowQualityMode.ShadowQuality;
+            cachedValues[SettingsMenuMode.ShadowDistance] = (int)shadowDistanceType;
+            cachedValues[SettingsMenuMode.AntiAliasing] = (int)data.AntiAliasingMode;
+            cachedValues[SettingsMenuMode.WindowMode] = (int)data.WindowMode;
+            cachedValues[SettingsMenuMode.VSync] = data.VSync ? 1 : 0;
+            cachedValues[SettingsMenuMode.ViewDistance] = (int)viewDistanceType;
+        }
 
-            return result;
+        public GraphicsData ConvertToGraphicData(
+            IReadOnlyDictionary<SettingsMenuMode, int> cachedValues)
+        {
+            var shadowDistanceType =
+                (GraphicsType)GetValue(
+                    cachedValues,
+                    SettingsMenuMode.ShadowDistance);
+
+            var viewDistanceType =
+                (GraphicsType)GetValue(
+                    cachedValues,
+                    SettingsMenuMode.ViewDistance);
+
+            var shadowQualityMode = new ShadowQualityMode(
+                (ShadowQuality)GetValue(
+                    cachedValues,
+                    SettingsMenuMode.ShadowQuality),
+                qualityConfig
+                    .GetShadowDistanceEntry(shadowDistanceType)
+                    .shadowDistance
+            );
+
+            return new GraphicsData(
+                (GraphicsType)GetValue(
+                    cachedValues,
+                    SettingsMenuMode.Quality),
+
+                shadowQualityMode,
+
+                (AntiAliasingMode)GetValue(
+                    cachedValues,
+                    SettingsMenuMode.AntiAliasing),
+
+                (WindowMode)GetValue(
+                    cachedValues,
+                    SettingsMenuMode.WindowMode),
+
+                GetValue(
+                    cachedValues,
+                    SettingsMenuMode.VSync) != 0,
+
+                qualityConfig
+                    .GetViewDistanceEntry(viewDistanceType)
+                    .viewDistance
+            );
         }
 
         public GraphicsData? GetDefaultGraphicsData(GraphicsType graphicsType)
         {
-            GraphicsPreset item = null;
+            GraphicsPreset preset = null;
 
-            foreach (var t in presets)
+            foreach (var item in presets)
             {
-                if (t.Category == graphicsType)
+                if (item.Category == graphicsType)
                 {
-                    item = t;
+                    preset = item;
                     break;
                 }
             }
 
-            if (!item)
+            if (!preset)
                 return null;
-            
+
             var shadowDistance = qualityConfig
                 .GetShadowDistanceEntry(graphicsType)
                 .shadowDistance;
@@ -69,27 +142,25 @@ namespace _Project.Features.Graphics.Infrastucture
             var viewDistance = qualityConfig
                 .GetViewDistanceEntry(graphicsType)
                 .viewDistance;
-            
-            var shadowData = new ShadowQualityMode(item.ShadowQuality.quality, shadowDistance);
-            var data = new GraphicsData(item.Category, shadowData, item.AntiAliasingMode, item.WindowMode, item.VSync, viewDistance);       
 
-            return data;
+            var shadowData = new ShadowQualityMode(
+                preset.ShadowQuality.quality,
+                shadowDistance);
+
+            return new GraphicsData(
+                preset.Category,
+                shadowData,
+                preset.AntiAliasingMode,
+                preset.WindowMode,
+                preset.VSync,
+                viewDistance);
         }
 
-        private static void SetOrAdd(List<SettingsEntry> entries, SettingsMenuMode mode, int value)
+        private static int GetValue(
+            IReadOnlyDictionary<SettingsMenuMode, int> values,
+            SettingsMenuMode mode)
         {
-            var newEntry = new SettingsEntry(mode, value);
-
-            for (int i = 0; i < entries.Count; i++)
-            {
-                if (entries[i].Mode == mode)
-                {
-                    entries[i] = newEntry;
-                    return;
-                }
-            }
-
-            entries.Add(newEntry);
+            return values[mode];
         }
     }
 }

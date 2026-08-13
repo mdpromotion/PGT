@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using UnityEngine;
 
 namespace _Project.Features.Core.Persistence
@@ -18,12 +20,25 @@ namespace _Project.Features.Core.Persistence
     {
         private readonly string _rootPath = UnityEngine.Application.persistentDataPath;
 
+        private static readonly JsonSerializerSettings SerializerSettings =
+            new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                Converters =
+                {
+                    new StringEnumConverter()
+                }
+            };
+
         public void Write<T>(string category, T data)
         {
             var path = GetPath(category);
-            var json = JsonUtility.ToJson(data, prettyPrint: true);
-
             var tmpPath = path + ".tmp";
+
+            var json = JsonConvert.SerializeObject(
+                data,
+                SerializerSettings);
+
             File.WriteAllText(tmpPath, json);
 
             if (File.Exists(path))
@@ -36,21 +51,25 @@ namespace _Project.Features.Core.Persistence
         {
             var path = GetPath(category);
 
+            data = default;
+
             if (!File.Exists(path))
             {
-                data = default;
                 return false;
             }
 
             try
             {
                 var json = File.ReadAllText(path);
-                data = JsonUtility.FromJson<T>(json);
+                
+                data = JsonConvert.DeserializeObject<T>(
+                    json,
+                    SerializerSettings);
+
                 return true;
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"[JsonFileStore] Failed to read '{category}': {e}");
                 data = default;
                 return false;
             }

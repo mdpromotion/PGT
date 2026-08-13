@@ -17,6 +17,6 @@ MonoBehaviour:
     quality: 0
     shadowDistance: 0
   AntiAliasingMode: 0
-  WindowMode: 0
+  WindowMode: 1
   VSync: 1
   ViewDistance: 0
