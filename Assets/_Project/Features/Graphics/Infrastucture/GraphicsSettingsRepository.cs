@@ -1,6 +1,5 @@
 using _Project.Features.Core.Persistence;
 using _Project.Features.Graphics.Domain;
-using UnityEngine;
 
 namespace _Project.Features.Graphics.Infrastucture
 {
@@ -19,6 +18,8 @@ namespace _Project.Features.Graphics.Infrastucture
         private readonly IJsonWriter _writer;
         private readonly IGraphicsConfigResolver _resolver;
 
+        private GraphicsData? _cache;
+
         public GraphicsSettingsRepository(
             IJsonReader reader,
             IJsonWriter writer,
@@ -31,17 +32,24 @@ namespace _Project.Features.Graphics.Infrastucture
 
         public GraphicsData Load()
         {
-            if (_reader.TryRead<GraphicsData>(Category, out var data))
-                return data;
+            if (_cache.HasValue)
+                return _cache.Value;
 
-            var fallback = _resolver.GetDefaultGraphicsData(FallbackPreset);
-            
-            Debug.Log(fallback.HasValue ? fallback.Value : FallbackPreset);
-            
-            return fallback ?? default;
+            if (_reader.TryRead<GraphicsData>(Category, out var data))
+            {
+                _cache = data;
+                return data;
+            }
+
+            var fallback = _resolver.GetDefaultGraphicsData(FallbackPreset) ?? default;
+            _cache = fallback;
+            return fallback;
         }
 
-        public void Save(GraphicsData data) =>
+        public void Save(GraphicsData data)
+        {
+            _cache = data;
             _writer.Write(Category, data);
+        }
     }
 }
