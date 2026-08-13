@@ -67,12 +67,7 @@ namespace _Project.Features.UI.Infrastructure
 
             if (scene.IsValid() && scene.isLoaded)
             {
-                Debug.LogWarning($"[LoadSceneService] No Addressables handle for '{sceneAddress}', unloading via SceneManager fallback.");
                 await SceneManager.UnloadSceneAsync(scene).ToUniTask();
-            }
-            else
-            {
-                Debug.LogWarning($"[LoadSceneService] Scene not found or already unloaded: {sceneAddress}");
             }
         }
 
