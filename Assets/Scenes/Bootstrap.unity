@@ -169,6 +169,7 @@ MonoBehaviour:
   autoInjectGameObjects: []
   loadingScreenView: {fileID: 1131743643}
   sceneDatabase: {fileID: 11400000, guid: bde1fe2425c04d34abf590282524bfa3, type: 2}
+  graphicsConfigResolver: {fileID: 11400000, guid: 6c2204a91d2459942b194b6565233137, type: 2}
 --- !u!1 &435113256
 GameObject:
   m_ObjectHideFlags: 0
@@ -346,7 +347,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90cf3b3166404a5da8b51bda8a2e88e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.LoadingScreen.View.LoadingScreenView
-  _canvasGroup: {fileID: 1131743644}
   _fadeDuration: 0.35
   _fadeEase: 4
 --- !u!225 &1131743644

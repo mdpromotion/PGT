@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0cd5fb6cee965741b73146534c7ba16, type: 3}
   m_Name: Low
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Settings.Infrastructure.GraphicsSettings
-  category: 0
-  shadowQuality: 0
-  viewDistance: 0
-  antiAliasing: 0
+  Category: 0
+  ShadowQuality:
+    quality: 0
+    shadowDistance: 0
+  AntiAliasingMode: 0
+  WindowMode: 1
+  VSync: 1
+  ViewDistance: 0
