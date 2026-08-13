@@ -39,6 +39,8 @@ namespace _Project.Features.Graphics.Infrastucture
             SetOrAdd(result, SettingsMenuMode.ShadowQuality, (int)data.ShadowQualityMode.ShadowQuality);
             SetOrAdd(result, SettingsMenuMode.ShadowDistance, (int)shadowDistanceType);
             SetOrAdd(result, SettingsMenuMode.AntiAliasing, (int)data.AntiAliasingMode);
+            SetOrAdd(result, SettingsMenuMode.WindowMode, (int)data.WindowMode);
+            SetOrAdd(result, SettingsMenuMode.VSync, data.VSync ? 1 : 0);
             SetOrAdd(result, SettingsMenuMode.ViewDistance, (int)viewDistanceType);
 
             return result;

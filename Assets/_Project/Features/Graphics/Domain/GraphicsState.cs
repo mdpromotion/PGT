@@ -1,5 +1,6 @@
 using System;
 using _Project.Features.Graphics.Infrastucture;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace _Project.Features.Graphics.Domain
@@ -29,36 +30,42 @@ namespace _Project.Features.Graphics.Domain
     public readonly struct GraphicsData
     {
         public readonly GraphicsType QualityMode;
+        
+        [JsonProperty("ShadowQualityMode")]
         public readonly ShadowQualityMode ShadowQualityMode;
+        
         public readonly AntiAliasingMode AntiAliasingMode;
         public readonly WindowMode WindowMode;
         public readonly bool VSync;
         public readonly int ViewDistance;
 
+        [JsonConstructor]
         public GraphicsData(
-            GraphicsType category, 
-            ShadowQualityMode shadowQuality, 
+            GraphicsType qualityMode,
+            ShadowQualityMode shadowQualityMode,
             AntiAliasingMode antiAliasingMode,
             WindowMode windowMode,
             bool vSync,
             int viewDistance)
         {
-            QualityMode = category;
-            ShadowQualityMode = shadowQuality;
+            QualityMode = qualityMode;
+            ShadowQualityMode = shadowQualityMode;
             AntiAliasingMode = antiAliasingMode;
             WindowMode = windowMode;
             VSync = vSync;
             ViewDistance = viewDistance;
         }
     }
-
-    [Serializable]
+    
     public readonly struct ShadowQualityMode
     {
         public readonly ShadowQuality ShadowQuality;
         public readonly float ShadowDistance;
 
-        public ShadowQualityMode(ShadowQuality shadowQuality, float shadowDistance)
+        [JsonConstructor]
+        public ShadowQualityMode(
+            [JsonProperty("ShadowQuality")] ShadowQuality shadowQuality,
+            [JsonProperty("ShadowDistance")] float shadowDistance)
         {
             ShadowQuality = shadowQuality;
             ShadowDistance = shadowDistance;
@@ -98,5 +105,6 @@ namespace _Project.Features.Graphics.Domain
             
             GraphicsChanged?.Invoke();
         }
+        
     }
 }
