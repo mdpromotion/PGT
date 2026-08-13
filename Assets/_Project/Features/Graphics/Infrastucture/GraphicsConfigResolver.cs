@@ -35,7 +35,7 @@ namespace _Project.Features.Graphics.Infrastucture
                 .GetViewDistanceEntry(data.ViewDistance)
                 .graphicsType;
 
-            SetOrAdd(result, SettingsMenuMode.Quality, (int)data.Category);
+            SetOrAdd(result, SettingsMenuMode.Quality, (int)data.QualityMode);
             SetOrAdd(result, SettingsMenuMode.ShadowQuality, (int)data.ShadowQualityMode.ShadowQuality);
             SetOrAdd(result, SettingsMenuMode.ShadowDistance, (int)shadowDistanceType);
             SetOrAdd(result, SettingsMenuMode.AntiAliasing, (int)data.AntiAliasingMode);
