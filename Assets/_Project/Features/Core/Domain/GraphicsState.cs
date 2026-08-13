@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace _Project.Features.Core.Domain
 {
@@ -37,15 +38,19 @@ namespace _Project.Features.Core.Domain
         Msaa4,
     }
 
-    public readonly struct ShadowQualityMode
+    [Serializable]
+    public struct ShadowQualityMode
     {
-        public readonly GraphicsType ShadowQuality;
-        public readonly float ShadowDistance;
+        [SerializeField] private ShadowQuality shadowQuality;
+        [SerializeField] private float shadowDistance;
+        
+        public ShadowQuality ShadowQuality => shadowQuality;
+        public float ShadowDistance => shadowDistance;
 
-        public ShadowQualityMode(GraphicsType shadowQuality, float shadowDistance)
+        public ShadowQualityMode(ShadowQuality shadowQuality, float shadowDistance)
         {
-            ShadowQuality = shadowQuality;
-            ShadowDistance = shadowDistance;
+            this.shadowQuality = shadowQuality;
+            this.shadowDistance = shadowDistance;
         }
     }
     

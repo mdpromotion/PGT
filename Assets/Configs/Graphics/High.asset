@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0cd5fb6cee965741b73146534c7ba16, type: 3}
   m_Name: High
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Settings.Infrastructure.GraphicsSettings
-  category: 2
-  shadowQuality: 2
-  viewDistance: 2
-  antiAliasing: 3
+  Category: 0
+  ShadowQuality:
+    quality: 2
+    shadowDistance: 2
+  AntiAliasingMode: 3
+  ViewDistance: 2

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using VContainer;
+using ShadowQuality = UnityEngine.ShadowQuality;
 
 namespace _Project.Features.Core.Presentation
 {
@@ -16,7 +17,7 @@ namespace _Project.Features.Core.Presentation
         [Inject]
         public void Construct()
         {
-            GraphicsData data = new GraphicsData(GraphicsType.High, new ShadowQualityMode(GraphicsType.High, 500), AntiAliasingMode.None, 10);
+            GraphicsData data = new GraphicsData(GraphicsType.High, new ShadowQualityMode(ShadowQuality.All, 500), AntiAliasingMode.Msaa4, 10);
             
             _graphicsState = new GraphicsState(data);
         }
@@ -24,6 +25,7 @@ namespace _Project.Features.Core.Presentation
 
         private void Awake()
         {
+            // temporary stub, I'll refactor this soon using di injection
             Construct();
             ApplyGraphicsSettings();
 
@@ -40,15 +42,18 @@ namespace _Project.Features.Core.Presentation
         {
             mainLight.shadows = _graphicsState.ShadowQualityMode.ShadowQuality switch
             {
-                GraphicsType.Low => LightShadows.None,
-                GraphicsType.Medium => LightShadows.Hard,
-                GraphicsType.High => LightShadows.Soft,
+                ShadowQuality.Disable => LightShadows.None,
+                ShadowQuality.HardOnly => LightShadows.Hard,
+                ShadowQuality.All => LightShadows.Soft,
                 _ => LightShadows.None
             };
+
             
             if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset urpAsset)
             {
                 urpAsset.shadowDistance = _graphicsState.ShadowQualityMode.ShadowDistance;
+                
+                QualitySettings.shadows = _graphicsState.ShadowQualityMode.ShadowQuality;
             }
         }
         

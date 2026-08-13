@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0cd5fb6cee965741b73146534c7ba16, type: 3}
   m_Name: Medium
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Settings.Infrastructure.GraphicsSettings
-  category: 1
-  shadowQuality: 1
-  viewDistance: 1
-  antiAliasing: 1
+  Category: 0
+  ShadowQuality:
+    quality: 1
+    shadowDistance: 1
+  AntiAliasingMode: 1
+  ViewDistance: 1

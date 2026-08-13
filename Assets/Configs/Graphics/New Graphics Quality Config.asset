@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 620b4405f0084669974723ce775bfdd5, type: 3}
+  m_Name: New Graphics Quality Config
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.UI.Infrastructure.GraphicsQualityConfig
+  shadowDistanceEntries:
+  - graphicsType: 0
+    shadowDistance: 0
+  - graphicsType: 1
+    shadowDistance: 500
+  - graphicsType: 2
+    shadowDistance: 1000
+  viewDistanceEntries:
+  - graphicsType: 0
+    viewDistance: 2
+  - graphicsType: 1
+    viewDistance: 3
+  - graphicsType: 2
+    viewDistance: 5
