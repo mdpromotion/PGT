@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using _Project.Features.Core.Domain;
+using _Project.Features.Graphics.Domain;
 using UnityEngine;
 
 namespace _Project.Features.UI.Infrastructure
@@ -16,6 +17,12 @@ namespace _Project.Features.UI.Infrastructure
 
         public ViewDistanceEntry GetViewDistanceEntry(GraphicsType type) =>
             viewDistanceEntries.First(m => m.graphicsType == type);
+        
+        public ShadowDistanceEntry GetShadowDistanceEntry(float shadowDistance) =>
+            shadowDistanceEntries.First(m => Mathf.Approximately(m.shadowDistance, shadowDistance));
+        
+        public ViewDistanceEntry GetViewDistanceEntry(int viewDistance) =>
+            viewDistanceEntries.First(m => m.viewDistance == viewDistance);
     }
 
     [Serializable]
@@ -29,6 +36,6 @@ namespace _Project.Features.UI.Infrastructure
     public struct ViewDistanceEntry
     {
         public GraphicsType graphicsType;
-        public float viewDistance;
+        public int viewDistance;
     }
 }

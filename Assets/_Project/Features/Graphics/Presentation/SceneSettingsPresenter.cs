@@ -1,7 +1,5 @@
-using _Project.Features.Core.Domain;
 using _Project.Features.Graphics.Domain;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using VContainer;
 using ShadowQuality = UnityEngine.ShadowQuality;
@@ -16,20 +14,14 @@ namespace _Project.Features.Graphics.Presentation
         private GraphicsState _graphicsState;
 
         [Inject]
-        public void Construct()
+        public void Construct(GraphicsState state)
         {
-            GraphicsData data = new GraphicsData(GraphicsType.High, new ShadowQualityMode(ShadowQuality.All, 500), AntiAliasingMode.Msaa4, 10);
-            
-            _graphicsState = new GraphicsState(data);
+            _graphicsState = state;
+            ApplyGraphicsSettings();
         }
-
-
+        
         private void Awake()
         {
-            // temporary stub, I'll refactor this soon using di injection
-            Construct();
-            ApplyGraphicsSettings();
-
             _graphicsState.GraphicsChanged += ApplyGraphicsSettings;
         }
 
@@ -48,47 +40,32 @@ namespace _Project.Features.Graphics.Presentation
                 ShadowQuality.All => LightShadows.Soft,
                 _ => LightShadows.None
             };
-
-            
-            if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset urpAsset)
-            {
-                urpAsset.shadowDistance = _graphicsState.ShadowQualityMode.ShadowDistance;
-                
-                QualitySettings.shadows = _graphicsState.ShadowQualityMode.ShadowQuality;
-            }
         }
         
         private void ApplyAntiAliasing()
         {
             UniversalAdditionalCameraData cameraData =
                 mainCamera.GetUniversalAdditionalCameraData();
-
-            if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset urpAsset)
+            
+            switch (_graphicsState.AntiAliasingMode)
             {
-                switch (_graphicsState.AntiAliasingMode)
-                {
-                    case AntiAliasingMode.None:
-                        cameraData.antialiasing = AntialiasingMode.None;
-                        urpAsset.msaaSampleCount = 1;
-                        break;
+                case AntiAliasingMode.None:
+                    cameraData.antialiasing = AntialiasingMode.None;
+                    break;
 
-                    case AntiAliasingMode.Fxaa:
-                        cameraData.antialiasing =
-                            AntialiasingMode.FastApproximateAntialiasing;
-                        urpAsset.msaaSampleCount = 1;
-                        break;
+                case AntiAliasingMode.Fxaa:
+                    cameraData.antialiasing =
+                        AntialiasingMode.FastApproximateAntialiasing;
+                    break;
 
-                    case AntiAliasingMode.Taa:
-                        cameraData.antialiasing =
-                            AntialiasingMode.TemporalAntiAliasing;
-                        urpAsset.msaaSampleCount = 1;
-                        break;
+                case AntiAliasingMode.Taa:
+                    cameraData.antialiasing =
+                        AntialiasingMode.TemporalAntiAliasing;
+                    break;
 
-                    case AntiAliasingMode.Msaa4:
-                        cameraData.antialiasing = AntialiasingMode.None;
-                        urpAsset.msaaSampleCount = 4;
-                        break;
-                }
+                case AntiAliasingMode.Msaa4:
+                    cameraData.antialiasing = AntialiasingMode.None;
+                    break;
             }
         }
 
