@@ -39,6 +39,7 @@ using _Project.Features.Tick.Domain;
 using _Project.Features.UI.Infrastructure;
 using _Project.Features.UI.Menus.DebugMenu;
 using _Project.Features.UI.Menus.InGameMenu;
+using _Project.Features.UI.Menus.SettingsMenu;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -312,8 +313,7 @@ namespace _Project.Features.Core.Bootstrap.Game
             builder.Register<CoreGameLoop>(Lifetime.Singleton)
                 .As<IInitializable>();
             
-            builder.RegisterComponentInHierarchy<SceneSettingsPresenter>();
-        }
+            builder.RegisterComponentInHierarchy<SceneSettingsPresenter>(); }
 
         private void RegisterUI(IContainerBuilder builder)
         {
@@ -323,6 +323,7 @@ namespace _Project.Features.Core.Bootstrap.Game
             
             builder.RegisterComponentInHierarchy<DebugMenuPresenter>();
             builder.RegisterComponentInHierarchy<InGameMenuPresenter>();
+            builder.RegisterComponentInHierarchy<SettingsMenuPresenter>();
         }
     }
 }
