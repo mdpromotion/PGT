@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace _Project.Features.Core.Domain
+namespace _Project.Features.Graphics.Domain
 {
     public readonly struct GraphicsData
     {

@@ -1,11 +1,12 @@
 using _Project.Features.Core.Domain;
+using _Project.Features.Graphics.Domain;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using VContainer;
 using ShadowQuality = UnityEngine.ShadowQuality;
 
-namespace _Project.Features.Core.Presentation
+namespace _Project.Features.Graphics.Presentation
 {
     public class SceneSettingsPresenter : MonoBehaviour
     {

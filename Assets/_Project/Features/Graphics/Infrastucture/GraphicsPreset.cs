@@ -1,8 +1,8 @@
 using System;
-using _Project.Features.Core.Domain;
+using _Project.Features.Graphics.Domain;
 using UnityEngine;
 
-namespace _Project.Features.Core.Infrastructure
+namespace _Project.Features.Graphics.Infrastucture
 {
     [CreateAssetMenu(menuName = "Settings/Graphics Preset")]
     public class GraphicsPreset  : ScriptableObject
