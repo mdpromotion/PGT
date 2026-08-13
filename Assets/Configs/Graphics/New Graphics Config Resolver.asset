@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0f7216a6c671e743bf7eff3615e01ac, type: 3}
+  m_Name: New Graphics Config Resolver
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Graphics.Infrastucture.GraphicsConfigResolver
+  presets:
+  - {fileID: 11400000, guid: 1fcac442602b1ca4aadbfcfc1f5e7202, type: 2}
+  - {fileID: 11400000, guid: ee0a6eadb757de1408822c6dcd02d18d, type: 2}
+  - {fileID: 11400000, guid: a776da97aa42e9e41bbc59efaebadb79, type: 2}
+  qualityConfig: {fileID: 11400000, guid: f30bb45ece8c8a846b817a6eb7e25fc1, type: 2}

@@ -1,4 +1,5 @@
 using System;
+using _Project.Features.Graphics.Infrastucture;
 using UnityEngine;
 
 namespace _Project.Features.Graphics.Domain
@@ -27,7 +28,7 @@ namespace _Project.Features.Graphics.Domain
     
     public readonly struct GraphicsData
     {
-        public readonly GraphicsType Category;
+        public readonly GraphicsType QualityMode;
         public readonly ShadowQualityMode ShadowQualityMode;
         public readonly AntiAliasingMode AntiAliasingMode;
         public readonly WindowMode WindowMode;
@@ -42,7 +43,7 @@ namespace _Project.Features.Graphics.Domain
             bool vSync,
             int viewDistance)
         {
-            Category = category;
+            QualityMode = category;
             ShadowQualityMode = shadowQuality;
             AntiAliasingMode = antiAliasingMode;
             WindowMode = windowMode;
@@ -52,24 +53,23 @@ namespace _Project.Features.Graphics.Domain
     }
 
     [Serializable]
-    public struct ShadowQualityMode
+    public readonly struct ShadowQualityMode
     {
-        [SerializeField] private ShadowQuality shadowQuality;
-        [SerializeField] private float shadowDistance;
-        
-        public ShadowQuality ShadowQuality => shadowQuality;
-        public float ShadowDistance => shadowDistance;
+        public readonly ShadowQuality ShadowQuality;
+        public readonly float ShadowDistance;
 
         public ShadowQualityMode(ShadowQuality shadowQuality, float shadowDistance)
         {
-            this.shadowQuality = shadowQuality;
-            this.shadowDistance = shadowDistance;
+            ShadowQuality = shadowQuality;
+            ShadowDistance = shadowDistance;
         }
     }
     
     public class GraphicsState
     {
-        public GraphicsType Category { get; private set; }
+        private readonly IGraphicsSettingsRepository _repository;
+        
+        public GraphicsType QualityMode { get; private set; }
         public ShadowQualityMode ShadowQualityMode { get; private set; }
         public AntiAliasingMode AntiAliasingMode { get; private set; }
         public WindowMode WindowMode { get; private set; }
@@ -78,19 +78,23 @@ namespace _Project.Features.Graphics.Domain
         
         public event Action GraphicsChanged;
 
-        public GraphicsState(GraphicsData data)
+        public GraphicsState(IGraphicsSettingsRepository repository)
         {
-            SetGraphicsData(data);
+            _repository = repository;
+            SetGraphicsData(_repository.Load(), persist: false);
         }
 
-        public void SetGraphicsData(GraphicsData data)
+        public void SetGraphicsData(GraphicsData data, bool persist = true)
         {
-            Category = data.Category;
+            QualityMode = data.QualityMode;
             ShadowQualityMode = data.ShadowQualityMode;
             AntiAliasingMode = data.AntiAliasingMode;
             WindowMode = data.WindowMode;
             VSync = data.VSync;
             ViewDistance = data.ViewDistance;
+            
+            if (persist)
+                _repository.Save(data);
             
             GraphicsChanged?.Invoke();
         }
