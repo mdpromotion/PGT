@@ -22,7 +22,7 @@ namespace _Project.Features.UI.Menus.SettingsMenu
         [SerializeField] private List<SettingsMenuDropdown> dropdowns;
         [SerializeField] private SettingsMenuView settingsMenu;
         [SerializeField] private SettingsMenuExitButton exitButton;
-
+        
         private readonly Dictionary<SettingsMenuMode, int> _cachedValues = new();
 
         private GraphicsState _graphicsState;
