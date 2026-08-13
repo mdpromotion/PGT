@@ -13,8 +13,8 @@ namespace _Project.Features.UI.Menus.InGameMenu
     public class InGameMenuPresenter : MonoBehaviour
     {
         [SerializeField] private InGameMenuButton resumeButton;
-        [SerializeField] private InGameMenuButton exitButton;
         [SerializeField] private InGameMenuButton settingsButton;
+        [SerializeField] private InGameMenuButton exitButton;
         
         [SerializeField] private InGameMenuView pauseMenu;
         [SerializeField] private SettingsMenuView settingsMenu;
@@ -29,8 +29,8 @@ namespace _Project.Features.UI.Menus.InGameMenu
         private void Awake()
         {
             resumeButton.ButtonClicked += OnResumeClicked;
-            exitButton.ButtonClicked += OnExitClicked;
             settingsButton.ButtonClicked += OnSettingsClicked;
+            exitButton.ButtonClicked += OnExitClicked; 
         }
 
         [Inject]
@@ -47,8 +47,7 @@ namespace _Project.Features.UI.Menus.InGameMenu
         {
             if (_isSettingsVisible)
             {
-                _isSettingsVisible = false;
-                settingsMenu.Toggle(_isSettingsVisible);
+                OnSettingsClicked();
                 return;
             }
             
@@ -83,8 +82,8 @@ namespace _Project.Features.UI.Menus.InGameMenu
         private void OnDestroy()
         {
             resumeButton.ButtonClicked -= OnResumeClicked;
-            exitButton.ButtonClicked -= OnExitClicked;
             settingsButton.ButtonClicked -= OnSettingsClicked;
+            exitButton.ButtonClicked -= OnExitClicked; 
             _playerUIInputReader.PauseClicked -= OnPauseClicked;
         }
     }
