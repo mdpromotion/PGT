@@ -5719,7 +5719,7 @@ MonoBehaviour:
   m_CaptionImage: {fileID: 0}
   m_ItemText: {fileID: 6319938959720118517}
   m_ItemImage: {fileID: 0}
-  m_Value: 2
+  m_Value: 1
   m_Options:
     m_Options:
     - m_Text: Low
@@ -5727,8 +5727,6 @@ MonoBehaviour:
     - m_Text: Medium
       m_Image: {fileID: 0}
     - m_Text: High
-      m_Image: {fileID: 0}
-    - m_Text: Custom
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:

@@ -24,10 +24,28 @@ namespace _Project.Features.Graphics.Infrastucture
 
         private void ApplyGraphicsSettings()
         {
+            ApplyQualityMode();
             ApplyShadowSettings();
             ApplyAntiAliasing();
             ApplyWindowMode();
             ApplyVSync();
+        }
+
+        private void ApplyQualityMode()
+        {
+            string levelName = _graphicsState.QualityMode.ToString();
+            int index = System.Array.IndexOf(QualitySettings.names, levelName);
+
+            if (index < 0)
+            {
+                Debug.LogWarning($"Quality level '{levelName}' not found in Project Settings.");
+                return;
+            }
+
+            if (QualitySettings.GetQualityLevel() == index)
+                return;
+
+            QualitySettings.SetQualityLevel(index, true);
         }
 
         private void ApplyShadowSettings()
