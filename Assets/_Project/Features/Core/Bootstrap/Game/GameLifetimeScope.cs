@@ -115,8 +115,7 @@ namespace _Project.Features.Core.Bootstrap.Game
                 .As<IFixedTickable>()
                 .As<IPlayerController>();
             
-            builder.Register<PlayerWorldRebaseSync>(Lifetime.Singleton)
-                .As<IInitializable>();
+            builder.Register<PlayerWorldRebaseSync>(Lifetime.Singleton).AsImplementedInterfaces();
 
             builder.RegisterComponentInHierarchy<RigidbodyPlayerState>()
                 .As<IPlayerReadOnly>();
@@ -149,8 +148,7 @@ namespace _Project.Features.Core.Bootstrap.Game
             builder.Register<CameraController>(Lifetime.Singleton)
                 .As<ILateTickable>();
             
-            builder.Register<CameraWorldRebaseSync>(Lifetime.Singleton)
-                .As<IInitializable>();
+            builder.Register<CameraWorldRebaseSync>(Lifetime.Singleton).AsImplementedInterfaces();
         }
         
         private void RegisterTickSystem(IContainerBuilder builder)

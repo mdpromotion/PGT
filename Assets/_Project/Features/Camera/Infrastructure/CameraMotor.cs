@@ -47,8 +47,6 @@ namespace _Project.Features.Camera.Infrastructure
 
         public void ApplyOriginShift(Vector3 delta)
         {
-            transform.position += delta;
-
             Transform trackingTarget = _vcam.Target.TrackingTarget;
 
             if (trackingTarget)

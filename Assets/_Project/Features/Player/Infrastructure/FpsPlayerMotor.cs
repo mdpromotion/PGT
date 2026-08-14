@@ -116,7 +116,14 @@ namespace _Project.Features.Player.Infrastructure
         
         public void ApplyOriginShift(Vector3 delta)
         {
-            _rb.position += delta;
+            var interpolation = _rb.interpolation;
+            _rb.interpolation = RigidbodyInterpolation.None;
+            
+            transform.position += delta;
+            
+            Physics.SyncTransforms();
+            
+            _rb.interpolation = interpolation;
         }
 
         private Vector3 GetGroundCheckPosition()

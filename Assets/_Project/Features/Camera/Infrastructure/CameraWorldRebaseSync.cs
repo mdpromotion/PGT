@@ -1,36 +1,22 @@
-using System;
 using _Project.Features.ProceduralWorld.Application.World;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace _Project.Features.Camera.Infrastructure
 {
-    public sealed class CameraWorldRebaseSync : IInitializable, IDisposable
+    public sealed class CameraWorldRebaseSync : IWorldRebaseParticipant
     {
-        private ICameraMotor _motor;
-        private WorldRebaseService _worldRebaseService;
+        private readonly ICameraMotor _motor;
+
+        public int Order => 300;
 
         [Inject]
-        public void Construct(
-            ICameraMotor motor,
-            WorldRebaseService worldRebaseService)
+        public CameraWorldRebaseSync(ICameraMotor motor)
         {
             _motor = motor;
-            _worldRebaseService = worldRebaseService;
         }
 
-        public void Initialize()
-        {
-            _worldRebaseService.WorldRebased += HandleWorldRebased;
-        }
-
-        public void Dispose()
-        {
-            _worldRebaseService.WorldRebased -= HandleWorldRebased;
-        }
-
-        private void HandleWorldRebased(Vector3 delta)
+        public void OnWorldRebased(Vector3 delta)
         {
             _motor.ApplyOriginShift(delta);
         }
