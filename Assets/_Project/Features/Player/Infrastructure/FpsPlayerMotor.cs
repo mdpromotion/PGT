@@ -113,6 +113,11 @@ namespace _Project.Features.Player.Infrastructure
             _rb.linearVelocity =
                 Vector3.zero;
         }
+        
+        public void ApplyOriginShift(Vector3 delta)
+        {
+            _rb.position += delta;
+        }
 
         private Vector3 GetGroundCheckPosition()
         {

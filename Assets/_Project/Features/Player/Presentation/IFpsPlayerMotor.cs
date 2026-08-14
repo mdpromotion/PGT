@@ -12,10 +12,9 @@ namespace _Project.Features.Player.Presentation
 
         bool IsGroundedCheck();
 
-        bool TryGetSafeGroundPosition(
-            out Vector3 position);
+        bool TryGetSafeGroundPosition(out Vector3 position);
 
-        void TeleportToPosition(
-            Vector3 position);
+        void TeleportToPosition(Vector3 position);
+        void ApplyOriginShift(Vector3 delta);
     }
 }

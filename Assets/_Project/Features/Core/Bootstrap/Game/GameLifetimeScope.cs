@@ -58,6 +58,7 @@ namespace _Project.Features.Core.Bootstrap.Game
         [SerializeField] private Material waterMaterial;
         [SerializeField] private Transform chunksParent;
         [SerializeField] private int viewDistance = 3;
+        [SerializeField] private WorldRebaseSettings worldRebaseSettings;
 
         [Header("Sound")]
         [SerializeField] private SoundDatabase database;
@@ -113,6 +114,9 @@ namespace _Project.Features.Core.Bootstrap.Game
             builder.Register<PlayerController>(Lifetime.Singleton)
                 .As<IFixedTickable>()
                 .As<IPlayerController>();
+            
+            builder.Register<PlayerWorldRebaseSync>(Lifetime.Singleton)
+                .As<IInitializable>();
 
             builder.RegisterComponentInHierarchy<RigidbodyPlayerState>()
                 .As<IPlayerReadOnly>();
@@ -144,6 +148,9 @@ namespace _Project.Features.Core.Bootstrap.Game
 
             builder.Register<CameraController>(Lifetime.Singleton)
                 .As<ILateTickable>();
+            
+            builder.Register<CameraWorldRebaseSync>(Lifetime.Singleton)
+                .As<IInitializable>();
         }
         
         private void RegisterTickSystem(IContainerBuilder builder)
@@ -178,6 +185,7 @@ namespace _Project.Features.Core.Bootstrap.Game
             builder.RegisterInstance(riverCarvingSettings);
             builder.RegisterInstance(vegetationGridSettings);
             builder.RegisterInstance(vegetationCatalog);
+            builder.RegisterInstance(worldRebaseSettings);
 
             // Grid / caches
             builder.Register(
@@ -278,15 +286,18 @@ namespace _Project.Features.Core.Bootstrap.Game
             builder.Register<ChunkManager>(Lifetime.Singleton)
                 .As<IChunkManager>()
                 .AsSelf();
+            
+            builder.Register<WorldRebaseService>(Lifetime.Singleton);
 
             builder.Register(
-                    container => new WorldStreamer(
-                        container.Resolve<ChunkManager>(),
-                        container.Resolve<ChunkGrid>(),
-                        container.Resolve<IPlayerReadOnly>(),
-                        viewDistance,
-                        container.Resolve<IEnumerable<IGenerationCacheEvictor>>()),
-                    Lifetime.Singleton);
+                container => new WorldStreamer(
+                    container.Resolve<ChunkManager>(),
+                    container.Resolve<ChunkGrid>(),
+                    container.Resolve<IPlayerReadOnly>(),
+                    viewDistance,
+                    container.Resolve<IEnumerable<IGenerationCacheEvictor>>(),
+                    container.Resolve<WorldRebaseService>()),
+                Lifetime.Singleton);
 
             builder.RegisterComponentInHierarchy<ProceduralWorldPresenter>();
         }
