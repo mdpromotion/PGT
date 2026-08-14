@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff4d2a2a1ae9441f905c05d8ea59376a, type: 3}
   m_Name: New World Rebase Settings
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.ProceduralWorld.Domain.World.WorldRebaseSettings
-  ThresholdChunks: 4
+  ThresholdChunks: 16
