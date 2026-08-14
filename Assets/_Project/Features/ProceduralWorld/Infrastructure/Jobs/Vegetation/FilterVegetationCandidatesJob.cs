@@ -25,8 +25,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation
 
         public void Execute(int index)
         {
-            float2 worldPos = TilePoints[index];
-            float2 local = worldPos - ChunkWorldOrigin;
+            float2 tileLocalPosition = TilePoints[index];
+            
+            float2 local = tileLocalPosition - ChunkWorldOrigin;
             
             if (local.x < 0f || local.y < 0f || local.x >= ChunkWorldSize.x || local.y >= ChunkWorldSize.y)
                 return;
@@ -77,13 +78,13 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation
             float slopeDegrees = math.degrees(slopeRadians);
 
             float worldHeight = height01 * TerrainHeightWorldScale;
-            float3 worldPosition = new float3(worldPos.x, worldHeight, worldPos.y);
+            float3 localPosition = new float3(local.x, worldHeight, local.y);
 
             uint seed = ChunkSeed ^ (uint)(index * 2654435761);
             if (seed == 0) seed = 1;
 
             Output.AddNoResize(new Domain.Vegetation.VegetationInstanceData(
-                worldPosition,
+                localPosition,
                 slopeDegrees,
                 height01,
                 seed));

@@ -9,6 +9,8 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
     public class ChunkRepository : IChunkLookup, IDisposable
     {
         private readonly Dictionary<ChunkCoordinate, ChunkInstance> _chunks = new();
+        
+        public IEnumerable<ChunkInstance> All => _chunks.Values;
 
         public bool Contains(ChunkCoordinate coordinate)
         {

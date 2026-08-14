@@ -10,7 +10,9 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation
     {
         public int CellsPerSide;
         public float CellSize;
-        public float2 TileWorldOrigin;
+        
+        public float2 TileNoiseOrigin;
+
         public float JitterStrength;
         public uint TileSeed;
 
@@ -26,25 +28,39 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation
             int cellX = index % CellsPerSide;
             int cellZ = index / CellsPerSide;
 
-            uint seed = TileSeed ^ (uint)(cellX * 73856093) ^ (uint)(cellZ * 19349663);
-            if (seed == 0) seed = 1;
+            uint seed = TileSeed
+                        ^ (uint)(cellX * 73856093)
+                        ^ (uint)(cellZ * 19349663);
+
+            if (seed == 0)
+                seed = 1;
 
             var rng = new Random(seed);
 
-            float2 cellOrigin = TileWorldOrigin + new float2(cellX, cellZ) * CellSize;
-            float2 jitter = (rng.NextFloat2() - 0.5f) * JitterStrength * CellSize;
-            float2 point = cellOrigin + new float2(CellSize * 0.5f, CellSize * 0.5f) + jitter;
+            // Всегда tile-local.
+            float2 cellOrigin = new float2(cellX, cellZ) * CellSize;
 
-            float mask = SamplePatchMask(point);
-            if (mask < PatchThreshold)
+            float2 jitter =
+                (rng.NextFloat2() - 0.5f)
+                * JitterStrength
+                * CellSize;
+
+            float2 point =
+                cellOrigin
+                + new float2(CellSize * 0.5f, CellSize * 0.5f)
+                + jitter;
+
+            if (SamplePatchMask(point) < PatchThreshold)
                 return;
 
             Output.AddNoResize(point);
         }
 
-        private float SamplePatchMask(float2 worldPos)
+        private float SamplePatchMask(float2 localPosition)
         {
-            float2 p = (worldPos + PatchNoiseOffset) / PatchScale;
+            float2 p =
+                (TileNoiseOrigin + localPosition + PatchNoiseOffset)
+                / PatchScale;
 
             float sum = 0f;
             float amplitude = 1f;
