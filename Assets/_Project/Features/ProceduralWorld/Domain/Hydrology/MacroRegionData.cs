@@ -8,7 +8,7 @@ namespace _Project.Features.ProceduralWorld.Domain.Hydrology
         public MacroRegionCoordinate Coordinate { get; }
         public int PaddedSize { get; }
         public float CellSize { get; }
-        public float2 WorldOrigin { get; }
+        public double2 WorldOrigin { get; }
 
         public NativeArray<float> Heights;
         public NativeArray<sbyte> FlowDirection;
@@ -20,7 +20,7 @@ namespace _Project.Features.ProceduralWorld.Domain.Hydrology
             MacroRegionCoordinate coordinate,
             int paddedSize,
             float cellSize,
-            float2 worldOrigin)
+            double2 worldOrigin)
         {
             Coordinate = coordinate;
             PaddedSize = paddedSize;

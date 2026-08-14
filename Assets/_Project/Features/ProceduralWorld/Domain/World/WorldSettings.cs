@@ -2,8 +2,7 @@ using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Domain.World
 {
-    [CreateAssetMenu(
-        menuName="Procedural World/World Settings")]
+    [CreateAssetMenu(menuName="Procedural World/World Settings")]
     public class WorldSettings : ScriptableObject
     {
         public int Seed;
