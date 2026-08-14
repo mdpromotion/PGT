@@ -11,7 +11,7 @@ namespace _Project.Features.UI.Menus.MainMenu.View
         private void Awake()
         {
             _gameNameText = GetComponent<Text>();
-            _gameNameText.text = $"{UnityEngine.Application.productName}";
+            _gameNameText.text = UnityEngine.Application.productName.ToUpperInvariant();
         }
     }
 }

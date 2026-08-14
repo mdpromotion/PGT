@@ -11,7 +11,7 @@ namespace _Project.Features.UI.Menus.MainMenu.View
         private void Awake()
         {
             _versionText = GetComponent<Text>();
-            _versionText.text = $"{UnityEngine.Application.version}";
+            _versionText.text = $"({UnityEngine.Application.version})";
         }
     }
 }

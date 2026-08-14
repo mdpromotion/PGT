@@ -1344,8 +1344,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -59}
-  m_SizeDelta: {x: 937, y: 77.8912}
+  m_AnchoredPosition: {x: 0, y: -83}
+  m_SizeDelta: {x: 937, y: 115.9592}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1560082950
 MonoBehaviour:
@@ -1373,14 +1373,14 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 1
     m_MinSize: 10
-    m_MaxSize: 70
+    m_MaxSize: 100
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Procedural-Generation Test
+  m_Text: WASTELAND
 --- !u!222 &1560082951
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1483,10 +1483,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 395861409}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 680.78906, y: 20.112}
-  m_SizeDelta: {x: 1346.4, y: 40.223}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: -0.19995117, y: -141}
+  m_SizeDelta: {x: 941.5, y: 40.223022}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1675959105
 MonoBehaviour:
@@ -1516,7 +1516,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6320754, g: 0.6320754, b: 0.6320754, a: 1}
+  m_Color: {r: 0.6320754, g: 0.6320754, b: 0.6320754, a: 0.5882353}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1524,19 +1524,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 2568cfab523d6154a99c086b1bb37db9, type: 3}
+    m_Font: {fileID: 12800000, guid: 466237028845ade4e8e5c3815c14cd28, type: 3}
     m_FontSize: 14
     m_FontStyle: 0
     m_BestFit: 1
     m_MinSize: 10
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 4
     m_AlignByGeometry: 1
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: (pgt-14082026)
 --- !u!222 &1675959107
 CanvasRenderer:
   m_ObjectHideFlags: 0
