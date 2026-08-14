@@ -113,6 +113,18 @@ namespace _Project.Features.Player.Infrastructure
             _rb.linearVelocity =
                 Vector3.zero;
         }
+        
+        public void ApplyOriginShift(Vector3 delta)
+        {
+            var interpolation = _rb.interpolation;
+            _rb.interpolation = RigidbodyInterpolation.None;
+            
+            transform.position += delta;
+            
+            Physics.SyncTransforms();
+            
+            _rb.interpolation = interpolation;
+        }
 
         private Vector3 GetGroundCheckPosition()
         {

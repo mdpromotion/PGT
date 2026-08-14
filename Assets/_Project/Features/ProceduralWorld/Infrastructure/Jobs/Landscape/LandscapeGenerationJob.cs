@@ -50,13 +50,13 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Landscape
             int x = index % _resolution;
             int z = index / _resolution;
 
-            float stepX = _chunkSizeX / (_resolution - 1);
-            float stepZ = _chunkSizeZ / (_resolution - 1);
+            double stepX = (double)_chunkSizeX / (_resolution - 1);
+            double stepZ = (double)_chunkSizeZ / (_resolution - 1);
 
-            float worldX = _chunk.x * _chunkSizeX + x * stepX + _settings.Offset.x;
-            float worldZ = _chunk.y * _chunkSizeZ + z * stepZ + _settings.Offset.y;
+            double worldX = (double)_chunk.x * _chunkSizeX + x * stepX + _settings.Offset.x;
+            double worldZ = (double)_chunk.y * _chunkSizeZ + z * stepZ + _settings.Offset.y;
 
-            _heights[index] = HeightSampler.Sample(new float2(worldX, worldZ), _settings, _octaveOffsets);
+            _heights[index] = HeightSampler.Sample(new double2(worldX, worldZ), _settings, _octaveOffsets);
         }
     }
 }

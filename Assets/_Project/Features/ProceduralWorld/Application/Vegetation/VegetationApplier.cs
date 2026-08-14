@@ -44,7 +44,6 @@ namespace _Project.Features.ProceduralWorld.Application.Vegetation
                 treeInstances.Capacity = instances.Length;
 
             float3 terrainSize = terrain.terrainData.size;
-            Vector3 terrainPosition = terrain.transform.position;
 
             for (int i = 0; i < instances.Length; i++)
             {
@@ -67,12 +66,11 @@ namespace _Project.Features.ProceduralWorld.Application.Vegetation
                 float scale = rng.NextFloat(entry.UniformScaleRange.x, entry.UniformScaleRange.y);
                 float rotation = entry.RandomizeYRotation ? rng.NextFloat(0f, 2f * Mathf.PI) : 0f;
 
-                Vector3 worldPos = new Vector3(
+                Vector3 local = new Vector3(
                     candidate.WorldPosition.x,
                     candidate.WorldPosition.y,
                     candidate.WorldPosition.z);
 
-                Vector3 local = worldPos - terrainPosition;
                 Vector3 normalized = new Vector3(
                     local.x / terrainSize.x,
                     0f,

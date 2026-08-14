@@ -23,6 +23,8 @@ namespace _Project.Features.ProceduralWorld.Application.World
         private readonly HashSet<ChunkCoordinate> _requiredChunks = new();
 
         private readonly List<ChunkCoordinate> _ordered = new();
+        
+        private readonly WorldRebaseService _worldRebaseService;
 
         private ChunkCoordinate _currentCenter;
 
@@ -30,12 +32,14 @@ namespace _Project.Features.ProceduralWorld.Application.World
 
 
 
+        
         public WorldStreamer(
             ChunkManager chunkManager,
             ChunkGrid chunkGrid,
             IPlayerReadOnly player,
             int viewDistance,
-            IEnumerable<IGenerationCacheEvictor> cacheEvictors)
+            IEnumerable<IGenerationCacheEvictor> cacheEvictors,
+            WorldRebaseService worldRebaseService)
         {
             _chunkManager = chunkManager;
             _chunkGrid = chunkGrid;
@@ -48,7 +52,9 @@ namespace _Project.Features.ProceduralWorld.Application.World
             {
                 evictors.Add(evictor);
             }
-
+            
+            _worldRebaseService = worldRebaseService;
+            
             _cacheEvictors = evictors;
         }
 
@@ -57,11 +63,11 @@ namespace _Project.Features.ProceduralWorld.Application.World
         public void Update()
         {
             ChunkCoordinate center =
-                _chunkGrid.ToChunkCoordinate(
-                    _player.Position);
+                _chunkGrid.ToChunkCoordinate(_player.Position);
 
-            if (_initialized &&
-                center.Equals(_currentCenter))
+            _worldRebaseService.TryRebase(center);
+
+            if (_initialized && center.Equals(_currentCenter))
             {
                 return;
             }

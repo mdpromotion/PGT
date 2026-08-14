@@ -30,14 +30,21 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
         public JobHandle Schedule(ChunkGenerationState state, JobHandle dependency)
         {
             int resolution = state.Context.Resolution;
+            ChunkCoordinate coordinate = state.Context.Coordinate;
 
-            state.Hydrology = new HydrologyData(state.Context.Coordinate, resolution, onDispose: null);
+            state.Hydrology = new HydrologyData(coordinate, resolution, onDispose: null);
 
-            float2 chunkOrigin = GetChunkWorldOrigin(state.Context.Coordinate);
-            float2 chunkSize = new float2(_chunkGrid.ChunkSizeX, _chunkGrid.ChunkSizeZ);
+            double2 absoluteChunkOrigin = GenerationSpace.AbsoluteChunkOrigin(
+                coordinate, _chunkGrid.ChunkSizeX, _chunkGrid.ChunkSizeZ);
 
-            MacroRegionCoordinate regionCoordinate = _macroRegionCache.ToRegionCoordinate(chunkOrigin);
+            MacroRegionCoordinate regionCoordinate = _macroRegionCache.ToRegionCoordinate(coordinate);
             MacroRegionData region = _macroRegionCache.GetOrBuild(regionCoordinate);
+
+            // Локальная позиция чанка относительно origin своего же региона.
+            // Границы всегда малы (не больше TileWorldSize), независимо от rebase и
+            // от того, как далеко чанк от истинного нуля.
+            float2 chunkOrigin = GenerationSpace.LocalOffset(absoluteChunkOrigin, region.WorldOrigin);
+            float2 chunkSize = new float2(_chunkGrid.ChunkSizeX, _chunkGrid.ChunkSizeZ);
 
             var job = new ComputeRiverStrengthJob
             {
@@ -50,7 +57,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 MacroTileCells = _macroGridSettings.TileCells,
                 MacroRiverZoneMargin = _macroGridSettings.RiverZoneMargin,
                 MacroCellSize = region.CellSize,
-                MacroWorldOrigin = region.WorldOrigin,
+                MacroWorldOrigin = float2.zero,
                 MacroAccumulation = region.Accumulation,
                 MacroHeights = region.Heights,
                 LocalAccumulationNormalizationRange = _localAccumulationNormalizationRange,
@@ -60,12 +67,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             };
 
             return job.Schedule(resolution * resolution, 64, dependency);
-        }
-
-        private float2 GetChunkWorldOrigin(ChunkCoordinate coordinate)
-        {
-            var offset = _chunkGrid.ToWorldOffset(coordinate);
-            return new float2(offset.x, offset.y);
         }
     }
 }

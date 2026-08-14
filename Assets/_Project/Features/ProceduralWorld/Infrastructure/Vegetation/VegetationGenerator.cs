@@ -32,40 +32,92 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Vegetation
             _terrainHeightWorldScale = terrainHeightWorldScale;
         }
 
-        public JobHandle Schedule(ChunkGenerationState state, JobHandle dependency)
+        public JobHandle Schedule(
+            ChunkGenerationState state,
+            JobHandle dependency)
         {
-            ChunkCoordinate coordinate = state.Context.Coordinate;
-            int resolution = state.Context.Resolution;
+            ChunkCoordinate coordinate =
+                state.Context.Coordinate;
 
-            VegetationTileCoordinate tileCoordinate = _tileCache.ToTileCoordinate(coordinate);
-            VegetationTileData tile = _tileCache.GetOrBuild(tileCoordinate);
+            int resolution =
+                state.Context.Resolution;
 
-            var offset = _chunkGrid.ToWorldOffset(coordinate);
-            float2 chunkOrigin = new float2(offset.x, offset.y);
-            float2 chunkSize = new float2(_chunkGrid.ChunkSizeX, _chunkGrid.ChunkSizeZ);
+            VegetationTileCoordinate tileCoordinate =
+                _tileCache.ToTileCoordinate(coordinate);
 
-            var instances = new NativeList<VegetationInstanceData>(tile.Points.Length, Allocator.Persistent);
-            state.Vegetation = new VegetationData(coordinate, instances);
+            VegetationTileData tile =
+                _tileCache.GetOrBuild(tileCoordinate);
 
-            uint chunkSeed = (uint)_worldSeed
-                             ^ (uint)(coordinate.X * 374761393)
-                             ^ (uint)(coordinate.Y * 668265263);
+            // Generation-space.
+            // Большое умножение coordinate × chunkSize
+            // выполняется в double.
+            double2 absoluteChunkOrigin =
+                GenerationSpace.AbsoluteChunkOrigin(
+                    coordinate,
+                    _chunkGrid.ChunkSizeX,
+                    _chunkGrid.ChunkSizeZ);
+
+            // Origin того же tile, в котором лежат TilePoints.
+            double2 tileOrigin =
+                _tileCache.GetTileWorldOrigin(tileCoordinate);
+
+            // Маленькая величина внутри tile.
+            float2 chunkOrigin =
+                GenerationSpace.LocalOffset(
+                    absoluteChunkOrigin,
+                    tileOrigin);
+
+            float2 chunkSize =
+                new float2(
+                    _chunkGrid.ChunkSizeX,
+                    _chunkGrid.ChunkSizeZ);
+
+            var instances = new NativeList<VegetationInstanceData>(
+                tile.Points.Length,
+                Allocator.Persistent);
+
+            state.Vegetation =
+                new VegetationData(
+                    coordinate,
+                    instances);
+
+            uint chunkSeed =
+                (uint)_worldSeed
+                ^ (uint)(coordinate.X * 374761393)
+                ^ (uint)(coordinate.Y * 668265263);
 
             var job = new FilterVegetationCandidatesJob
             {
-                TilePoints = tile.Points.AsDeferredJobArray(),
+                TilePoints =
+                    tile.Points.AsDeferredJobArray(),
+                
                 ChunkWorldOrigin = chunkOrigin,
+
                 ChunkWorldSize = chunkSize,
                 Resolution = resolution,
-                TerrainHeightWorldScale = _terrainHeightWorldScale,
-                RiverMaskThreshold = _settings.RiverMaskThreshold,
+
+                TerrainHeightWorldScale =
+                    _terrainHeightWorldScale,
+
+                RiverMaskThreshold =
+                    _settings.RiverMaskThreshold,
+
                 ChunkSeed = chunkSeed,
-                Heights = state.Landscape.Heights,
-                RiverMask = state.Hydrology.RiverMask,
-                Output = instances.AsParallelWriter(),
+
+                Heights =
+                    state.Landscape.Heights,
+
+                RiverMask =
+                    state.Hydrology.RiverMask,
+
+                Output =
+                    instances.AsParallelWriter(),
             };
 
-            return job.Schedule(tile.Points.Length, 64, dependency);
+            return job.Schedule(
+                tile.Points.Length,
+                64,
+                dependency);
         }
     }
 }

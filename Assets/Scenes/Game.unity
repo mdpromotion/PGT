@@ -361,7 +361,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1001, z: -10}
+  m_LocalPosition: {x: 0, y: 1001, z: 0}
   m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -531,7 +531,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TrackerSettings:
     BindingMode: 4
-    PositionDamping: {x: 0.05, y: 0.05, z: 0.05}
+    PositionDamping: {x: 0, y: 0, z: 0}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
@@ -2083,6 +2083,7 @@ MonoBehaviour:
   waterMaterial: {fileID: 2100000, guid: e0a5b090e332ecd4cad4f7b4b189ff24, type: 2}
   chunksParent: {fileID: 758205965}
   viewDistance: 5
+  worldRebaseSettings: {fileID: 11400000, guid: 34dca883eeeac184ab508e3d2f4ff81b, type: 2}
   database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
   globalMaxVoices: 32
   playerSoundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
@@ -2204,7 +2205,7 @@ Transform:
   m_GameObject: {fileID: 1508698440}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1000, z: -10}
+  m_LocalPosition: {x: 0, y: 1000, z: 0}
   m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2387,7 +2388,7 @@ Transform:
   m_GameObject: {fileID: 1652573605}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1001, z: -10}
+  m_LocalPosition: {x: 0, y: 1001, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
