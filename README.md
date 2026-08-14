@@ -1,195 +1,99 @@
-# PGT (Procedural-Generation Test)
+# Wasteland
 
 [English Version](#-english-version) | [Русская версия](#-русская-версия)
 
 ---
 
-<a id="-english-version"></a>
-
 # 🇬🇧 English Version
 
-**PGT (Procedural-Generation Test)** is a technical prototype focused on procedural world generation and exploration systems in Unity. The project explores scalable approaches for building infinite worlds, including procedural landscapes, hydrology, vegetation, dynamic lighting, runtime chunk streaming, and performance-oriented architecture designed for large-scale environments.
+**Wasteland** is a post-apocalyptic survival RPG built in Unity, set in an infinite, procedurally generated world. The project is in active development, with core world-generation and exploration technology already implemented and gameplay systems being built on top of it as the game moves toward release.
 
-The main goal of PGT is experimenting with the technologies and systems required to create dynamic procedural worlds while maintaining stable runtime performance and clean, extensible code architecture.
+## Concept
 
-## 🚀 Core Technologies & Approaches
-- **Clean Architecture + MVP** — Modular architecture with clear separation between gameplay logic, infrastructure, and presentation.
-- **Feature-first Structure** — Every system is isolated into independent features that can be extended without affecting unrelated parts.
-- **SOLID Principles** — Designed for scalability, maintainability, and long-term project growth.
-- **Data-Oriented Design** — Performance-critical systems built around Unity Jobs, Burst Compiler, and native memory structures.
+The player wakes up in a ruined world and has to survive against everything it throws at them — hostile creatures ranging from desperate survivors to mutated horrors, each with distinct combat behavior. There is no fixed map: the world is endless and generated on the fly, dotted with structures worth raiding for loot and **Knowledge** — a core progression mechanic that permanently improves the character (strength, crafting speed, and more). Combat is built around a risk/noise trade-off: quiet, low-durability melee weapons like bats and crowbars versus loud, ammo-hungry firearms that can pull every nearby threat straight to you. The game leans heavily into RPG systems and survival tension.
 
-## 🧠 Architecture & Patterns
-- **Dependency Injection (VContainer)** — Lightweight dependency management and feature composition.
-- **MVP (Model-View-Presenter)** — Separation between runtime presentation and application logic.
-- **Factory Pattern** — Creation and lifecycle management of generated world objects.
-- **Repository Pattern** — Runtime storage and lookup of generated world data.
-- **Scheduler Pattern** — Controlled execution pipeline for asynchronous generation tasks.
+## 🚀 Core Technologies & Approach
 
-## ⚙️ Tech Stack
-- **Unity Jobs System** — Multithreaded world generation and background processing.
-- **Unity Burst Compiler** — SIMD-optimized procedural calculations.
-- **Unity Mathematics** — High-performance mathematical operations.
-- **Native Collections** — Low-allocation runtime data processing.
-- **ScriptableObjects** — Data-driven configuration of world, generation, and gameplay systems.
-- **Unity Addressables** — Asset management and async scene/content loading.
+- **Clean Architecture + MVP** — modular separation between gameplay logic, infrastructure, and presentation.
+- **Feature-first structure** — every system is isolated and extendable without touching unrelated code.
+- **Data-Oriented Design** — performance-critical systems built on Unity Jobs, Burst Compiler, and native memory structures.
+- **Dependency Injection (VContainer)** — lightweight composition of gameplay features.
 
-## 🧪 Performance & Optimization
-- **Chunk Streaming** — Dynamic loading and unloading of world regions around the player.
-- **Procedural Landscape Generation** — Burst-accelerated generation of terrain data.
-- **Generation Cancellation** — Unnecessary background generation tasks are cancelled when no longer needed.
-- **Memory Management** — Controlled lifetime of native resources and minimized runtime allocations.
-- **Unity Profiler** — Continuous profiling and optimization of critical systems.
-- **Low-GC Runtime** — Designed to reduce managed allocations during gameplay.
-- **Configurable Graphics Presets** — Low, Medium, and High quality settings for scalable performance across hardware.
+## 🌎 World Generation
 
----
+- **Infinite Procedural World** — seamless, chunk-streamed landscape generated around the player in real time.
+- **Procedural Hydrology** — terrain-aware rivers with natural flow paths, carving, and smooth shoreline transitions.
+- **Chunk-Based Water Rendering** — waves, depth-aware color, shoreline fading, reflections, and fog integration.
+- **Procedural Vegetation** — automatic tree placement with variants, LODs, and collision across generated terrain.
+- **Dynamic Sky & Day/Night Cycle** — sun/moon visuals, procedural stars, and smoothly transitioning lighting and fog.
 
-## 🏗 Project Structure (Feature-first)
+## ⚙️ Performance
 
-`📦 Assets/_Project/Features/FeatureName`
+- **Chunk Streaming & Scheduling** — background generation pipeline with prioritization and cancellation of unneeded work.
+- **Burst-Accelerated Generation** — multithreaded terrain and world data generation via Unity Jobs + Burst.
+- **Low-GC Runtime** — controlled native memory lifetime, minimized managed allocations.
+- **Graphics Settings** — an in-game options menu letting players tune visual quality for the performance they want on their hardware.
 
-- `Application` — Use cases and feature-specific logic
-- `Domain` — Core rules, models, and independent systems
-- `Infrastructure` — Unity-specific implementations and external integrations
-- `Presentation` — Runtime views and MonoBehaviours
-- `Data` — Configurations and ScriptableObject assets
+## 🛠 On the Roadmap Toward Release
 
-## 🌎 World Systems
-
-- **Infinite Procedural World** — Dynamic landscape generation and streaming around the player.
-- **Procedural Hydrology System** — Terrain-aware river generation with natural flow paths, terrain carving, and smooth riverbed/shoreline transitions.
-- **Chunk-Based Water Rendering** — Wave movement, depth-aware coloration, shoreline fading, reflections, and fog integration.
-- **Procedural Vegetation** — Automatic tree placement across generated terrain, with multiple tree variants, LODs, and collision.
-- **Dynamic Sky & Day/Night Cycle** — Sun and moon visuals, procedural stars, rotating sun, and smoothly transitioning ambient lighting and fog over time.
-- **Volumetric Fog** — Depth-aware atmospheric fog integrated with lighting and time-of-day.
-- **Landscape Generation Pipeline** — Multithreaded world generation using Unity Jobs + Burst Compiler.
-- **World Streaming System** — Automatic loading, unloading, and prioritization of nearby regions.
-- **Environmental Interaction** — Player movement, sprinting, swimming, diving, and exploration mechanics.
-- **Sound System** — Data-driven audio playback with configurable sound definitions, movement audio, and water enter/exit feedback.
-- **Main Menu & Loading Flow** — Dedicated main menu scene with a loading screen and a safe, staged player spawn.
-- **Debug Tools** — In-game FPS counter accessible through a debug menu.
-- **Performance-Oriented Architecture** — Systems designed around scalability, profiling, and predictable runtime behavior.
-
-## ✨ Current Features
-
-- **Infinite Procedural World** — Large-scale procedural landscape generation around the player.
-- **Procedural Rivers** — Natural river generation with terrain carving and improved water continuity.
-- **Water System** — Runtime generated water surfaces with wave, depth, reflection, and fog-aware rendering.
-- **Vegetation System** — Procedurally placed trees with LODs and collision across generated terrain.
-- **Dynamic Sky & Lighting** — Full day/night cycle with sun/moon visuals, stars, and transitioning ambient light and fog.
-- **Volumetric Fog** — Atmospheric fog that reacts to lighting and time of day.
-- **Graphics Presets** — Configurable Low/Medium/High quality settings.
-- **Main Menu & Startup Flow** — Start Game flow, loading screen, and safe player spawn.
-- **Chunk Streaming** — Dynamic world loading and unloading based on player location.
-- **Chunk Scheduler** — Background generation pipeline with prioritization and cancellation support.
-- **Landscape Continuity** — Seamless connection between generated world regions.
-- **Player Exploration Systems** — Movement, sprinting, swimming, and diving.
-- **Environmental Audio** — Sound feedback for player actions, movement, and water interaction.
-- **Debug Menu** — In-game FPS counter.
-- **Performance-Oriented Architecture** — Continuous optimization of generation speed, memory usage, and runtime stability.
+- **Combat System** — unique behaviors per enemy type.
+- **Enemies & Threats** — a growing bestiary populating the wasteland.
+- **Lootable Structures** — hand-placed and procedural points of interest to explore and raid.
+- **Knowledge System** — a core progression mechanic that upgrades character stats and abilities through discovery.
+- **Weapon Systems** — quiet, low-durability melee weapons vs. loud, ammo-dependent firearms with noise-based enemy attraction.
+- **Survival & RPG Layer** — deeper character progression and survival mechanics.
 
 ## 🎯 Project Goals
 
-- Explore modern approaches to procedural world generation.
-- Build a scalable foundation for future survival / sandbox projects.
-- Experiment with large-scale runtime world systems.
-- Minimize CPU usage, GC allocations, and memory overhead.
-- Develop reusable technologies for complex Unity environments.
+- Build a fully realized post-apocalyptic survival RPG on top of a scalable procedural world.
+- Deliver combat, loot, and progression systems that make exploration genuinely rewarding.
+- Keep the world infinite, performant, and stable as systems layer on top of it.
+- Continue evolving the architecture and technology all the way through to release.
 
 ---
-
-<a id="-русская-версия"></a>
 
 # 🇷🇺 Русская версия
 
-**PGT (Procedural-Generation Test)** — технический прототип, посвящённый процедурной генерации мира и созданию систем исследования в Unity. Проект исследует подходы к построению масштабируемых бесконечных миров: генерацию ландшафта, гидрологию, растительность, динамическое освещение, стриминг чанков и производительную архитектуру для больших процедурных окружений.
+**Wasteland** — постапокалиптическая survival-RPG на Unity с бесконечным процедурно-генерируемым миром. Проект находится в активной разработке: технология генерации и исследования мира уже реализована, а поверх неё выстраиваются игровые системы по мере движения к релизу.
 
-Главная цель PGT — экспериментирование с технологиями, необходимыми для создания динамических процедурных миров, сохраняя высокую производительность и чистую расширяемую структуру проекта.
+## Концепт
 
-## 🚀 Основные технологии и подходы
+Игрок оказывается в разрушенном мире и вынужден выживать в ужасающих условиях. Повсюду его поджидают враждебные существа — от отчаявшихся выживших до мутантов с уникальным боевым поведением. Фиксированной карты нет: мир бесконечен и генерируется на лету, а по пути встречаются структуры, которые стоит обыскать ради лута и **Знаний** — ключевой механики прогрессии, которая постоянно улучшает персонажа (сила, скорость крафта и многое другое). Бой строится на балансе тишины и шума: тихое, но хрупкое ближнее оружие вроде бит и ломов против громкого огнестрела, требующего патроны и способного привлечь всех тварей поблизости. Игра имеет сильный уклон в RPG и выживание.
 
-- **Clean Architecture + MVP** — разделение ответственности между логикой приложения, инфраструктурой и представлением.
-- **Feature-first структура** — каждая система изолирована в отдельную фичу и может развиваться независимо.
-- **SOLID принципы** — архитектура рассчитана на масштабирование и долгосрочное развитие.
-- **Data-Oriented подход** — производительные системы построены вокруг Unity Jobs, Burst Compiler и Native Collections.
+## 🚀 Основные технологии и подход
 
-## 🧠 Архитектура и паттерны
+- **Clean Architecture + MVP** — разделение логики, инфраструктуры и представления.
+- **Feature-first структура** — каждая система изолирована и развивается независимо.
+- **Data-Oriented подход** — производительные системы на Unity Jobs, Burst Compiler и Native-структурах памяти.
+- **Dependency Injection (VContainer)** — лёгкая сборка игровых систем.
 
-- **Dependency Injection (VContainer)** — управление зависимостями и сборка игровых систем.
-- **MVP (Model-View-Presenter)** — разделение представления и логики приложения.
-- **Factory** — создание и управление жизненным циклом объектов процедурного мира.
-- **Repository** — хранение и поиск данных сгенерированных областей.
-- **Scheduler** — управление очередью асинхронной генерации и выполнением задач.
+## 🌎 Генерация мира
 
-## ⚙️ Технологии
+- **Бесконечный процедурный мир** — бесшовный, стримящийся по чанкам ландшафт, генерируемый вокруг игрока в реальном времени.
+- **Процедурная гидрология** — реки с учётом рельефа, естественными маршрутами течения и плавными переходами берега.
+- **Система воды по чанкам** — волны, зависимая от глубины окраска, затухание у берега, отражения и интеграция с туманом.
+- **Процедурная растительность** — автоматическое размещение деревьев с вариациями, LOD и коллизиями.
+- **Динамическое небо и цикл дня/ночи** — солнце, луна, звёзды и плавные переходы освещения и тумана.
 
-- **Unity Jobs System** — многопоточная генерация мира и фоновые вычисления.
-- **Unity Burst Compiler** — оптимизированные процедурные вычисления.
-- **Unity Mathematics** — высокопроизводительная математическая библиотека.
-- **Native Collections** — эффективная работа с памятью без лишних аллокаций.
-- **ScriptableObjects** — data-driven настройка параметров мира и игровых систем.
-- **Unity Addressables** — управление ассетами и асинхронная загрузка сцен/контента.
+## ⚙️ Производительность
 
-## 🧪 Оптимизация
+- **Стриминг и планирование чанков** — фоновая генерация с приоритизацией и отменой ненужных задач.
+- **Генерация на Burst** — многопоточная генерация мира через Unity Jobs + Burst.
+- **Минимизация GC** — контроль времени жизни Native-ресурсов, минимум managed-аллокаций.
+- **Настройки графики** — игровое меню опций, позволяющее игрокам подстроить качество картинки под нужную производительность на своём железе.
 
-- **Стриминг чанков** — динамическая загрузка и выгрузка мира вокруг игрока.
-- **Процедурная генерация ландшафта** — генерация данных мира с использованием Burst и Jobs.
-- **Отмена ненужной генерации** — прекращение вычислений для областей, которые больше не нужны.
-- **Контроль памяти** — управление временем жизни Native ресурсов и снижение количества аллокаций.
-- **Unity Profiler** — постоянный анализ и оптимизация критических систем.
-- **Минимизация GC** — снижение количества managed-аллокаций во время выполнения.
-- **Настраиваемые пресеты графики** — уровни Low, Medium и High для масштабируемой производительности.
+## 🛠 В планах к релизу
 
----
-
-## 🏗 Структура проекта (Feature-first)
-
-`📦 Assets/_Project/Features/FeatureName`
-
-- `Application` — сценарии использования и логика фичи
-- `Domain` — основные правила, модели и независимые системы
-- `Infrastructure` — Unity-реализации и внешние зависимости
-- `Presentation` — слой представления и MonoBehaviour
-- `Data` — конфигурации и ScriptableObject-ресурсы
-
-## 🌎 Системы мира
-
-- **Бесконечный процедурный мир** — динамическая генерация и стриминг ландшафта вокруг игрока.
-- **Гидрологическая система** — процедурные реки с учётом рельефа, естественными маршрутами течения и плавными переходами русла и берега.
-- **Система воды** — волны, зависимая от глубины окраска, затухание у берега, отражения и интеграция с туманом.
-- **Процедурная растительность** — автоматическое размещение деревьев на сгенерированной территории, несколько вариантов деревьев с LOD и коллизиями.
-- **Динамическое небо и цикл дня/ночи** — визуализация солнца и луны, процедурные звёзды, вращение солнца, плавные переходы освещения и тумана во времени.
-- **Объёмный туман** — атмосферный туман, зависящий от глубины и реагирующий на освещение и время суток.
-- **Генерация ландшафта** — многопоточная генерация мира на Unity Jobs + Burst Compiler.
-- **Стриминг мира** — автоматическая загрузка, выгрузка и приоритизация областей.
-- **Взаимодействие с окружением** — движение, бег, плавание, погружение и исследование мира.
-- **Звуковая система** — data-driven воспроизведение звуков, аудио движения и звуки входа/выхода из воды.
-- **Главное меню и загрузка** — отдельная сцена главного меню с экраном загрузки и безопасным поэтапным спавном игрока.
-- **Инструменты отладки** — счётчик FPS в игре через отладочное меню.
-- **Архитектура, ориентированная на производительность** — постоянная работа над масштабируемостью и стабильностью.
-
-## ✨ Реализовано на данный момент
-
-- **Бесконечный процедурный мир** с генерацией областей вокруг игрока.
-- **Процедурные реки** с естественной генерацией, изменением рельефа и улучшенной связностью.
-- **Система воды** с волнами, глубиной, отражениями и интеграцией с туманом.
-- **Система растительности** — процедурно размещённые деревья с LOD и коллизиями.
-- **Динамическое небо и освещение** — полный цикл дня/ночи с солнцем, луной, звёздами и плавными переходами.
-- **Объёмный туман**, реагирующий на освещение и время суток.
-- **Пресеты графики** — настраиваемые уровни Low/Medium/High.
-- **Главное меню и запуск игры** — стартовый флоу, экран загрузки и безопасный спавн игрока.
-- **Стриминг чанков** с динамической загрузкой и выгрузкой мира.
-- **Планировщик генерации** с очередью задач, приоритизацией и отменой ненужных вычислений.
-- **Связность ландшафта** между процедурно созданными регионами.
-- **Системы исследования мира** — движение, бег, плавание и погружение.
-- **Звуковая система** с настройкой звуковых событий, аудио движения и взаимодействия с водой.
-- **Отладочное меню** со счётчиком FPS.
-- **Производительная архитектура** с постоянной оптимизацией времени генерации и использования памяти.
+- **Боевая система** — уникальное поведение для разных типов врагов.
+- **Враги и угрозы** — растущий бестиарий, населяющий пустошь.
+- **Лутаемые структуры** — точки интереса, ручные и процедурные, для исследования и разграбления.
+- **Система Знаний** — ключевая механика прогрессии, улучшающая характеристики и способности персонажа через находки.
+- **Оружейные системы** — тихое, но хрупкое ближнее оружие против громкого, зависимого от патронов огнестрела, привлекающего врагов.
+- **Survival/RPG-слой** — более глубокая прогрессия персонажа и механики выживания.
 
 ## 🎯 Цели проекта
 
-- Исследование современных подходов к процедурной генерации мира.
-- Создание масштабируемой основы для будущего survival / sandbox проекта.
-- Экспериментирование с системами больших процедурных окружений.
-- Минимизация нагрузки на CPU, GC и использование памяти.
-- Создание переиспользуемых технологий для сложных Unity-проектов.
+- Создать полноценную постапокалиптическую survival-RPG поверх масштабируемого процедурного мира.
+- Реализовать боёвку, лут и прогрессию так, чтобы исследование мира было по-настоящему ценным.
+- Сохранять бесконечность мира, производительность и стабильность по мере наслоения новых систем.
+- Продолжать развивать архитектуру и технологии вплоть до релиза.
