@@ -9,6 +9,7 @@ using _Project.Features.Cursor.Presentation;
 using _Project.Features.GameTime.Application;
 using _Project.Features.GameTime.Domain;
 using _Project.Features.GameTime.Presentation;
+using _Project.Features.Graphics.Domain;
 using _Project.Features.Graphics.Presentation;
 using _Project.Features.Player.Application;
 using _Project.Features.Player.Domain;
@@ -292,7 +293,7 @@ namespace _Project.Features.Core.Bootstrap.Game
                     container.Resolve<ChunkManager>(),
                     container.Resolve<ChunkGrid>(),
                     container.Resolve<IPlayerReadOnly>(),
-                    viewDistance,
+                    container.Resolve<GraphicsState>(),
                     container.Resolve<IEnumerable<IGenerationCacheEvictor>>(),
                     container.Resolve<WorldRebaseService>()),
                 Lifetime.Singleton);

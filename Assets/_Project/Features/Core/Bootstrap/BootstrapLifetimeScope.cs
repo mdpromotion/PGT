@@ -18,8 +18,9 @@ namespace _Project.Features.Core.Bootstrap
 
         [SerializeField] private LoadingScreenView loadingScreenView;
         [SerializeField] private SceneDatabase sceneDatabase;
+        [SerializeField] private GraphicsQualityConfig qualityConfig;
         [SerializeField] private GraphicsConfigResolver graphicsConfigResolver;
-
+        [SerializeField] private FogConfig fogConfig;
         protected override void Awake()
         {
             Instance = this;
@@ -29,6 +30,16 @@ namespace _Project.Features.Core.Bootstrap
 
         protected override void Configure(IContainerBuilder builder)
         {
+            builder.Register<GraphicsState>(Lifetime.Singleton);
+
+            builder.Register<FogSettings>(Lifetime.Singleton)
+                .As<IFogSettings>();    
+            
+            builder.RegisterInstance(loadingScreenView);
+            builder.RegisterInstance(sceneDatabase);
+            builder.RegisterInstance(qualityConfig);
+            builder.RegisterInstance(fogConfig);
+            
             builder.Register<InputSystem_Actions>(Lifetime.Singleton);
 
             builder.Register<InputReader>(Lifetime.Singleton)
@@ -40,10 +51,7 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.Register<BootstrapEntryPoint>(Lifetime.Singleton)
                 .As<IInitializable>();
-
-            builder.RegisterInstance(loadingScreenView);
-            builder.RegisterInstance(sceneDatabase);
-
+            
             builder.Register<SceneTransitionService>(Lifetime.Singleton);
             builder.Register<LoadSceneController>(Lifetime.Singleton);
             
@@ -52,15 +60,22 @@ namespace _Project.Features.Core.Bootstrap
                 .As<IJsonWriter>();
             
             builder.RegisterInstance(graphicsConfigResolver)
-                .As<IGraphicsConfigResolver>();
+                .As<IGraphicsConfigResolver>()
+                .AsSelf();
+            
+            builder.RegisterBuildCallback(container =>
+            {
+                container.Inject(graphicsConfigResolver);
+            });
 
             builder.Register<GraphicsSettingsRepository>(Lifetime.Singleton)
                 .As<IGraphicsSettingsRepository>();
-
-            builder.Register<GraphicsState>(Lifetime.Singleton);
-
+            
             builder.Register<UnitySettingsApplier>(Lifetime.Singleton)
                 .As<IInitializable>();
+            
+            builder.Register<FogApplier>(Lifetime.Singleton)
+                .As<IFogApplier>();
         }
     }
 }

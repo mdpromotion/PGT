@@ -170,6 +170,8 @@ MonoBehaviour:
   loadingScreenView: {fileID: 1131743643}
   sceneDatabase: {fileID: 11400000, guid: bde1fe2425c04d34abf590282524bfa3, type: 2}
   graphicsConfigResolver: {fileID: 11400000, guid: 6c2204a91d2459942b194b6565233137, type: 2}
+  fogConfig: {fileID: 11400000, guid: 144d59e4d9abf4b4dbe87295e8457327, type: 2}
+  qualityConfig: {fileID: 11400000, guid: f30bb45ece8c8a846b817a6eb7e25fc1, type: 2}
 --- !u!1 &435113256
 GameObject:
   m_ObjectHideFlags: 0
