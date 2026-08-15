@@ -10,12 +10,41 @@ namespace _Project.Features.GameTime.Presentation
 {
     public class GameTimePresenter : MonoBehaviour
     {
+        private enum DayNightPhase
+        {
+            Day,
+            Night,
+            DayTransition,
+            NightTransition
+        }
+
+        private readonly struct DayNightTimings
+        {
+            public readonly float DayHour;
+            public readonly float NightHour;
+            public readonly float DayTransitionStart;
+            public readonly float NightTransitionStart;
+
+            public DayNightTimings(float dayHour, float nightHour, float dayTransitionStart, float nightTransitionStart)
+            {
+                DayHour = dayHour;
+                NightHour = nightHour;
+                DayTransitionStart = dayTransitionStart;
+                NightTransitionStart = nightTransitionStart;
+            }
+        }
+
         private IGameTime _gameTime;
         private IFogSettings _fogSettings;
-        private IFogApplier _fogApplier;
+        private IFogAnimator _fogAnimator;
 
-        [SerializeField] private Transform _sunTransform;
-        [SerializeField] private GameTimePresenterSceneConfig _sceneConfig;
+        [SerializeField] private Transform sunTransform;
+        [SerializeField] private GameTimePresenterSceneConfig sceneConfig;
+
+        [Header("Intro fog animation")]
+        [SerializeField] private float introFogStartDistance = 0f;
+        [SerializeField] private float introFogEndDistance = 100f;
+        [SerializeField] private float introFogDurationSeconds = 1f;
 
         private Light _sunLight;
 
@@ -25,44 +54,99 @@ namespace _Project.Features.GameTime.Presentation
         private const float NightFogStartDistance = 0f;
         private const float NightFogEndDistance = 300f;
 
+        private DayNightPhase? _lastEnvironmentPhase;
+
+        private readonly object _timeLock = new object();
+        private float _pendingTime;
+        private bool _hasPendingTime;
+        private float _currentTime;
+        
+        private bool _introActive;
+        private float _introElapsed;
+
         [Inject]
         public void Construct(
             IGameTime gameTime,
             IFogSettings fogSettings,
-            IFogApplier fogApplier)
+            IFogAnimator fogAnimator)
         {
             _gameTime = gameTime;
             _fogSettings = fogSettings;
-            _fogApplier = fogApplier;
+            _fogAnimator = fogAnimator;
         }
 
         private void Start()
-        { 
+        {
             _gameTime.TimeChanged += OnTimeChanged;
 
-            _sunLight = _sunTransform.GetComponent<Light>();
+            _sunLight = sunTransform.GetComponent<Light>();
             if (!_sunLight)
-                _sunLight = _sunTransform.gameObject.AddComponent<Light>();
+                _sunLight = sunTransform.gameObject.AddComponent<Light>();
 
             RenderSettings.ambientMode = AmbientMode.Skybox;
-            OnTimeChanged(_gameTime.CurrentTime);
+
+            _currentTime = _gameTime.CurrentTime;
+
+            UpdateSun(_currentTime);
+            UpdateSunLight(_currentTime);
+            UpdateEnvironment(_currentTime);
+
+            _introActive = true;
+            _introElapsed = 0f;
+            ApplyFog(_currentTime);
+        }
+
+        private void Update()
+        {
+            bool timeUpdated = false;
+
+            lock (_timeLock)
+            {
+                if (_hasPendingTime)
+                {
+                    _currentTime = _pendingTime;
+                    _hasPendingTime = false;
+                    timeUpdated = true;
+                }
+            }
+
+            if (timeUpdated)
+            {
+                UpdateSun(_currentTime);
+                UpdateSunLight(_currentTime);
+                UpdateEnvironment(_currentTime);
+            }
+
+            if (_introActive)
+            {
+                _introElapsed += Time.deltaTime;
+                if (_introElapsed >= introFogDurationSeconds)
+                    _introActive = false;
+                
+                ApplyFog(_currentTime);
+            }
+            else if (timeUpdated)
+            {
+                ApplyFog(_currentTime);
+            }
         }
 
         private void OnTimeChanged(float time)
         {
-            UpdateSun(time);
-            UpdateSunLight(time);
-            UpdateFog(time);
-            UpdateEnvironment(time);
+            lock (_timeLock)
+            {
+                _pendingTime = time;
+                _hasPendingTime = true;
+            }
         }
 
         private void UpdateSun(float time)
         {
             float sunAngle =
                 time / _gameTime.TicksPerDay * 360f
-                + _sceneConfig.SunRotationOffset;
+                + sceneConfig.SunRotationOffset;
 
-            _sunTransform.localRotation = Quaternion.Euler(
+            sunTransform.localRotation = Quaternion.Euler(
                 sunAngle,
                 0f,
                 0f);
@@ -70,139 +154,113 @@ namespace _Project.Features.GameTime.Presentation
 
         private void UpdateSunLight(float time)
         {
-            float transitionDuration = _gameTime.HoursToTicks(_sceneConfig.TransitionDurationHours);
-            float dayHour = _gameTime.HoursToTicks(_sceneConfig.DayTransition.Hour);
-            float nightHour = _gameTime.HoursToTicks(_sceneConfig.NightTransition.Hour);
-            float dayTransitionStart = dayHour - transitionDuration;
-            float nightTransitionStart = nightHour - transitionDuration;
+            DayNightPhase phase = GetPhase(time, GetTimings(), out float t);
 
-            if (IsInTransition(time, dayTransitionStart, dayHour))
+            _sunLight.intensity = phase switch
             {
-                float t = Mathf.InverseLerp(dayTransitionStart, dayHour, time);
-                _sunLight.intensity = t;
-                return;
-            }
-
-            if (IsInTransition(time, nightTransitionStart, nightHour))
-            {
-                float t = Mathf.InverseLerp(nightTransitionStart, nightHour, time);
-                _sunLight.intensity = MaximumSunIntensity - t;
-                return;
-            }
-
-            _sunLight.intensity =
-                IsDay(time, dayHour, nightHour)
-                    ? MaximumSunIntensity
-                    : MinimumSunIntensity;
+                DayNightPhase.DayTransition => Mathf.Lerp(MinimumSunIntensity, MaximumSunIntensity, t),
+                DayNightPhase.NightTransition => Mathf.Lerp(MaximumSunIntensity, MinimumSunIntensity, t),
+                DayNightPhase.Day => MaximumSunIntensity,
+                _ => MinimumSunIntensity
+            };
         }
 
         private void UpdateEnvironment(float time)
         {
-            float transitionDuration = _gameTime.HoursToTicks(_sceneConfig.TransitionDurationHours);
-            float dayHour = _gameTime.HoursToTicks(_sceneConfig.DayTransition.Hour);
-            float nightHour = _gameTime.HoursToTicks(_sceneConfig.NightTransition.Hour);
-            float dayTransitionStart = dayHour - transitionDuration;
-            float nightTransitionStart = nightHour - transitionDuration;
+            DayNightPhase phase = GetPhase(time, GetTimings(), out float t);
+            bool isTransition = phase is DayNightPhase.DayTransition or DayNightPhase.NightTransition;
 
-            if (IsInTransition(time, dayTransitionStart, dayHour))
-            {
-                float t = Mathf.InverseLerp(dayTransitionStart, dayHour, time);
-                RenderSettings.ambientIntensity = t;
+            if (!isTransition && _lastEnvironmentPhase == phase)
                 return;
-            }
 
-            if (IsInTransition(time, nightTransitionStart, nightHour))
+            RenderSettings.ambientIntensity = phase switch
             {
-                float t = Mathf.InverseLerp(nightTransitionStart, nightHour, time);
-                RenderSettings.ambientIntensity = 1f - t;
-                return;
-            }
+                DayNightPhase.DayTransition => t,
+                DayNightPhase.NightTransition => 1f - t,
+                DayNightPhase.Day => 1f,
+                _ => 0f
+            };
 
-            RenderSettings.ambientIntensity =
-                IsDay(time, dayHour, nightHour)
-                    ? 1f
-                    : 0f;
+            _lastEnvironmentPhase = phase;
         }
-
-        private void UpdateFog(float time)
+        
+        private void ApplyFog(float time)
         {
-            float transitionDuration = _gameTime.HoursToTicks(_sceneConfig.TransitionDurationHours);
-            float dayHour = _gameTime.HoursToTicks(_sceneConfig.DayTransition.Hour);
-            float nightHour = _gameTime.HoursToTicks(_sceneConfig.NightTransition.Hour);
-            float dayTransitionStart = dayHour - transitionDuration;
-            float nightTransitionStart = nightHour - transitionDuration;
+            DayNightPhase phase = GetPhase(time, GetTimings(), out float t);
+            FogState naturalState = GetNaturalFogState(phase, t);
 
-            float dayStartDistance = _fogSettings.OriginalFogStartDistance;
-            float dayEndDistance = _fogSettings.OriginalFogEndDistance;
-
-            float nightStartDistance = NightFogStartDistance;
-            float nightEndDistance = NightFogEndDistance;
-
-            if (IsInTransition(time, dayTransitionStart, dayHour))
+            FogState finalState;
+            if (_introActive)
             {
-                float t = Mathf.InverseLerp(dayTransitionStart, dayHour, time);
-
-                ApplyFogTransition(
-                    _sceneConfig.NightTransition.FogColor,
-                    nightStartDistance,
-                    nightEndDistance,
-                    _sceneConfig.DayTransition.FogColor,
-                    dayStartDistance,
-                    dayEndDistance,
-                    t);
-
-                return;
-            }
-
-            if (IsInTransition(time, nightTransitionStart, nightHour))
-            {
-                float t = Mathf.InverseLerp(nightTransitionStart, nightHour, time);
-
-                ApplyFogTransition(
-                    _sceneConfig.DayTransition.FogColor,
-                    dayStartDistance,
-                    dayEndDistance,
-                    _sceneConfig.NightTransition.FogColor,
-                    nightStartDistance,
-                    nightEndDistance,
-                    t);
-
-                return;
-            }
-
-            if (IsDay(time, dayHour, nightHour))
-            {
-                _fogApplier.Apply(
-                    _sceneConfig.DayTransition.FogColor,
-                    dayStartDistance,
-                    dayEndDistance);
+                float introT = Mathf.Clamp01(_introElapsed / Mathf.Max(introFogDurationSeconds, 0.0001f));
+                FogState introRevealState = new FogState(naturalState.Color, introFogStartDistance, introFogEndDistance);
+                finalState = FogState.Lerp(introRevealState, naturalState, introT);
             }
             else
             {
-                _fogApplier.Apply(
-                    _sceneConfig.NightTransition.FogColor,
-                    nightStartDistance,
-                    nightEndDistance);
+                finalState = naturalState;
             }
+
+            _fogAnimator.SnapTo(finalState);
+        }
+        
+        private FogState GetNaturalFogState(DayNightPhase phase, float t)
+        {
+            return phase switch
+            {
+                DayNightPhase.Day => GetDayFogState(),
+                DayNightPhase.Night => GetNightFogState(),
+                DayNightPhase.DayTransition => FogState.Lerp(GetNightFogState(), GetDayFogState(), t),
+                DayNightPhase.NightTransition => FogState.Lerp(GetDayFogState(), GetNightFogState(), t),
+                _ => GetNightFogState()
+            };
         }
 
-        private void ApplyFogTransition(
-            Color fromColor,
-            float fromStartDistance,
-            float fromEndDistance,
-            Color toColor,
-            float toStartDistance,
-            float toEndDistance,
-            float t)
+        private DayNightTimings GetTimings()
         {
-            Color color = Color.Lerp(fromColor, toColor, t);
-            float startDistance = Mathf.Lerp(fromStartDistance, toStartDistance, t);
-            float endDistance = Mathf.Lerp(fromEndDistance, toEndDistance, t);
+            float transitionDuration = _gameTime.HoursToTicks(sceneConfig.TransitionDurationHours);
+            float dayHour = _gameTime.HoursToTicks(sceneConfig.DayTransition.Hour);
+            float nightHour = _gameTime.HoursToTicks(sceneConfig.NightTransition.Hour);
 
-            _fogApplier.Apply(
-                color,
-                startDistance,
-                endDistance);
+            return new DayNightTimings(
+                dayHour,
+                nightHour,
+                dayHour - transitionDuration,
+                nightHour - transitionDuration);
+        }
+
+        private DayNightPhase GetPhase(float time, in DayNightTimings timings, out float t)
+        {
+            if (IsInTransition(time, timings.DayTransitionStart, timings.DayHour))
+            {
+                t = Mathf.InverseLerp(timings.DayTransitionStart, timings.DayHour, time);
+                return DayNightPhase.DayTransition;
+            }
+
+            if (IsInTransition(time, timings.NightTransitionStart, timings.NightHour))
+            {
+                t = Mathf.InverseLerp(timings.NightTransitionStart, timings.NightHour, time);
+                return DayNightPhase.NightTransition;
+            }
+
+            t = 0f;
+            return IsDay(time, timings.DayHour, timings.NightHour) ? DayNightPhase.Day : DayNightPhase.Night;
+        }
+
+        private FogState GetDayFogState()
+        {
+            return new FogState(
+                sceneConfig.DayTransition.FogColor,
+                _fogSettings.OriginalFogStartDistance,
+                _fogSettings.OriginalFogEndDistance);
+        }
+
+        private FogState GetNightFogState()
+        {
+            return new FogState(
+                sceneConfig.NightTransition.FogColor,
+                NightFogStartDistance,
+                NightFogEndDistance);
         }
 
         private bool IsInTransition(float time, float start, float end)

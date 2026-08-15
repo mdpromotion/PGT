@@ -1,5 +1,8 @@
+using System;
 using _Project.Features.Graphics.Infrastucture;
 using _Project.Features.UI.Infrastructure;
+using UnityEngine;
+using VContainer.Unity;
 
 namespace _Project.Features.Graphics.Domain
 {
@@ -9,25 +12,45 @@ namespace _Project.Features.Graphics.Domain
         float OriginalFogEndDistance { get; }
     }
 
-    public class FogSettings : IFogSettings
+    public class FogSettings : IFogSettings, IInitializable, IDisposable
     {
-        public float OriginalFogStartDistance { get; }
-        public float OriginalFogEndDistance { get; }
+        
+        private readonly GraphicsState _graphicsState;
+        private readonly FogConfig _config;
+        private readonly GraphicsQualityConfig _qualityConfig;
+        
+        public float OriginalFogStartDistance { get; private set; }
+        public float OriginalFogEndDistance { get; private set; }
 
         public FogSettings(
             GraphicsState state,
             FogConfig fogConfig,
             GraphicsQualityConfig qualityConfig)
         {
-            var viewType =
-                qualityConfig
-                    .GetViewDistanceEntry(state.ViewDistance)
-                    .graphicsType;
+            _graphicsState = state;
+            _config = fogConfig;
+            _qualityConfig = qualityConfig;
 
-            OriginalFogEndDistance =
-                fogConfig.GetFogEndFromType(viewType);
+            SetNewFogDistance();
+        }
+
+        public void Initialize()
+        {
+            _graphicsState.GraphicsChanged += SetNewFogDistance;
+        }
+
+        private void SetNewFogDistance()
+        {
+            var viewType = _qualityConfig.GetViewDistanceEntry(_graphicsState.ViewDistance).graphicsType;
+
+            OriginalFogEndDistance = _config.GetFogEndFromType(viewType);
             
-            OriginalFogStartDistance = fogConfig.GetFogStartromType(viewType);
+            OriginalFogStartDistance = _config.GetFogStartromType(viewType);
+        }
+
+        public void Dispose()
+        {
+            _graphicsState.GraphicsChanged -= SetNewFogDistance;
         }
     }
 }

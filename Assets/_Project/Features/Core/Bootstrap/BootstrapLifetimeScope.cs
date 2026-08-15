@@ -30,10 +30,13 @@ namespace _Project.Features.Core.Bootstrap
 
         protected override void Configure(IContainerBuilder builder)
         {
+            builder.Register<FogState>(Lifetime.Singleton);
+            
             builder.Register<GraphicsState>(Lifetime.Singleton);
 
             builder.Register<FogSettings>(Lifetime.Singleton)
-                .As<IFogSettings>();    
+                .As<IFogSettings>()
+                .As<IInitializable>();    
             
             builder.RegisterInstance(loadingScreenView);
             builder.RegisterInstance(sceneDatabase);
@@ -76,6 +79,9 @@ namespace _Project.Features.Core.Bootstrap
             
             builder.Register<FogApplier>(Lifetime.Singleton)
                 .As<IFogApplier>();
+            
+            builder.Register<FogAnimator>(Lifetime.Singleton)
+                .As<IFogAnimator>();
         }
     }
 }
