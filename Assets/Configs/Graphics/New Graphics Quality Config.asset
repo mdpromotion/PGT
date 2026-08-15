@@ -23,6 +23,6 @@ MonoBehaviour:
   - graphicsType: 0
     viewDistance: 2
   - graphicsType: 1
-    viewDistance: 3
-  - graphicsType: 2
     viewDistance: 5
+  - graphicsType: 2
+    viewDistance: 8
