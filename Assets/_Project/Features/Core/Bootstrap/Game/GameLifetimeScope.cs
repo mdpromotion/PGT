@@ -224,7 +224,8 @@ namespace _Project.Features.Core.Bootstrap.Game
             builder.Register(
                     container => new LandscapeChunkFactory(
                         chunkPrefab,
-                        container.Resolve<ChunkGrid>()),
+                        container.Resolve<ChunkGrid>(),
+                        container.Resolve<GraphicsState>()),
                     Lifetime.Singleton)
                 .As<ILandscapeFactory>();
 
@@ -296,7 +297,9 @@ namespace _Project.Features.Core.Bootstrap.Game
                     container.Resolve<GraphicsState>(),
                     container.Resolve<IEnumerable<IGenerationCacheEvictor>>(),
                     container.Resolve<WorldRebaseService>()),
-                Lifetime.Singleton);
+                Lifetime.Singleton)
+                .As<IInitializable>()
+                .AsSelf();
 
             builder.RegisterComponentInHierarchy<ProceduralWorldPresenter>();
         }

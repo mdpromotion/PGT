@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using _Project.Features.Graphics.Domain;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
@@ -11,6 +12,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
     {
         private readonly Terrain _prefab;
         private readonly ChunkGrid _grid;
+        private readonly GraphicsState _graphicsState;
 
         private readonly Dictionary<Terrain, ChunkHandle> _handles = new();
 
@@ -19,11 +21,37 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
         public LandscapeChunkFactory(
             Terrain prefab,
             ChunkGrid grid,
-            int expectedPoolCapacity = 32)
+            GraphicsState graphicsState)
         {
             _prefab = prefab;
             _grid = grid;
-            _pool = new Queue<Terrain>(expectedPoolCapacity);
+            _graphicsState = graphicsState;
+            
+            int initialCapacity = GetMaxPoolCapacity(_graphicsState.ViewDistance);
+            _pool = new Queue<Terrain>(initialCapacity);
+            
+            _graphicsState.GraphicsChanged += OnGraphicsChanged;
+        }
+
+        private void OnGraphicsChanged()
+        {
+            int maxPoolSize = GetMaxPoolCapacity(_graphicsState.ViewDistance);
+            
+            while (_pool.Count > maxPoolSize)
+            {
+                Terrain terrain = _pool.Dequeue();
+                _handles.Remove(terrain);
+                
+                if (terrain != null)
+                {
+                    Object.Destroy(terrain.gameObject);
+                }
+            }
+        }
+
+        private int GetMaxPoolCapacity(int viewDistance)
+        {
+            return (viewDistance * 2 + 1) * 2;
         }
 
         public void Connect(Terrain terrain, Terrain left, Terrain top, Terrain right, Terrain bottom)
@@ -70,7 +98,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
                 if (!marker)
                     marker = terrain.gameObject.AddComponent<TerrainChunkCoordinate>();
 
-
                 handle = new ChunkHandle(
                     collider,
                     marker);
@@ -115,7 +142,20 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
                     handle.Collider.enabled = false;
             }
 
-            _pool.Enqueue(terrain);
+            int maxPoolSize = GetMaxPoolCapacity(_graphicsState.ViewDistance);
+            
+            if (_pool.Count >= maxPoolSize)
+            {
+                _handles.Remove(terrain);
+                if (terrain != null)
+                {
+                    Object.Destroy(terrain.gameObject);
+                }
+            }
+            else
+            {
+                _pool.Enqueue(terrain);
+            }
         }
 
         private TerrainData CreateTerrainData()
@@ -134,6 +174,11 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
         
         public void Dispose()
         {
+            if (_graphicsState != null)
+            {
+                _graphicsState.GraphicsChanged -= OnGraphicsChanged;
+            }
+
             _handles.Clear();
             _pool.Clear();
         }

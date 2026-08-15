@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using _Project.Features.Core.Infrastructure;
 using _Project.Features.Graphics.Domain;
@@ -6,17 +7,16 @@ using _Project.Features.ProceduralWorld.Application.Chunks;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
-using UnityEngine;
+using VContainer.Unity;
 
 namespace _Project.Features.ProceduralWorld.Application.World
 {
-    public class WorldStreamer
+    public class WorldStreamer : IInitializable, IDisposable
     {
         private readonly ChunkManager _chunkManager;
         private readonly ChunkGrid _chunkGrid;
         private readonly IPlayerReadOnly _player;
-        
-        private readonly int _viewDistance;
+        private readonly GraphicsState _graphicsState;
 
         private readonly IReadOnlyList<IGenerationCacheEvictor> _cacheEvictors;
 
@@ -30,7 +30,7 @@ namespace _Project.Features.ProceduralWorld.Application.World
         private ChunkCoordinate _currentCenter;
 
         private bool _initialized;
-
+        private int _viewDistance;
 
 
         
@@ -38,14 +38,14 @@ namespace _Project.Features.ProceduralWorld.Application.World
             ChunkManager chunkManager,
             ChunkGrid chunkGrid,
             IPlayerReadOnly player,
-            GraphicsState graphicsState,
+            GraphicsState state,
             IEnumerable<IGenerationCacheEvictor> cacheEvictors,
             WorldRebaseService worldRebaseService)
         {
             _chunkManager = chunkManager;
             _chunkGrid = chunkGrid;
             _player = player;
-            _viewDistance = graphicsState.ViewDistance;
+            _graphicsState = state;
 
             List<IGenerationCacheEvictor> evictors = new();
 
@@ -58,7 +58,18 @@ namespace _Project.Features.ProceduralWorld.Application.World
             
             _cacheEvictors = evictors;
         }
+        
+        public void Initialize()
+        {
+            _graphicsState.GraphicsChanged += OnGraphicsChanged;
+            _viewDistance = _graphicsState.ViewDistance;
+        }
 
+        public void OnGraphicsChanged()
+        {
+            _viewDistance = _graphicsState.ViewDistance;
+            Refresh(_currentCenter);
+        }
 
 
         public void Update()
@@ -72,7 +83,7 @@ namespace _Project.Features.ProceduralWorld.Application.World
             {
                 return;
             }
-
+            
             _initialized = true;
             _currentCenter = center;
 
@@ -135,12 +146,17 @@ namespace _Project.Features.ProceduralWorld.Application.World
                 _activeChunks.Add(coordinate);
             }
 
-            for (int i = 0; i < _cacheEvictors.Count; i++)
+            foreach (var t in _cacheEvictors)
             {
-                _cacheEvictors[i].EvictOutside(
+                t.EvictOutside(
                     center,
                     _viewDistance);
             }
+        }
+
+        public void Dispose()
+        {
+            _graphicsState.GraphicsChanged -= OnGraphicsChanged;
         }
     }
 }
