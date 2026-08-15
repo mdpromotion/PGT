@@ -6,6 +6,7 @@ using _Project.Features.ProceduralWorld.Application.Landscape;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Infrastructure.Chunks;
 using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
+using VContainer.Unity;
 
 namespace _Project.Features.ProceduralWorld.Application.Chunks
 {
@@ -14,7 +15,7 @@ namespace _Project.Features.ProceduralWorld.Application.Chunks
         bool IsReady { get; }
     }
     
-    public class ChunkManager : IChunkManager, IDisposable
+    public class ChunkManager : IChunkManager, ITickable, IDisposable
     {
         private readonly ChunkGenerationScheduler _scheduler;
         private readonly ChunkRepository _repository;

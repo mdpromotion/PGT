@@ -285,6 +285,7 @@ namespace _Project.Features.Core.Bootstrap.Game
 
             builder.Register<ChunkManager>(Lifetime.Singleton)
                 .As<IChunkManager>()
+                .As<ITickable>()
                 .AsSelf();
             
             builder.Register<WorldRebaseService>(Lifetime.Singleton);
@@ -299,9 +300,7 @@ namespace _Project.Features.Core.Bootstrap.Game
                     container.Resolve<WorldRebaseService>()),
                 Lifetime.Singleton)
                 .As<IInitializable>()
-                .AsSelf();
-
-            builder.RegisterComponentInHierarchy<ProceduralWorldPresenter>();
+                .As<ITickable>();
         }
         
         private void RegisterCore(IContainerBuilder builder)

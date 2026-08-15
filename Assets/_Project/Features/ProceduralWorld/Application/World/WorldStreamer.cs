@@ -11,7 +11,7 @@ using VContainer.Unity;
 
 namespace _Project.Features.ProceduralWorld.Application.World
 {
-    public class WorldStreamer : IInitializable, IDisposable
+    public class WorldStreamer : IInitializable, ITickable, IDisposable
     {
         private readonly ChunkManager _chunkManager;
         private readonly ChunkGrid _chunkGrid;
@@ -72,7 +72,7 @@ namespace _Project.Features.ProceduralWorld.Application.World
         }
 
 
-        public void Update()
+        public void Tick()
         {
             ChunkCoordinate center =
                 _chunkGrid.ToChunkCoordinate(_player.Position);
