@@ -41,11 +41,6 @@ namespace _Project.Features.GameTime.Presentation
         [SerializeField] private Transform sunTransform;
         [SerializeField] private GameTimePresenterSceneConfig sceneConfig;
 
-        [Header("Intro fog animation")]
-        [SerializeField] private float introFogStartDistance = 0f;
-        [SerializeField] private float introFogEndDistance = 100f;
-        [SerializeField] private float introFogDurationSeconds = 1f;
-
         private Light _sunLight;
 
         private const float MaximumSunIntensity = 1f;
@@ -60,9 +55,6 @@ namespace _Project.Features.GameTime.Presentation
         private float _pendingTime;
         private bool _hasPendingTime;
         private float _currentTime;
-        
-        private bool _introActive;
-        private float _introElapsed;
 
         [Inject]
         public void Construct(
@@ -90,9 +82,6 @@ namespace _Project.Features.GameTime.Presentation
             UpdateSun(_currentTime);
             UpdateSunLight(_currentTime);
             UpdateEnvironment(_currentTime);
-
-            _introActive = true;
-            _introElapsed = 0f;
             ApplyFog(_currentTime);
         }
 
@@ -115,20 +104,10 @@ namespace _Project.Features.GameTime.Presentation
                 UpdateSun(_currentTime);
                 UpdateSunLight(_currentTime);
                 UpdateEnvironment(_currentTime);
+                ApplyFog(_currentTime);
             }
 
-            if (_introActive)
-            {
-                _introElapsed += Time.deltaTime;
-                if (_introElapsed >= introFogDurationSeconds)
-                    _introActive = false;
-                
-                ApplyFog(_currentTime);
-            }
-            else if (timeUpdated)
-            {
-                ApplyFog(_currentTime);
-            }
+            _fogAnimator.Tick(Time.deltaTime);
         }
 
         private void OnTimeChanged(float time)
@@ -183,25 +162,13 @@ namespace _Project.Features.GameTime.Presentation
 
             _lastEnvironmentPhase = phase;
         }
-        
+
         private void ApplyFog(float time)
         {
             DayNightPhase phase = GetPhase(time, GetTimings(), out float t);
             FogState naturalState = GetNaturalFogState(phase, t);
-
-            FogState finalState;
-            if (_introActive)
-            {
-                float introT = Mathf.Clamp01(_introElapsed / Mathf.Max(introFogDurationSeconds, 0.0001f));
-                FogState introRevealState = new FogState(naturalState.Color, introFogStartDistance, introFogEndDistance);
-                finalState = FogState.Lerp(introRevealState, naturalState, introT);
-            }
-            else
-            {
-                finalState = naturalState;
-            }
-
-            _fogAnimator.SnapTo(finalState);
+            
+            _fogAnimator.SetTarget(naturalState);
         }
         
         private FogState GetNaturalFogState(DayNightPhase phase, float t)
