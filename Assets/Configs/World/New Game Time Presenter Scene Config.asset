@@ -12,13 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94ceb3c489eacfa42ab854f30b25c3a8, type: 3}
   m_Name: New Game Time Presenter Scene Config
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.GameTime.Infrastructure.GameTimePresenterSceneConfig
-  _transitionDurationHours: 1
+  _transitionDurationHours: 0.25
   _sunRotationOffset: -90
   _dayTransition:
-    Hour: 6
+    Hour: 5.7
     FogColor: {r: 0.7019608, g: 0.7019608, b: 0.7019608, a: 1}
-    FogEnd: 1200
   _nightTransition:
-    Hour: 19
+    Hour: 18.6
     FogColor: {r: 0, g: 0, b: 0, a: 1}
-    FogEnd: 200

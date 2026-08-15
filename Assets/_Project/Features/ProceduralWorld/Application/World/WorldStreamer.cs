@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using _Project.Features.Core.Infrastructure;
+using _Project.Features.Graphics.Domain;
 using _Project.Features.Player.Domain;
 using _Project.Features.ProceduralWorld.Application.Chunks;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
@@ -37,14 +38,14 @@ namespace _Project.Features.ProceduralWorld.Application.World
             ChunkManager chunkManager,
             ChunkGrid chunkGrid,
             IPlayerReadOnly player,
-            int viewDistance,
+            GraphicsState graphicsState,
             IEnumerable<IGenerationCacheEvictor> cacheEvictors,
             WorldRebaseService worldRebaseService)
         {
             _chunkManager = chunkManager;
             _chunkGrid = chunkGrid;
             _player = player;
-            _viewDistance = viewDistance;
+            _viewDistance = graphicsState.ViewDistance;
 
             List<IGenerationCacheEvictor> evictors = new();
 

@@ -10,7 +10,6 @@ namespace _Project.Features.GameTime.Infrastructure
         public float Hour;
 
         public Color FogColor;
-        public float FogEnd;
     }
 
     [CreateAssetMenu(menuName = "GameTime/GameTimePresenterSceneConfig")]

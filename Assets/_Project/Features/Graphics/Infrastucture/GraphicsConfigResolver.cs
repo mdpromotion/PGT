@@ -3,6 +3,7 @@ using _Project.Features.Graphics.Domain;
 using _Project.Features.UI.Infrastructure;
 using _Project.Features.UI.Menus.SettingsMenu;
 using UnityEngine;
+using VContainer;
 
 namespace _Project.Features.Graphics.Infrastucture
 {
@@ -26,19 +27,26 @@ namespace _Project.Features.Graphics.Infrastucture
     public class GraphicsConfigResolver : ScriptableObject, IGraphicsConfigResolver
     {
         [SerializeField] private List<GraphicsPreset> presets;
-        [SerializeField] private GraphicsQualityConfig qualityConfig;
+        
+        private GraphicsQualityConfig _qualityConfig;
 
+        [Inject]
+        public void Construct(GraphicsQualityConfig qualityConfig)
+        {
+            _qualityConfig = qualityConfig;
+        }
+        
         public void ConvertFromGraphicData(
             GraphicsData data,
             Dictionary<SettingsMenuMode, int> cachedValues)
         {
-            var shadowDistanceType = qualityConfig
+            var shadowDistanceType = _qualityConfig
                 .GetShadowDistanceEntry(data.ShadowQualityMode.ShadowDistance)
                 .graphicsType;
 
             Debug.Log(data.ViewDistance);
             
-            var viewDistanceType = qualityConfig
+            var viewDistanceType = _qualityConfig
                 .GetViewDistanceEntry(data.ViewDistance)
                 .graphicsType;
 
@@ -55,11 +63,11 @@ namespace _Project.Features.Graphics.Infrastucture
             GraphicsState data,
             Dictionary<SettingsMenuMode, int> cachedValues)
         {
-            var shadowDistanceType = qualityConfig
+            var shadowDistanceType = _qualityConfig
                 .GetShadowDistanceEntry(data.ShadowQualityMode.ShadowDistance)
                 .graphicsType;
 
-            var viewDistanceType = qualityConfig
+            var viewDistanceType = _qualityConfig
                 .GetViewDistanceEntry(data.ViewDistance)
                 .graphicsType;
 
@@ -89,7 +97,7 @@ namespace _Project.Features.Graphics.Infrastucture
                 (ShadowQuality)GetValue(
                     cachedValues,
                     SettingsMenuMode.ShadowQuality),
-                qualityConfig
+                _qualityConfig
                     .GetShadowDistanceEntry(shadowDistanceType)
                     .shadowDistance
             );
@@ -113,7 +121,7 @@ namespace _Project.Features.Graphics.Infrastucture
                     cachedValues,
                     SettingsMenuMode.VSync) != 0,
 
-                qualityConfig
+                _qualityConfig
                     .GetViewDistanceEntry(viewDistanceType)
                     .viewDistance
             );
@@ -135,11 +143,11 @@ namespace _Project.Features.Graphics.Infrastucture
             if (!preset)
                 return null;
 
-            var shadowDistance = qualityConfig
+            var shadowDistance = _qualityConfig
                 .GetShadowDistanceEntry(graphicsType)
                 .shadowDistance;
 
-            var viewDistance = qualityConfig
+            var viewDistance = _qualityConfig
                 .GetViewDistanceEntry(graphicsType)
                 .viewDistance;
 
