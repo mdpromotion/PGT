@@ -123,6 +123,11 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Vegetation
                 PatchScale = _settings.PatchScale,
                 PatchOctaves = _settings.PatchOctaves,
                 PatchThreshold = _settings.PatchThreshold,
+                
+                ForestRegionScale = _settings.ForestRegionScale,
+                ForestCoverage = _settings.ForestCoverage,
+                ForestRegionOctaves = _settings.ForestRegionOctaves,
+                PatchDetailInfluence = _settings.PatchDetailInfluence,
 
                 Output = points.AsParallelWriter(),
             }

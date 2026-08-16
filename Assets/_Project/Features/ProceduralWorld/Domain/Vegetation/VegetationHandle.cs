@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Domain.Vegetation
 {
     public sealed class VegetationHandle
     {
         public readonly TerrainCollider Collider;
-        public readonly List<TreeInstance> TreeInstanceBuffer = new();
-        public bool PrototypesAssigned;
+
+        public readonly TreeVegetationHandle Trees = new();
+        public readonly DetailVegetationHandle Details = new();
+        public readonly RockVegetationHandle Rocks = new();
 
         public VegetationHandle(TerrainCollider collider)
         {

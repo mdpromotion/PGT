@@ -1,4 +1,5 @@
-﻿using Unity.Burst;
+﻿using _Project.Features.ProceduralWorld.Infrastructure.Vegetation;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -10,15 +11,22 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation
     {
         public int CellsPerSide;
         public float CellSize;
-        
+
         public float2 TileNoiseOrigin;
 
         public float JitterStrength;
         public uint TileSeed;
 
         public float2 PatchNoiseOffset;
+        
+        public float ForestRegionScale;
+        public float ForestCoverage;
+        public int ForestRegionOctaves;
+        
         public float PatchScale;
         public int PatchOctaves;
+        public float PatchDetailInfluence;
+
         public float PatchThreshold;
 
         [WriteOnly] public NativeList<float2>.ParallelWriter Output;
@@ -50,34 +58,24 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation
                 + new float2(CellSize * 0.5f, CellSize * 0.5f)
                 + jitter;
 
-            if (SamplePatchMask(point) < PatchThreshold)
+            var parameters = new ForestMaskSampler.Parameters
+            {
+                ForestRegionScale = ForestRegionScale,
+                ForestCoverage = ForestCoverage,
+                ForestRegionOctaves = ForestRegionOctaves,
+                PatchScale = PatchScale,
+                PatchOctaves = PatchOctaves,
+                PatchDetailInfluence = PatchDetailInfluence,
+                Threshold = PatchThreshold,
+            };
+
+            float2 origin = TileNoiseOrigin + point + PatchNoiseOffset;
+            float mask = ForestMaskSampler.Sample(origin, parameters);
+
+            if (mask < PatchThreshold)
                 return;
 
             Output.AddNoResize(point);
-        }
-
-        private float SamplePatchMask(float2 localPosition)
-        {
-            float2 p =
-                (TileNoiseOrigin + localPosition + PatchNoiseOffset)
-                / PatchScale;
-
-            float sum = 0f;
-            float amplitude = 1f;
-            float amplitudeSum = 0f;
-            float frequency = 1f;
-
-            for (int i = 0; i < PatchOctaves; i++)
-            {
-                sum += noise.snoise(p * frequency) * amplitude;
-                amplitudeSum += amplitude;
-
-                amplitude *= 0.5f;
-                frequency *= 2f;
-            }
-
-            float normalized = sum / amplitudeSum;
-            return normalized * 0.5f + 0.5f;
         }
     }
 }
