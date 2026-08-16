@@ -13,9 +13,15 @@ MonoBehaviour:
   m_Name: VegetationGridSettings
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.ProceduralWorld.Infrastructure.Vegetation.VegetationGridSettings
   ChunksPerTile: 32
-  PointSpacing: 20
+  PointSpacing: 30
   JitterStrength: 0.9
-  PatchScale: 800
-  PatchOctaves: 4
-  PatchThreshold: 0.7
+  ForestRegionScale: 3000
+  ForestCoverage: 0.2
+  ForestRegionOctaves: 2
+  PatchScale: 400
+  PatchOctaves: 3
+  PatchDetailInfluence: 0.2
+  PatchThreshold: 0.45
   RiverMaskThreshold: 0.05
+  DetailMapResolution: 256
+  DetailResolutionPerPatch: 16
