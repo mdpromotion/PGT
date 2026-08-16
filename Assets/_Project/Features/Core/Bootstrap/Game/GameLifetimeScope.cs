@@ -58,7 +58,6 @@ namespace _Project.Features.Core.Bootstrap.Game
         [SerializeField] private VegetationCatalog vegetationCatalog;
         [SerializeField] private Material waterMaterial;
         [SerializeField] private Transform chunksParent;
-        [SerializeField] private int viewDistance = 3;
         [SerializeField] private WorldRebaseSettings worldRebaseSettings;
 
         [Header("Sound")]
