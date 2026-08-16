@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d638ef2ca2fe20c4c9c08e125692d3f4
+timeCreated: 1448021005
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 52977
+  packageName: Nature Starter Kit 2
+  packageVersion: 1.0
+  assetPath: Assets/NatureStarterKit2/Nature/bush01.prefab
+  uploadId: 96407
