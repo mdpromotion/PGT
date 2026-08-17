@@ -1,6 +1,5 @@
 using _Project.Features.ProceduralWorld.Application.Chunks;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
-using _Project.Features.ProceduralWorld.Application.Vegetation;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Domain.Landscape;
 using _Project.Features.ProceduralWorld.Infrastructure.Chunks;
@@ -17,7 +16,6 @@ namespace _Project.Features.ProceduralWorld.Application.Landscape
         private readonly IChunkNeighborConnector _neighborConnector;
         private readonly ChunkRepository _repository;
         private readonly WaterSurfaceApplier _waterSurfaceApplier;
-        private readonly VegetationApplier _vegetationApplier;
         private readonly Transform _parent;
 
         public LandscapeApplier(
@@ -26,7 +24,6 @@ namespace _Project.Features.ProceduralWorld.Application.Landscape
             IChunkNeighborConnector neighborConnector,
             ChunkRepository repository,
             WaterSurfaceApplier waterSurfaceApplier,
-            VegetationApplier vegetationApplier,
             Transform parent)
         {
             _factory = factory;
@@ -34,7 +31,6 @@ namespace _Project.Features.ProceduralWorld.Application.Landscape
             _neighborConnector = neighborConnector;
             _repository = repository;
             _waterSurfaceApplier = waterSurfaceApplier;
-            _vegetationApplier = vegetationApplier;
             _parent = parent;
         }
 
@@ -49,7 +45,6 @@ namespace _Project.Features.ProceduralWorld.Application.Landscape
             terrain.terrainData.SyncHeightmap();
 
             _waterSurfaceApplier.Apply(state, terrain);
-            _vegetationApplier.Apply(state, terrain);
 
             ChunkInstance chunk = new ChunkInstance(data.Coordinate, data, state.Hydrology, terrain);
 
