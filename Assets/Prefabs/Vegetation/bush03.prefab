@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7826196573232950180}
   - component: {fileID: 2215568385644446275}
   - component: {fileID: 1504925910043286197}
+  - component: {fileID: 124683281284069626}
   m_Layer: 0
   m_Name: bush03
   m_TagString: Untagged
@@ -214,6 +215,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: Whinarn.UnityMeshSimplifier.Runtime::UnityMeshSimplifier.LODBackupComponent
   originalRenderers:
   - {fileID: 2322364}
+--- !u!136 &124683281284069626
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 193742}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.03442666
+  m_Height: 0.28291863
+  m_Direction: 1
+  m_Center: {x: -0.0027744174, y: 0.09511325, z: 0}
 --- !u!1 &756791767357166276
 GameObject:
   m_ObjectHideFlags: 0
