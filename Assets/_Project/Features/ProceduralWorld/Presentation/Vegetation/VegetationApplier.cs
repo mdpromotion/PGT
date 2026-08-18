@@ -29,12 +29,15 @@ namespace _Project.Features.ProceduralWorld.Presentation.Vegetation
             TerrainData terrainData = terrain.terrainData;
 
             terrainData.treeInstances = System.Array.Empty<TreeInstance>();
+            TerrainCollider terrainCollider = EnsureTreeCollider(terrain);
 
             int resolution = state.Landscape.Resolution;
             float terrainHeight = terrainData.size.y;
 
             ApplyTrees(state, terrainData, resolution, terrainHeight);
             ApplyDetails(state, terrainData, resolution);
+            
+            RefreshTreeColliders(terrainCollider);  
         }
 
         private void ApplyTrees(
@@ -243,6 +246,28 @@ namespace _Project.Features.ProceduralWorld.Presentation.Vegetation
         }
 
         private static int math_clamp(int value, int min, int max) => value < min ? min : (value > max ? max : value);
+        
+        private static TerrainCollider EnsureTreeCollider(Terrain terrain)
+        {
+            TerrainCollider collider = terrain.GetComponent<TerrainCollider>();
+
+            if (!collider)
+                collider = terrain.gameObject.AddComponent<TerrainCollider>();
+
+            collider.terrainData = terrain.terrainData;
+            collider.enabled = true;
+
+            return collider;
+        }
+
+        private static void RefreshTreeColliders(TerrainCollider collider)
+        {
+            if (!collider)
+                return;
+
+            collider.enabled = false;
+            collider.enabled = true;
+        }
 
         private IReadOnlyList<GameObject> GetPrefabs(VegetationSpeciesType species)
         {
