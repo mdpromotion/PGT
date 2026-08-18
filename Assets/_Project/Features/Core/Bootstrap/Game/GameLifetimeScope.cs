@@ -27,7 +27,10 @@ using _Project.Features.ProceduralWorld.Infrastructure;
 using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
+using _Project.Features.ProceduralWorld.Infrastructure.Vegetation;
+using _Project.Features.ProceduralWorld.Infrastructure.Vegetation.Configs;
 using _Project.Features.ProceduralWorld.Presentation;
+using _Project.Features.ProceduralWorld.Presentation.Vegetation;
 using _Project.Features.Shared.Application;
 using _Project.Features.Sound.Application;
 using _Project.Features.Sound.Infrastructure;
@@ -52,6 +55,7 @@ namespace _Project.Features.Core.Bootstrap.Game
         [SerializeField] private WorldSettings worldSettings;
         [SerializeField] private MacroGridSettings macroGridSettings;
         [SerializeField] private RiverCarvingSettings riverCarvingSettings;
+        [SerializeField] private VegetationCatalog vegetationCatalog;
         [SerializeField] private Material waterMaterial;
         [SerializeField] private Transform chunksParent;
         [SerializeField] private WorldRebaseSettings worldRebaseSettings;
@@ -178,6 +182,7 @@ namespace _Project.Features.Core.Bootstrap.Game
             builder.RegisterInstance(macroGridSettings);
             builder.RegisterInstance(riverCarvingSettings);
             builder.RegisterInstance(worldRebaseSettings);
+            builder.RegisterInstance(vegetationCatalog);
 
             // Grid / caches
             builder.Register(
@@ -200,7 +205,11 @@ namespace _Project.Features.Core.Bootstrap.Game
                         waterMaterial),
                     Lifetime.Singleton);
 
+            builder.Register<VegetationApplier>(Lifetime.Singleton);
+
             builder.Register<TerrainNoiseSettingsProvider>(Lifetime.Singleton);
+            
+            builder.Register<VegetationSettingsProvider>(Lifetime.Singleton);
 
             builder.Register<UnityTerrainWriter>(Lifetime.Singleton)
                 .As<ITerrainWriter>();
@@ -223,6 +232,7 @@ namespace _Project.Features.Core.Bootstrap.Game
                         container.Resolve<IChunkNeighborConnector>(),
                         container.Resolve<ChunkRepository>(),
                         container.Resolve<WaterSurfaceApplier>(),
+                        container.Resolve<VegetationApplier>(),
                         chunksParent),
                     Lifetime.Singleton);
 
@@ -240,6 +250,9 @@ namespace _Project.Features.Core.Bootstrap.Game
                 .As<IGenerationStage>();
 
             builder.Register<WaterSurfaceStage>(Lifetime.Singleton)
+                .As<IGenerationStage>();
+            
+            builder.Register<VegetationGenerator>(Lifetime.Singleton)
                 .As<IGenerationStage>();
 
             builder.Register<ChunkGenerationPipeline>(Lifetime.Singleton)
