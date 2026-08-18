@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.ProceduralWorld.Infrastructure.Vegetation.Configs.MeshVegetationConfig
   prefabs:
   - {fileID: 299712424454941021, guid: 022485ff60e4a26418217d8ab778a812, type: 3}
+  - {fileID: 5400752399725384465, guid: af90fe2f0f252bf4b8c2ab79bcd41edf, type: 3}
   speciesType: 0
   coverage: 0.15
   density: 0.0025
