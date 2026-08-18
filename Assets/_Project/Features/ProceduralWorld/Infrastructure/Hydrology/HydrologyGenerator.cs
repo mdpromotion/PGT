@@ -39,10 +39,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
             MacroRegionCoordinate regionCoordinate = _macroRegionCache.ToRegionCoordinate(coordinate);
             MacroRegionData region = _macroRegionCache.GetOrBuild(regionCoordinate);
-
-            // Локальная позиция чанка относительно origin своего же региона.
-            // Границы всегда малы (не больше TileWorldSize), независимо от rebase и
-            // от того, как далеко чанк от истинного нуля.
+            
             float2 chunkOrigin = GenerationSpace.LocalOffset(absoluteChunkOrigin, region.WorldOrigin);
             float2 chunkSize = new float2(_chunkGrid.ChunkSizeX, _chunkGrid.ChunkSizeZ);
 
@@ -60,10 +57,12 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 MacroWorldOrigin = float2.zero,
                 MacroAccumulation = region.Accumulation,
                 MacroHeights = region.Heights,
+                MacroWaterLevels = region.WaterLevels, 
                 LocalAccumulationNormalizationRange = _localAccumulationNormalizationRange,
 
                 RiverStrength = state.Hydrology.Accumulation,
                 MacroHeightSample = state.Hydrology.MacroHeightSample,
+                WaterSurfaceHeight = state.Hydrology.WaterSurfaceHeight
             };
 
             return job.Schedule(resolution * resolution, 64, dependency);

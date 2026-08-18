@@ -21,10 +21,12 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
         [ReadOnly] public NativeArray<float> MacroAccumulation;
         [ReadOnly] public NativeArray<float> MacroHeights;
+        [ReadOnly] public NativeArray<float> MacroWaterLevels;
         public float LocalAccumulationNormalizationRange;
 
         [WriteOnly] public NativeArray<float> RiverStrength;
         [WriteOnly] public NativeArray<float> MacroHeightSample;
+        [WriteOnly] public NativeArray<float> WaterSurfaceHeight;
 
         public void Execute(int index)
         {
@@ -38,7 +40,10 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float2 macroCoord = (worldPos - MacroWorldOrigin) / MacroCellSize;
 
             float localAccum = SampleBilinear(MacroAccumulation, macroCoord);
+            
             MacroHeightSample[index] = SampleBilinear(MacroHeights, macroCoord);
+            
+            WaterSurfaceHeight[index] = SampleBilinear(MacroWaterLevels, macroCoord);
 
             float strength = math.saturate(
                 (localAccum - 1f) / math.max(LocalAccumulationNormalizationRange, 0.0001f));

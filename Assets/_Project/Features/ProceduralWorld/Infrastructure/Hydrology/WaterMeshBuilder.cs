@@ -14,15 +14,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             float heightScale,
             int stride)
         {
-            if ((resolution - 1) % stride != 0)
-            {
-                Debug.LogError(
-                    $"WaterMeshBuilder: stride {stride} does not evenly divide " +
-                    $"(resolution-1)={resolution - 1}. Chunk edges will not line up " +
-                    "with neighboring chunks. Pick a stride that divides evenly " +
-                    "(e.g. 1, 2, 4, 8, 16, 32, 64, 128, 256 for resolution 257).");
-            }
-
             int gridSize = (resolution - 1) / stride + 1;
             int vertexCount = gridSize * gridSize;
 

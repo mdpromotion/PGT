@@ -9,7 +9,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
     public struct CarveRiverbedsJob : IJobParallelFor
     {
         [ReadOnly] public NativeArray<float> Accumulation;
-        [ReadOnly] public NativeArray<float> MacroHeight;
+        
+        [ReadOnly] public NativeArray<float> WaterSurfaceHeight;
 
         public int Resolution;
 
@@ -20,13 +21,12 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         public NativeArray<float> Heights;
 
         [WriteOnly] public NativeArray<float> RiverMask;
-        [WriteOnly] public NativeArray<float> WaterSurfaceHeight;
 
         public void Execute(int index)
         {
             float originalHeight = Heights[index];
-            float macroHeight = MacroHeight[index];
             float strength = Accumulation[index];
+            float flatWaterLevel = WaterSurfaceHeight[index];
 
             float edgeStart = AccumulationThreshold;
             float edgeEnd = AccumulationThreshold + math.max(FalloffRange, 0.0001f);
@@ -34,20 +34,13 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float mask = math.smoothstep(edgeStart, edgeEnd, strength);
             RiverMask[index] = mask;
 
-            float carvedHeight = originalHeight;
-
             if (mask > 0f)
             {
-                float targetBed = math.min(originalHeight, macroHeight) - mask * MaxCarveDepth;
-                carvedHeight = math.max(math.lerp(originalHeight, targetBed, mask), 0f);
+                float targetBed = flatWaterLevel - MaxCarveDepth;
+                
+                float carvedHeight = math.max(math.lerp(originalHeight, targetBed, mask), 0f);
                 Heights[index] = carvedHeight;
             }
-            
-            float safeWaterHeight = math.min(macroHeight, originalHeight);
-            
-            float edgeBlend = math.saturate(mask * 5f); 
-            
-            WaterSurfaceHeight[index] = math.lerp(originalHeight, safeWaterHeight, edgeBlend);
         }
     }
 }
