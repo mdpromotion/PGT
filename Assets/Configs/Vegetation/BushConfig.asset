@@ -17,14 +17,14 @@ MonoBehaviour:
   - {fileID: 199470, guid: ec78ebca7517fb745a45a931cb06d2bd, type: 3}
   - {fileID: 193742, guid: 9c74caa742791864f9c678287121e6c9, type: 3}
   speciesType: 2
-  coverage: 0.05
-  density: 0.025
+  coverage: 1
+  density: 0.001
   edgeSmooting: 0.15
   minScale: 3
-  maxScale: 5
+  maxScale: 4
   minSlopeAngle: 0
   maxSlopeAngle: 90
-  patchNoiseFrequency: 5
+  patchNoiseFrequency: 1
   patchNoiseOctaves: 3
   priority: 10
   occupancyRadius: 2
