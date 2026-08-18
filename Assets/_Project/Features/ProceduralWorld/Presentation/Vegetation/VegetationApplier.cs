@@ -12,8 +12,9 @@ namespace _Project.Features.ProceduralWorld.Presentation.Vegetation
 
         private readonly Dictionary<VegetationSpeciesType, IReadOnlyList<GameObject>> _prefabCache;
         
-        private const int MaxDetailDensityPerCell = 16;
         private const int DetailResolutionPerPatch = 16;
+        private const int MaxDetailCoverage = 255;
+        private const float CoverageContributionPerInstance = 48f;
 
         public VegetationApplier(VegetationSettingsProvider provider)
         {
@@ -36,8 +37,8 @@ namespace _Project.Features.ProceduralWorld.Presentation.Vegetation
 
             ApplyTrees(state, terrainData, resolution, terrainHeight);
             ApplyDetails(state, terrainData, resolution);
-            
-            RefreshTreeColliders(terrainCollider);  
+
+            RefreshTreeColliders(terrainCollider);
         }
 
         private void ApplyTrees(
@@ -126,8 +127,9 @@ namespace _Project.Features.ProceduralWorld.Presentation.Vegetation
             TerrainData terrainData,
             int resolution)
         {
+            terrainData.SetDetailScatterMode(DetailScatterMode.CoverageMode);
             terrainData.SetDetailResolution(resolution, DetailResolutionPerPatch);
-            
+
             int detailWidth = terrainData.detailWidth;
             int detailHeight = terrainData.detailHeight;
 
@@ -136,16 +138,16 @@ namespace _Project.Features.ProceduralWorld.Presentation.Vegetation
             Dictionary<VegetationSpeciesType, int[]> speciesLayerIndices = new();
 
             bool hasAnyDetailLayer = false;
-            
+
             foreach (var layer in state.Vegetation.Layers)
             {
                 if (layer == null || layer.Instances.Length == 0) continue;
                 if (_provider.GetRenderKind(layer.Species) != VegetationRenderKind.Detail) continue;
                 if (speciesLayerIndices.ContainsKey(layer.Species)) continue;
-                
+
                 IReadOnlyList<GameObject> prefabs = GetPrefabs(layer.Species);
                 if (prefabs == null || prefabs.Count == 0) continue;
-                
+
                 float minScale = float.MaxValue;
                 float maxScale = float.MinValue;
 
@@ -154,7 +156,7 @@ namespace _Project.Features.ProceduralWorld.Presentation.Vegetation
                     if (instance.Scale < minScale) minScale = instance.Scale;
                     if (instance.Scale > maxScale) maxScale = instance.Scale;
                 }
-                
+
                 if (minScale > maxScale)
                 {
                     minScale = 0.8f;
@@ -177,22 +179,29 @@ namespace _Project.Features.ProceduralWorld.Presentation.Vegetation
                     }
 
                     layerIndices[i] = detailPrototypes.Count;
-                    
+
                     detailPrototypes.Add(new DetailPrototype
                     {
                         usePrototypeMesh = true,
                         prototype = prefabs[i],
+
                         renderMode = DetailRenderMode.VertexLit,
                         useInstancing = true,
+
                         healthyColor = Color.white,
                         dryColor = Color.white,
+
                         minWidth = minScale,
                         maxWidth = maxScale,
                         minHeight = minScale,
                         maxHeight = maxScale,
+
                         noiseSpread = 0.1f,
+                        density = 1f,
+                        alignToGround = 1f,
+                        positionJitter = 0f,
                     });
-                    
+
                     pendingMaps.Add((layer.Species, i, new int[detailHeight, detailWidth]));
                     hasAnyDetailLayer = true;
                 }
@@ -205,13 +214,13 @@ namespace _Project.Features.ProceduralWorld.Presentation.Vegetation
                 terrainData.detailPrototypes = System.Array.Empty<DetailPrototype>();
                 return;
             }
-            
+
             terrainData.detailPrototypes = detailPrototypes.ToArray();
 
             var mapLookup = new Dictionary<(VegetationSpeciesType, int), int[,]>();
             foreach (var (species, variantIndex, map) in pendingMaps)
                 mapLookup[(species, variantIndex)] = map;
-            
+
             foreach (var layer in state.Vegetation.Layers)
             {
                 if (layer == null || layer.Instances.Length == 0) continue;
@@ -230,12 +239,15 @@ namespace _Project.Features.ProceduralWorld.Presentation.Vegetation
                     int cellX = math_clamp((int)(normalizedX * (detailWidth - 1)), 0, detailWidth - 1);
                     int cellZ = math_clamp((int)(normalizedZ * (detailHeight - 1)), 0, detailHeight - 1);
                     
-                    int contribution = math_clamp(Mathf.RoundToInt(instance.Scale), 1, MaxDetailDensityPerCell);
+                    int contribution = math_clamp(
+                        Mathf.RoundToInt(instance.Scale * CoverageContributionPerInstance),
+                        1,
+                        MaxDetailCoverage);
 
-                    map[cellZ, cellX] = math_clamp(map[cellZ, cellX] + contribution, 0, MaxDetailDensityPerCell);
+                    map[cellZ, cellX] = math_clamp(map[cellZ, cellX] + contribution, 0, MaxDetailCoverage);
                 }
             }
-
+            
             foreach (var (species, variantIndex, map) in pendingMaps)
             {
                 int layerIndex = speciesLayerIndices[species][variantIndex];
