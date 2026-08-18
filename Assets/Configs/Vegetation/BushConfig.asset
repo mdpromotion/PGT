@@ -20,8 +20,8 @@ MonoBehaviour:
   coverage: 1
   density: 0.001
   edgeSmooting: 0.15
-  minScale: 3
-  maxScale: 4
+  minScale: 1
+  maxScale: 3
   minSlopeAngle: 0
   maxSlopeAngle: 90
   patchNoiseFrequency: 1
