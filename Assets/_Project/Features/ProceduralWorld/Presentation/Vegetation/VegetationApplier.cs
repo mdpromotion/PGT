@@ -142,6 +142,26 @@ namespace _Project.Features.ProceduralWorld.Presentation.Vegetation
                 
                 IReadOnlyList<GameObject> prefabs = GetPrefabs(layer.Species);
                 if (prefabs == null || prefabs.Count == 0) continue;
+                
+                float minScale = float.MaxValue;
+                float maxScale = float.MinValue;
+
+                foreach (var instance in layer.Instances)
+                {
+                    if (instance.Scale < minScale) minScale = instance.Scale;
+                    if (instance.Scale > maxScale) maxScale = instance.Scale;
+                }
+                
+                if (minScale > maxScale)
+                {
+                    minScale = 0.8f;
+                    maxScale = 1.2f;
+                }
+                else if (Mathf.Approximately(minScale, maxScale))
+                {
+                    minScale *= 0.8f;
+                    maxScale *= 1.2f;
+                }
 
                 int[] layerIndices = new int[prefabs.Count];
 
@@ -163,10 +183,10 @@ namespace _Project.Features.ProceduralWorld.Presentation.Vegetation
                         useInstancing = true,
                         healthyColor = Color.white,
                         dryColor = Color.white,
-                        minWidth = 0.8f,
-                        maxWidth = 1.2f,
-                        minHeight = 0.8f,
-                        maxHeight = 1.2f,
+                        minWidth = minScale,
+                        maxWidth = maxScale,
+                        minHeight = minScale,
+                        maxHeight = maxScale,
                         noiseSpread = 0.1f,
                     });
                     
