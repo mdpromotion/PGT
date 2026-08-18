@@ -43,7 +43,7 @@ namespace _Project.Features.GameTime.Presentation
 
         private Light _sunLight;
 
-        private const float MaximumSunIntensity = 1f;
+        private const float MaximumSunIntensity = 0.5f;
         private const float MinimumSunIntensity = 0.01f;
 
         private const float NightFogStartDistance = 0f;
@@ -83,6 +83,7 @@ namespace _Project.Features.GameTime.Presentation
             UpdateSunLight(_currentTime);
             UpdateEnvironment(_currentTime);
             ApplyFog(_currentTime);
+            UpdateGlobalShaderTime(_currentTime);
         }
 
         private void Update()
@@ -105,6 +106,7 @@ namespace _Project.Features.GameTime.Presentation
                 UpdateSunLight(_currentTime);
                 UpdateEnvironment(_currentTime);
                 ApplyFog(_currentTime);
+                UpdateGlobalShaderTime(_currentTime);
             }
 
             _fogAnimator.Tick(Time.deltaTime);
@@ -182,6 +184,12 @@ namespace _Project.Features.GameTime.Presentation
                 _ => GetNightFogState()
             };
         }
+        
+        private void UpdateGlobalShaderTime(float time)
+        {
+            float normalizedTime = time / _gameTime.TicksPerDay;
+            Shader.SetGlobalFloat(GlobalTimeOfDayId, normalizedTime);
+        }
 
         private DayNightTimings GetTimings()
         {
@@ -239,6 +247,8 @@ namespace _Project.Features.GameTime.Presentation
         {
             return time >= dayHour && time < nightHour;
         }
+        
+        private static readonly int GlobalTimeOfDayId = Shader.PropertyToID("_GlobalTimeOfDay");
 
         private void OnDestroy()
         {
