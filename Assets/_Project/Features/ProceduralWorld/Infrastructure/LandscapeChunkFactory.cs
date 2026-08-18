@@ -141,9 +141,14 @@ namespace _Project.Features.ProceduralWorld.Infrastructure
                 if (handle.Collider)
                     handle.Collider.enabled = false;
             }
+            
+            if (terrain.terrainData != null)
+            {
+                terrain.terrainData.treeInstances = System.Array.Empty<TreeInstance>();
+            }
 
             int maxPoolSize = GetMaxPoolCapacity(_graphicsState.ViewDistance);
-            
+
             if (_pool.Count >= maxPoolSize)
             {
                 _handles.Remove(terrain);

@@ -1,25 +1,24 @@
-﻿using _Project.Features.ProceduralWorld.Domain.Chunks;
-using Unity.Collections;
+﻿using System.Collections.Generic;
+using System.Linq;
+using _Project.Features.ProceduralWorld.Domain.Chunks;
 
 namespace _Project.Features.ProceduralWorld.Domain.Vegetation
 {
-    public sealed class VegetationData
+    public class VegetationData
     {
         public ChunkCoordinate Coordinate { get; }
-        public NativeList<VegetationInstanceData> Instances { get; }
+        public IReadOnlyList<VegetationLayerData> Layers { get; }
 
-        public VegetationData(
-            ChunkCoordinate coordinate,
-            NativeList<VegetationInstanceData> instances)
+        public VegetationData(ChunkCoordinate coordinate, IReadOnlyList<VegetationLayerData> layers)
         {
             Coordinate = coordinate;
-            Instances = instances;
+            Layers = layers;
         }
 
         public void Dispose()
         {
-            if (Instances.IsCreated)
-                Instances.Dispose();
+            foreach (var layer in Layers)
+                layer.Dispose();
         }
     }
 }

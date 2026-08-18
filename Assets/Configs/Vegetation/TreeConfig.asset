@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fc0a71481fc414ea34ce2a6c2dbc154, type: 3}
+  m_Name: TreeConfig
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.ProceduralWorld.Infrastructure.Vegetation.Configs.MeshVegetationConfig
+  prefabs:
+  - {fileID: 299712424454941021, guid: 022485ff60e4a26418217d8ab778a812, type: 3}
+  - {fileID: 5400752399725384465, guid: af90fe2f0f252bf4b8c2ab79bcd41edf, type: 3}
+  speciesType: 0
+  coverage: 0.15
+  density: 0.0025
+  edgeSmooting: 0.015
+  minScale: 1
+  maxScale: 1.5
+  minSlopeAngle: 0
+  maxSlopeAngle: 40
+  patchNoiseFrequency: 0.001
+  patchNoiseOctaves: 3
+  priority: 0
+  occupancyRadius: 3
+  isBreakable: 1
+  isDetail: 0

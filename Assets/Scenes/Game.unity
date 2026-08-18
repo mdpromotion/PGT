@@ -904,7 +904,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 758205965}
-  - component: {fileID: 758205966}
   m_Layer: 0
   m_Name: Terrain
   m_TagString: Untagged
@@ -927,18 +926,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &758205966
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 758205964}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d154bab83f1f76804af14c0e40ab330d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &808630449
 GameObject:
   m_ObjectHideFlags: 0
@@ -1900,9 +1887,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.GameTime.Presentation.GameTimePresenter
   sunTransform: {fileID: 1262901866}
   sceneConfig: {fileID: 11400000, guid: 233f3d3b2048c22459cd9f4181702bf6, type: 2}
-  introFogStartDistance: 0
-  introFogEndDistance: 100
-  introFogDurationSeconds: 2
 --- !u!114 &1448567564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2081,11 +2065,9 @@ MonoBehaviour:
   worldSettings: {fileID: 11400000, guid: dbe12bdf8867feb4880810240955aec2, type: 2}
   macroGridSettings: {fileID: 11400000, guid: 5454c414ee7cf2d4c81d4bbc16424904, type: 2}
   riverCarvingSettings: {fileID: 11400000, guid: 6327c2419ce8bc54aa10a4128e82c04e, type: 2}
-  vegetationGridSettings: {fileID: 11400000, guid: bf6cf9a8320f14d4287f2ad3d4cce407, type: 2}
-  vegetationCatalog: {fileID: 11400000, guid: 4fcbd9594b9ecc84c98767784051252e, type: 2}
+  vegetationCatalog: {fileID: 11400000, guid: ecb1596ae0496a143a87a75c2eb3d3d2, type: 2}
   waterMaterial: {fileID: 2100000, guid: e0a5b090e332ecd4cad4f7b4b189ff24, type: 2}
   chunksParent: {fileID: 758205965}
-  viewDistance: 5
   worldRebaseSettings: {fileID: 11400000, guid: 34dca883eeeac184ab508e3d2f4ff81b, type: 2}
   database: {fileID: 11400000, guid: c4f2dc7613946a74cae26d9024ab7180, type: 2}
   globalMaxVoices: 32

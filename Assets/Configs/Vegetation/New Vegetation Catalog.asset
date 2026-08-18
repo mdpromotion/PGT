@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab83182b2124a78a887facbc3354d1a, type: 3}
+  m_Name: New Vegetation Catalog
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.ProceduralWorld.Infrastructure.Vegetation.Configs.VegetationCatalog
+  species:
+  - {fileID: 11400000, guid: 036545d8bf8de0745aec02a5a0c9c19b, type: 2}
+  - {fileID: 11400000, guid: d2fefaa2312cd4b4eb7589411e1a8983, type: 2}
+  - {fileID: 11400000, guid: 3f66776aa8f9b2846ba8a6ca7a4f4df0, type: 2}

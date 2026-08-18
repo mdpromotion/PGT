@@ -19,7 +19,6 @@ using _Project.Features.ProceduralWorld.Application.Chunks;
 using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Application.Landscape;
-using _Project.Features.ProceduralWorld.Application.Vegetation;
 using _Project.Features.ProceduralWorld.Application.World;
 using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Hydrology;
@@ -29,7 +28,9 @@ using _Project.Features.ProceduralWorld.Infrastructure.Hydrology;
 using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
 using _Project.Features.ProceduralWorld.Infrastructure.Vegetation;
+using _Project.Features.ProceduralWorld.Infrastructure.Vegetation.Configs;
 using _Project.Features.ProceduralWorld.Presentation;
+using _Project.Features.ProceduralWorld.Presentation.Vegetation;
 using _Project.Features.Shared.Application;
 using _Project.Features.Sound.Application;
 using _Project.Features.Sound.Infrastructure;
@@ -54,11 +55,9 @@ namespace _Project.Features.Core.Bootstrap.Game
         [SerializeField] private WorldSettings worldSettings;
         [SerializeField] private MacroGridSettings macroGridSettings;
         [SerializeField] private RiverCarvingSettings riverCarvingSettings;
-        [SerializeField] private VegetationGridSettings vegetationGridSettings;
         [SerializeField] private VegetationCatalog vegetationCatalog;
         [SerializeField] private Material waterMaterial;
         [SerializeField] private Transform chunksParent;
-        [SerializeField] private int viewDistance = 3;
         [SerializeField] private WorldRebaseSettings worldRebaseSettings;
 
         [Header("Sound")]
@@ -182,9 +181,8 @@ namespace _Project.Features.Core.Bootstrap.Game
             builder.RegisterInstance(worldSettings);
             builder.RegisterInstance(macroGridSettings);
             builder.RegisterInstance(riverCarvingSettings);
-            builder.RegisterInstance(vegetationGridSettings);
-            builder.RegisterInstance(vegetationCatalog);
             builder.RegisterInstance(worldRebaseSettings);
+            builder.RegisterInstance(vegetationCatalog);
 
             // Grid / caches
             builder.Register(
@@ -192,10 +190,6 @@ namespace _Project.Features.Core.Bootstrap.Game
                         chunkPrefab.terrainData.size.x,
                         chunkPrefab.terrainData.size.z),
                     Lifetime.Singleton);
-
-            builder.Register<VegetationTileCache>(Lifetime.Singleton)
-                .AsSelf()
-                .As<IGenerationCacheEvictor>();
 
             builder.Register<MacroRegionCache>(Lifetime.Singleton);
 
@@ -214,6 +208,8 @@ namespace _Project.Features.Core.Bootstrap.Game
             builder.Register<VegetationApplier>(Lifetime.Singleton);
 
             builder.Register<TerrainNoiseSettingsProvider>(Lifetime.Singleton);
+            
+            builder.Register<VegetationSettingsProvider>(Lifetime.Singleton);
 
             builder.Register<UnityTerrainWriter>(Lifetime.Singleton)
                 .As<ITerrainWriter>();
@@ -255,15 +251,8 @@ namespace _Project.Features.Core.Bootstrap.Game
 
             builder.Register<WaterSurfaceStage>(Lifetime.Singleton)
                 .As<IGenerationStage>();
-
-            builder.Register(
-                    container => new VegetationGenerator(
-                        container.Resolve<ChunkGrid>(),
-                        container.Resolve<VegetationTileCache>(),
-                        container.Resolve<VegetationGridSettings>(),
-                        container.Resolve<WorldSettings>(),
-                        chunkPrefab.terrainData.size.y),
-                    Lifetime.Singleton)
+            
+            builder.Register<VegetationGenerator>(Lifetime.Singleton)
                 .As<IGenerationStage>();
 
             builder.Register<ChunkGenerationPipeline>(Lifetime.Singleton)
