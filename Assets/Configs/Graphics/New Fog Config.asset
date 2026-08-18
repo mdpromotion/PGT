@@ -15,10 +15,10 @@ MonoBehaviour:
   entries:
   - type: 0
     fogStart: 0
-    fogEnd: 400
+    fogEnd: 375
   - type: 1
-    fogStart: 500
-    fogEnd: 1000
+    fogStart: 900
+    fogEnd: 1125
   - type: 2
-    fogStart: 1000
+    fogStart: 1200
     fogEnd: 1500

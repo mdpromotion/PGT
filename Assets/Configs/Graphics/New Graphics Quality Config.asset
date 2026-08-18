@@ -21,8 +21,8 @@ MonoBehaviour:
     shadowDistance: 1000
   viewDistanceEntries:
   - graphicsType: 0
-    viewDistance: 2
+    viewDistance: 1
   - graphicsType: 1
-    viewDistance: 5
+    viewDistance: 3
   - graphicsType: 2
-    viewDistance: 8
+    viewDistance: 4
