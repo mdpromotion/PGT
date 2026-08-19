@@ -116,10 +116,27 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                     SortedIndices = sortedIndices,
                     Accumulation = region.Accumulation,
                 };
-                
+
                 accumulationJob.Schedule(flowHandle).Complete();
             }
             
+            var strengthJob = new ComputeMacroRiverStrengthJob
+            {
+                NormalizationRange = 1, 
+                Accumulation = region.Accumulation,
+                RiverStrengthRaw = region.RiverStrengthRaw,
+            };
+            strengthJob.Schedule(count, 64).Complete();
+            
+            var blurJob = new BoxBlurFieldJob
+            {
+                PaddedSize = paddedSize,
+                Radius = _settings.EmbankmentSmoothingRadius,
+                Source = region.RiverStrengthRaw,
+                Destination = region.RiverStrengthSmoothed,
+            };
+            blurJob.Schedule().Complete();
+
             var waterLevelJob = new ComputeMacroWaterLevelJob
             {
                 PaddedSize = paddedSize,
@@ -129,7 +146,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 Accumulation = region.Accumulation,
                 WaterLevels = region.WaterLevels,
             };
-            
+
             waterLevelJob.Schedule().Complete();
 
             return region;

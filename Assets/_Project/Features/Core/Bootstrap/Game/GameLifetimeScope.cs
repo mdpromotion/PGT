@@ -244,8 +244,7 @@ namespace _Project.Features.Core.Bootstrap.Game
                     container => new HydrologyGenerator(
                         container.Resolve<ChunkGrid>(),
                         container.Resolve<MacroRegionCache>(),
-                        container.Resolve<MacroGridSettings>(),
-                        localAccumulationNormalizationRange: 16f),
+                        container.Resolve<MacroGridSettings>()),
                     Lifetime.Singleton)
                 .As<IGenerationStage>();
 

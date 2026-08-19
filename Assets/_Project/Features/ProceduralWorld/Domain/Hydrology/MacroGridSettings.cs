@@ -21,6 +21,7 @@ namespace _Project.Features.ProceduralWorld.Domain.Hydrology
         public int PaddedSize => TileCells + 2 * PaddingCells;
 
         public float TileWorldSize => TileCells * CellSize;
+        public int EmbankmentSmoothingRadius = 3;
 
         public int CoreSize => PaddedSize - 2 * RiverZoneMargin;
     }

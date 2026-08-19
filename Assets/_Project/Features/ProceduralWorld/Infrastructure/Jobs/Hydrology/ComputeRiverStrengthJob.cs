@@ -18,11 +18,10 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         public int MacroRiverZoneMargin;
         public float MacroCellSize;
         public float2 MacroWorldOrigin;
-
-        [ReadOnly] public NativeArray<float> MacroAccumulation;
+        
+        [ReadOnly] public NativeArray<float> MacroRiverStrengthSmoothed;
         [ReadOnly] public NativeArray<float> MacroHeights;
         [ReadOnly] public NativeArray<float> MacroWaterLevels;
-        public float LocalAccumulationNormalizationRange;
 
         [WriteOnly] public NativeArray<float> RiverStrength;
         [WriteOnly] public NativeArray<float> MacroHeightSample;
@@ -39,14 +38,10 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float2 worldPos = ChunkWorldOrigin + new float2(u, v) * ChunkWorldSize;
             float2 macroCoord = (worldPos - MacroWorldOrigin) / MacroCellSize;
 
-            float localAccum = SampleBilinear(MacroAccumulation, macroCoord);
-            
-            MacroHeightSample[index] = SampleBilinear(MacroHeights, macroCoord);
-            
-            WaterSurfaceHeight[index] = SampleBilinear(MacroWaterLevels, macroCoord);
+            float strength = SampleBilinear(MacroRiverStrengthSmoothed, macroCoord);
 
-            float strength = math.saturate(
-                (localAccum - 1f) / math.max(LocalAccumulationNormalizationRange, 0.0001f));
+            MacroHeightSample[index] = SampleBilinear(MacroHeights, macroCoord);
+            WaterSurfaceHeight[index] = SampleBilinear(MacroWaterLevels, macroCoord);
 
             strength *= EdgeFade(macroCoord.x, macroCoord.y);
 
@@ -67,7 +62,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
             return math.smoothstep(0f, MacroRiverZoneMargin, dist);
         }
-        
+
         private float SampleBilinear(NativeArray<float> field, float2 macroCoord)
         {
             float gx = math.clamp(macroCoord.x, 0f, MacroPaddedSize - 1.0001f);
