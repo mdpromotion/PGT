@@ -9,8 +9,10 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
     public struct ComputeMacroWaterLevelJob : IJob
     {
         public int PaddedSize;
-        
-        public float RiverAccumulationThreshold; 
+
+        public float RiverAccumulationThreshold;
+
+        public int PaddingCells;
 
         [ReadOnly] public NativeArray<float> Heights;
         [ReadOnly] public NativeArray<float> Accumulation;
@@ -21,7 +23,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         {
             int count = PaddedSize * PaddedSize;
             var distances = new NativeArray<float>(count, Allocator.Temp);
-            
+
             for (int i = 0; i < count; i++)
             {
                 if (Accumulation[i] >= RiverAccumulationThreshold)
@@ -35,7 +37,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                     distances[i] = 1000000f;
                 }
             }
-            
+
             for (int z = 0; z < PaddedSize; z++)
             {
                 for (int x = 0; x < PaddedSize; x++)
@@ -43,20 +45,20 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                     int idx = z * PaddedSize + x;
                     float minDist = distances[idx];
                     float bestLevel = WaterLevels[idx];
-                    
+
                     if (x > 0) UpdateDistance(idx - 1, 1f, ref minDist, ref bestLevel, distances, WaterLevels);
-                    
+
                     if (z > 0) UpdateDistance(idx - PaddedSize, 1f, ref minDist, ref bestLevel, distances, WaterLevels);
-                    
+
                     if (x > 0 && z > 0) UpdateDistance(idx - PaddedSize - 1, 1.414f, ref minDist, ref bestLevel, distances, WaterLevels);
-                    
+
                     if (x < PaddedSize - 1 && z > 0) UpdateDistance(idx - PaddedSize + 1, 1.414f, ref minDist, ref bestLevel, distances, WaterLevels);
 
                     distances[idx] = minDist;
                     WaterLevels[idx] = bestLevel;
                 }
             }
-            
+
             for (int z = PaddedSize - 1; z >= 0; z--)
             {
                 for (int x = PaddedSize - 1; x >= 0; x--)
@@ -64,13 +66,13 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
                     int idx = z * PaddedSize + x;
                     float minDist = distances[idx];
                     float bestLevel = WaterLevels[idx];
-                    
+
                     if (x < PaddedSize - 1) UpdateDistance(idx + 1, 1f, ref minDist, ref bestLevel, distances, WaterLevels);
-                    
+
                     if (z < PaddedSize - 1) UpdateDistance(idx + PaddedSize, 1f, ref minDist, ref bestLevel, distances, WaterLevels);
-                    
+
                     if (x < PaddedSize - 1 && z < PaddedSize - 1) UpdateDistance(idx + PaddedSize + 1, 1.414f, ref minDist, ref bestLevel, distances, WaterLevels);
-                    
+
                     if (x > 0 && z < PaddedSize - 1) UpdateDistance(idx + PaddedSize - 1, 1.414f, ref minDist, ref bestLevel, distances, WaterLevels);
 
                     distances[idx] = minDist;
@@ -79,6 +81,35 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             }
 
             distances.Dispose();
+            
+            float minBankHeight = float.MaxValue;
+
+            if (PaddingCells > 0)
+            {
+                for (int x = 0; x < PaddedSize; x++)
+                {
+                    minBankHeight = math.min(minBankHeight, SampleRingRow(x, 0));
+                    minBankHeight = math.min(minBankHeight, SampleRingRow(x, PaddedSize - 1));
+                }
+                for (int z = PaddingCells; z < PaddedSize - PaddingCells; z++)
+                {
+                    minBankHeight = math.min(minBankHeight, Heights[z * PaddedSize + 0]);
+                    minBankHeight = math.min(minBankHeight, Heights[z * PaddedSize + (PaddedSize - 1)]);
+                }
+            }
+
+            if (minBankHeight < float.MaxValue)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    WaterLevels[i] = math.min(WaterLevels[i], minBankHeight);
+                }
+            }
+        }
+
+        private float SampleRingRow(int x, int z)
+        {
+            return Heights[z * PaddedSize + x];
         }
 
         private void UpdateDistance(int neighborIdx, float distOffset, ref float minDist, ref float bestLevel, NativeArray<float> distances, NativeArray<float> levels)

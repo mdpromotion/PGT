@@ -123,7 +123,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             var waterLevelJob = new ComputeMacroWaterLevelJob
             {
                 PaddedSize = paddedSize,
-                RiverAccumulationThreshold = 1.0001f, 
+                RiverAccumulationThreshold = 1.0001f,
+                PaddingCells = _settings.PaddingCells,
                 Heights = region.Heights,
                 Accumulation = region.Accumulation,
                 WaterLevels = region.WaterLevels,
