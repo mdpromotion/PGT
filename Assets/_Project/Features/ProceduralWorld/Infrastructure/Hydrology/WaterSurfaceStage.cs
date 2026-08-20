@@ -1,5 +1,4 @@
 ﻿using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
-using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology;
 using Unity.Collections;
@@ -29,16 +28,15 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
         {
             int resolution = state.Context.Resolution;
             int count = resolution * resolution;
-
+            
             var carveJob = new CarveRiverbedsJob
             {
-                Resolution = resolution,
                 AccumulationThreshold = _settings.AccumulationThreshold,
                 FalloffRange = _settings.FalloffRange,
                 MaxCarveDepth = _settings.MaxCarveDepth,
                 EmbankmentHeight = _settings.EmbankmentHeight,
                 EmbankmentPeakPosition = _settings.EmbankmentPeakPosition,
-                MinDepthBelowWaterFactor = _settings.MinDepthBelowWaterFactor,
+                ShoreConformStrength = _settings.ShoreConformStrength,
 
                 Accumulation = state.Hydrology.Accumulation,
                 WaterSurfaceHeight = state.Hydrology.WaterSurfaceHeight,

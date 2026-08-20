@@ -18,7 +18,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         public int MacroRiverZoneMargin;
         public float MacroCellSize;
         public float2 MacroWorldOrigin;
-        
+
         [ReadOnly] public NativeArray<float> MacroRiverStrengthSmoothed;
         [ReadOnly] public NativeArray<float> MacroHeights;
         [ReadOnly] public NativeArray<float> MacroWaterLevels;

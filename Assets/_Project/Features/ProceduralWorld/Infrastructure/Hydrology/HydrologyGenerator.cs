@@ -13,7 +13,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
         private readonly ChunkGrid _chunkGrid;
         private readonly MacroRegionCache _macroRegionCache;
         private readonly MacroGridSettings _macroGridSettings;
-        
+
         public HydrologyGenerator(
             ChunkGrid chunkGrid,
             MacroRegionCache macroRegionCache,
@@ -52,7 +52,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 MacroRiverZoneMargin = _macroGridSettings.RiverZoneMargin,
                 MacroCellSize = region.CellSize,
                 MacroWorldOrigin = float2.zero,
-                
+
                 MacroRiverStrengthSmoothed = region.RiverStrengthSmoothed,
                 MacroHeights = region.Heights,
                 MacroWaterLevels = region.WaterLevels,

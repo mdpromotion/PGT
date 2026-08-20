@@ -60,7 +60,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
         {
             int paddedSize = _settings.PaddedSize;
             float cellSize = _settings.CellSize;
-            
+
             double2 tileOrigin = new double2(
                 coordinate.X * (double)_settings.TileWorldSize,
                 coordinate.Y * (double)_settings.TileWorldSize);
@@ -75,7 +75,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
             TerrainNoiseSettings noiseSettings = _noiseProvider.Create();
             NativeArray<float2> octaveOffsets = _noiseProvider.GetOctaveOffsets(noiseSettings.Octaves);
-            
+
             var heightsJob = new SampleMacroHeightsJob
             {
                 PaddedSize = paddedSize,
@@ -119,15 +119,15 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
                 accumulationJob.Schedule(flowHandle).Complete();
             }
-            
+
             var strengthJob = new ComputeMacroRiverStrengthJob
             {
-                NormalizationRange = 1, 
+                NormalizationRange = _settings.LocalAccumulationNormalizationRange,
                 Accumulation = region.Accumulation,
                 RiverStrengthRaw = region.RiverStrengthRaw,
             };
             strengthJob.Schedule(count, 64).Complete();
-            
+
             var blurJob = new BoxBlurFieldJob
             {
                 PaddedSize = paddedSize,
