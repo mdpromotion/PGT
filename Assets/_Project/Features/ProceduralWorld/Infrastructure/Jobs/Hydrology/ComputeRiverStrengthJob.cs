@@ -19,11 +19,15 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         public float MacroCellSize;
         public float2 MacroWorldOrigin;
 
+        // Тайтовый сигнал -> граница воды/канал (RiverStrength).
+        [ReadOnly] public NativeArray<float> MacroRiverStrengthTight;
+        // Широкий сигнал -> только форма насыпи (EmbankmentStrength).
         [ReadOnly] public NativeArray<float> MacroRiverStrengthSmoothed;
         [ReadOnly] public NativeArray<float> MacroHeights;
         [ReadOnly] public NativeArray<float> MacroWaterLevels;
 
         [WriteOnly] public NativeArray<float> RiverStrength;
+        [WriteOnly] public NativeArray<float> EmbankmentStrength;
         [WriteOnly] public NativeArray<float> MacroHeightSample;
         [WriteOnly] public NativeArray<float> WaterSurfaceHeight;
 
@@ -38,14 +42,16 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             float2 worldPos = ChunkWorldOrigin + new float2(u, v) * ChunkWorldSize;
             float2 macroCoord = (worldPos - MacroWorldOrigin) / MacroCellSize;
 
-            float strength = SampleBilinear(MacroRiverStrengthSmoothed, macroCoord);
+            float edgeFade = EdgeFade(macroCoord.x, macroCoord.y);
+
+            float tight = SampleBilinear(MacroRiverStrengthTight, macroCoord) * edgeFade;
+            float smoothed = SampleBilinear(MacroRiverStrengthSmoothed, macroCoord) * edgeFade;
+
+            RiverStrength[index] = tight;
+            EmbankmentStrength[index] = smoothed;
 
             MacroHeightSample[index] = SampleBilinear(MacroHeights, macroCoord);
             WaterSurfaceHeight[index] = SampleBilinear(MacroWaterLevels, macroCoord);
-
-            strength *= EdgeFade(macroCoord.x, macroCoord.y);
-
-            RiverStrength[index] = strength;
         }
 
         private float EdgeFade(float gx, float gz)

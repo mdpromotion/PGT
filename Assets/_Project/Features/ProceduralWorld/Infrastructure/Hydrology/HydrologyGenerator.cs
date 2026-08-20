@@ -53,11 +53,13 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 MacroCellSize = region.CellSize,
                 MacroWorldOrigin = float2.zero,
 
+                MacroRiverStrengthTight = region.RiverStrengthTight,
                 MacroRiverStrengthSmoothed = region.RiverStrengthSmoothed,
                 MacroHeights = region.Heights,
                 MacroWaterLevels = region.WaterLevels,
 
                 RiverStrength = state.Hydrology.Accumulation,
+                EmbankmentStrength = state.Hydrology.EmbankmentStrength,
                 MacroHeightSample = state.Hydrology.MacroHeightSample,
                 WaterSurfaceHeight = state.Hydrology.WaterSurfaceHeight
             };

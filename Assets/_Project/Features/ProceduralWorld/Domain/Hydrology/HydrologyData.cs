@@ -13,6 +13,8 @@ namespace _Project.Features.ProceduralWorld.Domain.Hydrology
         public NativeArray<float> RiverMask { get; }
         public NativeArray<float> WaterSurfaceHeight { get; }
         public NativeArray<float> MacroHeightSample { get; }
+        
+        public NativeArray<float> EmbankmentStrength { get; }
 
         public NativeArray<sbyte> FlowDirection;
 
@@ -31,6 +33,7 @@ namespace _Project.Features.ProceduralWorld.Domain.Hydrology
             RiverMask = new NativeArray<float>(count, Allocator.Persistent);
             WaterSurfaceHeight = new NativeArray<float>(count, Allocator.Persistent);
             MacroHeightSample = new NativeArray<float>(count, Allocator.Persistent);
+            EmbankmentStrength = new NativeArray<float>(count, Allocator.Persistent);
             FlowDirection = new NativeArray<sbyte>(count, Allocator.Persistent);
         }
 
@@ -43,6 +46,7 @@ namespace _Project.Features.ProceduralWorld.Domain.Hydrology
             if (RiverMask.IsCreated) RiverMask.Dispose();
             if (WaterSurfaceHeight.IsCreated) WaterSurfaceHeight.Dispose();
             if (MacroHeightSample.IsCreated) MacroHeightSample.Dispose();
+            if (EmbankmentStrength.IsCreated) EmbankmentStrength.Dispose();
             if (FlowDirection.IsCreated) FlowDirection.Dispose();
 
             _onDispose?.Invoke();

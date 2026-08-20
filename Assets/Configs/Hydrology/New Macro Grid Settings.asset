@@ -17,4 +17,5 @@ MonoBehaviour:
   PaddingCells: 24
   RiverZoneMargin: 1
   EdgeBiasStrength: 2
+  LocalAccumulationNormalizationRange: 10
   EmbankmentSmoothingRadius: 2

@@ -1,8 +1,10 @@
 ﻿using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
+using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology

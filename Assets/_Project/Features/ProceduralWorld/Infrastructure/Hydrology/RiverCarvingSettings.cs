@@ -26,5 +26,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
         [Tooltip("1 = рельеф у берега полностью подтягивается к уровню воды " +
                  "(рекомендуется — устраняет расхождение шума суши и воды).")]
         public float ShoreConformStrength = 1f;
+        
     }
 }

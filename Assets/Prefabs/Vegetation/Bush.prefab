@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3302098}
   - component: {fileID: 2398136}
   - component: {fileID: 4843858053526785502}
-  - component: {fileID: 717169986075548358}
   - component: {fileID: 5710421845422156070}
   - component: {fileID: 2749403074046918422}
   m_Layer: 0
@@ -178,29 +177,6 @@ MonoBehaviour:
     lightProbeUsage: 0
     reflectionProbeUsage: 0
   isGenerated: 1
---- !u!136 &717169986075548358
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 108544}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.076343745
-  m_Height: 0.55354524
-  m_Direction: 1
-  m_Center: {x: 0.09270795, y: 0.23042655, z: 0.032725185}
 --- !u!205 &5710421845422156070
 LODGroup:
   m_ObjectHideFlags: 0

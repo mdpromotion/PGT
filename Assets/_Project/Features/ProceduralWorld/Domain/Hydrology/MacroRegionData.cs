@@ -15,6 +15,9 @@ namespace _Project.Features.ProceduralWorld.Domain.Hydrology
         public NativeArray<float> Accumulation;
         public NativeArray<float> WaterLevels;
         public NativeArray<float> RiverStrengthRaw;
+        
+        public NativeArray<float> RiverStrengthTight;
+        
         public NativeArray<float> RiverStrengthSmoothed;
 
         private bool _disposed;
@@ -36,6 +39,7 @@ namespace _Project.Features.ProceduralWorld.Domain.Hydrology
             Accumulation = new NativeArray<float>(count, Allocator.Persistent);
             WaterLevels = new NativeArray<float>(count, Allocator.Persistent);
             RiverStrengthRaw = new NativeArray<float>(count, Allocator.Persistent);
+            RiverStrengthTight = new NativeArray<float>(count, Allocator.Persistent);
             RiverStrengthSmoothed = new NativeArray<float>(count, Allocator.Persistent);
         }
 
@@ -51,6 +55,7 @@ namespace _Project.Features.ProceduralWorld.Domain.Hydrology
             if (Accumulation.IsCreated) Accumulation.Dispose();
             if (WaterLevels.IsCreated) WaterLevels.Dispose();
             if (RiverStrengthRaw.IsCreated) RiverStrengthRaw.Dispose();
+            if (RiverStrengthTight.IsCreated) RiverStrengthTight.Dispose();
             if (RiverStrengthSmoothed.IsCreated) RiverStrengthSmoothed.Dispose();
         }
     }
