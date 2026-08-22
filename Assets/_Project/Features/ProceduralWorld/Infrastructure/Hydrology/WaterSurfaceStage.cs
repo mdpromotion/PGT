@@ -36,10 +36,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 AccumulationThreshold = _settings.AccumulationThreshold,
                 FalloffRange = _settings.FalloffRange,
                 MaxCarveDepth = _settings.MaxCarveDepth,
-                EmbankmentHeight = _settings.EmbankmentHeight,
-                EmbankmentPeakPosition = _settings.EmbankmentPeakPosition,
-                ShoreConformStrength = _settings.ShoreConformStrength,
-
                 Accumulation = state.Hydrology.Accumulation,
                 WaterSurfaceHeight = state.Hydrology.WaterSurfaceHeight,
                 Heights = state.Landscape.Heights,

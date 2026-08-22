@@ -19,9 +19,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         public float MacroCellSize;
         public float2 MacroWorldOrigin;
 
-        // Тайтовый сигнал -> граница воды/канал (RiverStrength).
         [ReadOnly] public NativeArray<float> MacroRiverStrengthTight;
-        // Широкий сигнал -> только форма насыпи (EmbankmentStrength).
         [ReadOnly] public NativeArray<float> MacroRiverStrengthSmoothed;
         [ReadOnly] public NativeArray<float> MacroHeights;
         [ReadOnly] public NativeArray<float> MacroWaterLevels;
@@ -81,16 +79,19 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 
             float tx = gx - x0;
             float tz = gz - z0;
+            
+            float sx = tx * tx * (3f - 2f * tx);
+            float sz = tz * tz * (3f - 2f * tz);
 
             float h00 = field[z0 * MacroPaddedSize + x0];
             float h10 = field[z0 * MacroPaddedSize + x1];
             float h01 = field[z1 * MacroPaddedSize + x0];
             float h11 = field[z1 * MacroPaddedSize + x1];
 
-            float a = math.lerp(h00, h10, tx);
-            float b = math.lerp(h01, h11, tx);
+            float a = math.lerp(h00, h10, sx);
+            float b = math.lerp(h01, h11, sx);
 
-            return math.lerp(a, b, tz);
+            return math.lerp(a, b, sz);
         }
     }
 }
