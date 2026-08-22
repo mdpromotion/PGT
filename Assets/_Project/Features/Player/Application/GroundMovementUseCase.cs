@@ -25,67 +25,33 @@ namespace _Project.Features.Player.Application
         }
 
 
-        public Vector3 BuildVelocity(
-            Vector2 moveInput,
-            Vector3 forward,
-            Vector3 right,
-            Vector3 currentVelocity)
+        public Vector3 BuildVelocity(Vector2 moveInput, Vector3 forward, Vector3 right, Vector3 currentVelocity)
         {
-            Vector3 planarForward =
-                Vector3.ProjectOnPlane(
-                    forward,
-                    Vector3.up)
-                .normalized;
+            Vector3 planarForward = Vector3.ProjectOnPlane(forward, Vector3.up).normalized;
+            Vector3 planarRight = Vector3.ProjectOnPlane(right, Vector3.up).normalized;
 
+            Vector3 move = planarForward * moveInput.y + planarRight * moveInput.x;
 
-            Vector3 planarRight =
-                Vector3.ProjectOnPlane(
-                    right,
-                    Vector3.up)
-                .normalized;
-
-
-            Vector3 move =
-                planarForward * moveInput.y +
-                planarRight * moveInput.x;
-
-
-            if (move.sqrMagnitude > 1f)
+            if (move.sqrMagnitude > 1f) 
                 move.Normalize();
-
-
-            float speedMultiplier =
-                GetSpeedMultiplier();
-
-
-            Vector3 desiredVelocity =
-                move * (_config.BaseSpeed * speedMultiplier);
-
-
-            return new Vector3(
-                desiredVelocity.x,
-                currentVelocity.y,
-                desiredVelocity.z);
+            
+            float speedMultiplier = GetSpeedMultiplier();
+            
+            Vector3 desiredVelocity = move * (_config.BaseSpeed * speedMultiplier);
+            
+            return new Vector3(desiredVelocity.x, currentVelocity.y, desiredVelocity.z);
         }
 
 
-        public bool TryJump(
-            ref Vector3 velocity)
+        public bool TryJump(ref Vector3 velocity)
         {
-            if (velocity.y > 0f)
-                return false;
-
-
-            velocity.y =
-                _config.JumpVelocity;
-
+            velocity.y = _config.JumpVelocity;
 
             return true;
         }
 
 
-        public bool TryCrouch(
-            ref Vector3 velocity)
+        public bool TryCrouch(ref Vector3 velocity)
         {
             return false;
         }
@@ -93,8 +59,7 @@ namespace _Project.Features.Player.Application
 
         private float GetSpeedMultiplier()
         {
-            if (_stance != null &&
-                _stance.IsCrouching)
+            if (_stance != null && _stance.IsCrouching)
             {
                 return _config.CrouchSpeedMultiplier;
             }

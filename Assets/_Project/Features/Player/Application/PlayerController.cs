@@ -82,70 +82,44 @@ namespace _Project.Features.Player.Application
             UpdateGroundCheck();
             
             bool swimming = _waterState.IsInWater;
-
-            bool groundedNow =
-                _groundedCached &&
-                !swimming;
+            bool groundedNow = _groundedCached && !swimming;
             
             _yaw += _pendingYawDelta;
             _pendingYawDelta = 0f;
             
-            Quaternion rotation =
-                Quaternion.Euler(
-                    0f,
-                    _yaw,
-                    0f);
+            Quaternion rotation = Quaternion.Euler(0f, _yaw, 0f);
             
             _playerMotor.SetRotation(rotation);
 
             if (_isFrozen)
                 return;
             
-            Vector3 forward =
-                rotation *
-                Vector3.forward;
-
-            Vector3 right =
-                rotation *
-                Vector3.right;
+            Vector3 forward = rotation * Vector3.forward;
+            Vector3 right = rotation * Vector3.right;
             
-            Vector3 velocity =
-                _playerMotor.CurrentVelocity;
+            Vector3 velocity = _playerMotor.CurrentVelocity;
             
-            IMovementMode movementMode =
-                swimming
-                    ? _waterMovement
-                    : _groundMovement;
+            IMovementMode movementMode = swimming ? _waterMovement : _groundMovement;
             
-            Vector3 targetVelocity =
-                movementMode.BuildVelocity(
-                    _input.Move,
-                    forward,
-                    right,
-                    velocity);
+            Vector3 targetVelocity = movementMode.BuildVelocity(_input.Move, forward, right, velocity);
             
             if (swimming)
             {
                 if (_input.JumpPressed)
                 {
-                    movementMode.TryJump(
-                        ref targetVelocity);
+                    movementMode.TryJump(ref targetVelocity);
                 }
 
                 if (_input.CrouchPressed)
                 {
-                    movementMode.TryCrouch(
-                        ref targetVelocity);
+                    movementMode.TryCrouch(ref targetVelocity);
                 }
             }
             else
             {
-                if (_input.JumpPressed &&
-                    groundedNow &&
-                    velocity.y <= 0f)
+                if (_input.JumpPressed && groundedNow)
                 {
-                    if (movementMode.TryJump(
-                            ref targetVelocity))
+                    if (movementMode.TryJump(ref targetVelocity))
                     {
                         OnJumped?.Invoke();
                     }
@@ -154,15 +128,11 @@ namespace _Project.Features.Player.Application
             
             if (_input.CrouchPressed)
             {
-                movementMode.TryCrouch(
-                    ref targetVelocity);
+                movementMode.TryCrouch(ref targetVelocity);
             }
 
 
-            if (groundedNow &&
-                !_wasGrounded &&
-                _lastVerticalVelocity <=
-                LandingFallSpeedThreshold)
+            if (groundedNow && !_wasGrounded &&  _lastVerticalVelocity <= LandingFallSpeedThreshold)
             {
                 OnLanded?.Invoke();
             }
@@ -187,20 +157,14 @@ namespace _Project.Features.Player.Application
         
         private void UpdateGroundCheck()
         {
-            _groundCheckTimer -=
-                Time.fixedDeltaTime;
-
+            _groundCheckTimer -= Time.fixedDeltaTime;
 
             if (_groundCheckTimer > 0f)
                 return;
 
+            _groundCheckTimer = _groundCheckInterval;
 
-            _groundCheckTimer =
-                _groundCheckInterval;
-
-
-            _groundedCached =
-                _playerMotor.IsGroundedCheck();
+            _groundedCached = _playerMotor.IsGroundedCheck();
         }
     }
 }
