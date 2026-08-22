@@ -13,18 +13,15 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
         private readonly ChunkGrid _chunkGrid;
         private readonly MacroRegionCache _macroRegionCache;
         private readonly MacroGridSettings _macroGridSettings;
-        private readonly float _localAccumulationNormalizationRange;
 
         public HydrologyGenerator(
             ChunkGrid chunkGrid,
             MacroRegionCache macroRegionCache,
-            MacroGridSettings macroGridSettings,
-            float localAccumulationNormalizationRange)
+            MacroGridSettings macroGridSettings)
         {
             _chunkGrid = chunkGrid;
             _macroRegionCache = macroRegionCache;
             _macroGridSettings = macroGridSettings;
-            _localAccumulationNormalizationRange = localAccumulationNormalizationRange;
         }
 
         public JobHandle Schedule(ChunkGenerationState state, JobHandle dependency)
@@ -40,9 +37,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
             MacroRegionCoordinate regionCoordinate = _macroRegionCache.ToRegionCoordinate(coordinate);
             MacroRegionData region = _macroRegionCache.GetOrBuild(regionCoordinate);
 
-            // Локальная позиция чанка относительно origin своего же региона.
-            // Границы всегда малы (не больше TileWorldSize), независимо от rebase и
-            // от того, как далеко чанк от истинного нуля.
             float2 chunkOrigin = GenerationSpace.LocalOffset(absoluteChunkOrigin, region.WorldOrigin);
             float2 chunkSize = new float2(_chunkGrid.ChunkSizeX, _chunkGrid.ChunkSizeZ);
 
@@ -58,12 +52,16 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
                 MacroRiverZoneMargin = _macroGridSettings.RiverZoneMargin,
                 MacroCellSize = region.CellSize,
                 MacroWorldOrigin = float2.zero,
-                MacroAccumulation = region.Accumulation,
+
+                MacroRiverStrengthTight = region.RiverStrengthTight,
+                MacroRiverStrengthSmoothed = region.RiverStrengthSmoothed,
                 MacroHeights = region.Heights,
-                LocalAccumulationNormalizationRange = _localAccumulationNormalizationRange,
+                MacroWaterLevels = region.WaterLevels,
 
                 RiverStrength = state.Hydrology.Accumulation,
+                EmbankmentStrength = state.Hydrology.EmbankmentStrength,
                 MacroHeightSample = state.Hydrology.MacroHeightSample,
+                WaterSurfaceHeight = state.Hydrology.WaterSurfaceHeight
             };
 
             return job.Schedule(resolution * resolution, 64, dependency);

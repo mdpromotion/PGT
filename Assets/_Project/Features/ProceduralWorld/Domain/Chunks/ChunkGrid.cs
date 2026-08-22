@@ -1,7 +1,6 @@
-using _Project.Features.ProceduralWorld.Domain.Chunks;
 using UnityEngine;
 
-namespace _Project.Features.ProceduralWorld.Domain
+namespace _Project.Features.ProceduralWorld.Domain.Chunks
 {
     public class ChunkGrid
     {

@@ -1,8 +1,10 @@
 ﻿using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
+using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
@@ -12,10 +14,14 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
         private const int EdgePaddingCells = 1;
 
         private readonly RiverCarvingSettings _settings;
+        private readonly ChunkGrid _chunkGrid;
 
-        public WaterSurfaceStage(RiverCarvingSettings settings)
+        public WaterSurfaceStage(
+            RiverCarvingSettings settings,
+            ChunkGrid chunkGrid)
         {
             _settings = settings;
+            _chunkGrid = chunkGrid;
         }
 
         public JobHandle Schedule(
@@ -24,18 +30,16 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
         {
             int resolution = state.Context.Resolution;
             int count = resolution * resolution;
-
+            
             var carveJob = new CarveRiverbedsJob
             {
-                Resolution = resolution,
                 AccumulationThreshold = _settings.AccumulationThreshold,
                 FalloffRange = _settings.FalloffRange,
                 MaxCarveDepth = _settings.MaxCarveDepth,
                 Accumulation = state.Hydrology.Accumulation,
-                MacroHeight = state.Hydrology.MacroHeightSample,
+                WaterSurfaceHeight = state.Hydrology.WaterSurfaceHeight,
                 Heights = state.Landscape.Heights,
                 RiverMask = state.Hydrology.RiverMask,
-                WaterSurfaceHeight = state.Hydrology.WaterSurfaceHeight,
             };
 
             JobHandle carveHandle = carveJob.Schedule(count, 64, dependency);
@@ -66,7 +70,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
             JobHandle boundsHandle = boundsJob.Schedule(carveHandle);
 
-            return JobHandle.CombineDependencies(packHandle, boundsHandle);
+            return JobHandle.CombineDependencies(boundsHandle, packHandle);
         }
     }
 }

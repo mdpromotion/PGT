@@ -54,9 +54,6 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
         
         private float EdgePenalty(int x, int z)
         {
-            if (RiverZoneMargin <= 0 || EdgeBiasStrength <= 0f)
-                return 0f;
-
             int coreMin = PaddingCells;
             int coreMax = PaddingCells + TileCells;
 
@@ -64,9 +61,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
             int distZ = math.min(z - coreMin, coreMax - 1 - z);
             int dist = math.min(distX, distZ);
 
-            if (dist >= RiverZoneMargin)
-                return 0f;
-            
+            if (dist >= RiverZoneMargin) return 0f;
+
             float t = 1f - math.saturate((float)dist / RiverZoneMargin);
             return t * t * EdgeBiasStrength;
         }

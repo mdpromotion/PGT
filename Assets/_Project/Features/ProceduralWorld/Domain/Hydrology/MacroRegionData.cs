@@ -13,6 +13,12 @@ namespace _Project.Features.ProceduralWorld.Domain.Hydrology
         public NativeArray<float> Heights;
         public NativeArray<sbyte> FlowDirection;
         public NativeArray<float> Accumulation;
+        public NativeArray<float> WaterLevels;
+        public NativeArray<float> RiverStrengthRaw;
+        
+        public NativeArray<float> RiverStrengthTight;
+        
+        public NativeArray<float> RiverStrengthSmoothed;
 
         private bool _disposed;
 
@@ -31,6 +37,10 @@ namespace _Project.Features.ProceduralWorld.Domain.Hydrology
             Heights = new NativeArray<float>(count, Allocator.Persistent);
             FlowDirection = new NativeArray<sbyte>(count, Allocator.Persistent);
             Accumulation = new NativeArray<float>(count, Allocator.Persistent);
+            WaterLevels = new NativeArray<float>(count, Allocator.Persistent);
+            RiverStrengthRaw = new NativeArray<float>(count, Allocator.Persistent);
+            RiverStrengthTight = new NativeArray<float>(count, Allocator.Persistent);
+            RiverStrengthSmoothed = new NativeArray<float>(count, Allocator.Persistent);
         }
 
         public void Dispose()
@@ -43,6 +53,10 @@ namespace _Project.Features.ProceduralWorld.Domain.Hydrology
             if (Heights.IsCreated) Heights.Dispose();
             if (FlowDirection.IsCreated) FlowDirection.Dispose();
             if (Accumulation.IsCreated) Accumulation.Dispose();
+            if (WaterLevels.IsCreated) WaterLevels.Dispose();
+            if (RiverStrengthRaw.IsCreated) RiverStrengthRaw.Dispose();
+            if (RiverStrengthTight.IsCreated) RiverStrengthTight.Dispose();
+            if (RiverStrengthSmoothed.IsCreated) RiverStrengthSmoothed.Dispose();
         }
     }
 }

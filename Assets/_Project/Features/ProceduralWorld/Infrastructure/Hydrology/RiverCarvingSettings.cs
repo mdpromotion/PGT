@@ -10,7 +10,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Hydrology
 
         [Range(0.01f, 1f)]
         public float FalloffRange = 0.35f;
-
-        public float MaxCarveDepth = 0.03f;
+        
+        public float MaxCarveDepth = 1f;
+        
     }
 }

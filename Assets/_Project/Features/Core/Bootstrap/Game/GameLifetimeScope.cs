@@ -21,6 +21,7 @@ using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Application.Landscape;
 using _Project.Features.ProceduralWorld.Application.World;
 using _Project.Features.ProceduralWorld.Domain;
+using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Domain.Hydrology;
 using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure;
@@ -244,8 +245,7 @@ namespace _Project.Features.Core.Bootstrap.Game
                     container => new HydrologyGenerator(
                         container.Resolve<ChunkGrid>(),
                         container.Resolve<MacroRegionCache>(),
-                        container.Resolve<MacroGridSettings>(),
-                        localAccumulationNormalizationRange: 16f),
+                        container.Resolve<MacroGridSettings>()),
                     Lifetime.Singleton)
                 .As<IGenerationStage>();
 
