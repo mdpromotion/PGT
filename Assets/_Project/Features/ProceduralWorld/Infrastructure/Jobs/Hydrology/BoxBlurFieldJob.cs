@@ -4,9 +4,6 @@ using Unity.Jobs;
 
 namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Hydrology
 {
-    // Разделяемый box blur (горизонталь -> вертикаль) со скользящим окном.
-    // Сглаживает пространственные скачки accumulation, из-за которых
-    // насыпь получается зубчатой и превращается в "забор".
     [BurstCompile]
     public struct BoxBlurFieldJob : IJob
     {
