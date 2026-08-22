@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using VContainer.Unity;
+using ShadowQuality = UnityEngine.ShadowQuality;
 
 namespace _Project.Features.Graphics.Infrastucture
 {
@@ -53,6 +54,13 @@ namespace _Project.Features.Graphics.Infrastucture
             if (GraphicsSettings.currentRenderPipeline is not UniversalRenderPipelineAsset urpAsset) return;
 
             urpAsset.shadowDistance = _graphicsState.ShadowQualityMode.ShadowDistance;
+
+            urpAsset.shadowCascadeCount = _graphicsState.ShadowQualityMode.ShadowQuality switch
+            {
+                ShadowQuality.All => 3,
+                ShadowQuality.HardOnly => 1,
+                ShadowQuality.Disable => 0
+            };
 
             QualitySettings.shadows = _graphicsState.ShadowQualityMode.ShadowQuality;
         }
