@@ -58,8 +58,8 @@ namespace _Project.Features.Graphics.Infrastucture
             urpAsset.shadowCascadeCount = _graphicsState.ShadowQualityMode.ShadowQuality switch
             {
                 ShadowQuality.All => 3,
-                ShadowQuality.HardOnly => 1,
-                ShadowQuality.Disable => 0
+                ShadowQuality.HardOnly => 2,
+                ShadowQuality.Disable => 1
             };
 
             QualitySettings.shadows = _graphicsState.ShadowQualityMode.ShadowQuality;
