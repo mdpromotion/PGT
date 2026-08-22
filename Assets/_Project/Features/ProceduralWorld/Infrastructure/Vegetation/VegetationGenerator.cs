@@ -3,6 +3,7 @@ using System.Linq;
 using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Domain.Vegetation;
+using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation;
 using Unity.Collections;
 using Unity.Jobs;
@@ -13,13 +14,15 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Vegetation
 {
     public class VegetationGenerator : IGenerationStage
     {
-        private readonly VegetationSettingsProvider _settingsProvider; 
+        private readonly VegetationSettingsProvider _settingsProvider;
+        private readonly WorldSettings _worldSettings;
         
         private List<(VegetationSpeciesType Species, VegetationGenerationParams Params)> _speciesInPriorityOrder;
         private bool _isPrioritized = false;
         
-        public VegetationGenerator(VegetationSettingsProvider settingsProvider)
+        public VegetationGenerator(VegetationSettingsProvider settingsProvider, WorldSettings worldSettings)
         {
+            _worldSettings = worldSettings;
             _settingsProvider = settingsProvider;
             _speciesInPriorityOrder = new List<(VegetationSpeciesType, VegetationGenerationParams)>();
         }
@@ -33,8 +36,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Vegetation
 
             NativeArray<byte> occupancy = new NativeArray<byte>(
                 resolution * resolution,
-                Allocator.Persistent,
-                NativeArrayOptions.ClearMemory);
+                Allocator.Persistent);
 
             var speciesOrder = GetOrPrioritizeOrder();
 
@@ -59,7 +61,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Vegetation
                     state.Landscape.Resolution,
                     state.Hydrology.WaterSurfaceHeight,
                     state.Hydrology.RiverMask,
-                    0.05f, 
+                    _worldSettings.Seed,
                     candidates.AsParallelWriter());
 
                 JobHandle stageA = candidateJob.Schedule(resolution * resolution, 64, chain);

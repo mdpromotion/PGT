@@ -19,7 +19,8 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation
         
         [ReadOnly] private readonly NativeArray<float> _waterSurfaceHeight;
         [ReadOnly] private readonly NativeArray<float> _riverMask;
-        [ReadOnly] private readonly float _riverMaskThreshold;
+        
+        [ReadOnly] private readonly int _worldSeed;
         
         [WriteOnly] private NativeList<VegetationInstanceData>.ParallelWriter _candidates;
 
@@ -31,7 +32,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation
             int heightResolution,
             NativeArray<float> waterSurfaceHeight,
             NativeArray<float> riverMask,
-            float riverMaskThreshold,
+            int worldSeed,
             NativeList<VegetationInstanceData>.ParallelWriter candidates)
         {
             _resolution = resolution;
@@ -41,7 +42,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation
             _heightResolution = heightResolution;
             _waterSurfaceHeight = waterSurfaceHeight;
             _riverMask = riverMask;
-            _riverMaskThreshold = riverMaskThreshold;
+            _worldSeed = worldSeed;
             _candidates = candidates;
         }
 
@@ -51,18 +52,19 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation
             int localX = index % _resolution;
             int localZ = index / _resolution;
 
-            uint currentSeed = 1; // temporary stub.
+            int seed = _worldSeed;
 
+            const float riverMaskThreshold = 0.05f;
             int2 globalCell = _chunkCoordinate * _resolution + new int2(localX, localZ);
 
-            uint cellHash = (uint)(math.hash(new int3(globalCell, (int)currentSeed)));
+            uint cellHash = (uint)(math.hash(new int3(globalCell, seed)));
             Random random = Random.CreateFromIndex(cellHash);
 
             float rawSum = FractalNoiseSum(
                 globalCell,
                 _species.PatchNoiseFrequency,
                 _species.PatchNoiseOctaves,
-                currentSeed,
+                seed,
                 out float stdDev);
 
             float patchNoise = NormalCdf(rawSum / stdDev);
@@ -86,7 +88,7 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation
             float waterHeight = _waterSurfaceHeight[hydroIndex];
             float riverMaskValue = _riverMask[hydroIndex];
 
-            bool isRiverPresent = riverMaskValue > _riverMaskThreshold;
+            bool isRiverPresent = riverMaskValue > riverMaskThreshold;
             bool isBelowOrAtWater = height <= waterHeight;
 
             if (isRiverPresent && isBelowOrAtWater)
@@ -106,13 +108,13 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation
        
         private const float SingleOctaveNoiseStd = 0.29f;
 
-        private static float FractalNoiseSum(int2 cell, float frequency, int octaves, uint seed, out float stdDev)
+        private static float FractalNoiseSum(int2 cell, float frequency, int octaves, int seed, out float stdDev)
         {
             float value = 0f;
             float amplitude = 0.5f;
             float sumSquaredAmplitude = 0f;
             float freq = frequency;
-            float2 offset = new float2(seed * 0.1234f, seed * 0.5678f);
+            float2 offset = SeedToOffset(seed);
 
             for (int i = 0; i < octaves; i++)
             {
@@ -126,6 +128,13 @@ namespace _Project.Features.ProceduralWorld.Infrastructure.Jobs.Vegetation
             stdDev = math.max(stdDev, 0.0001f);
 
             return value;
+        }
+        
+        private static float2 SeedToOffset(int seed)
+        {
+            uint h = math.hash(new int2(seed, seed * 7 + 13));
+            Random rnd = Random.CreateFromIndex(h);
+            return new float2(rnd.NextFloat(0f, 1000f), rnd.NextFloat(0f, 1000f));
         }
         
         private static float NormalCdf(float z)
