@@ -12,7 +12,7 @@ namespace _Project.Features.ProceduralWorld.Presentation.Vegetation
 
         private readonly Dictionary<VegetationSpeciesType, IReadOnlyList<GameObject>> _prefabCache;
         
-        private const int DetailResolutionPerPatch = 16;
+        private const int DetailResolutionPerPatch = 128;
         private const int MaxDetailCoverage = 255;
         private const float CoverageContributionPerInstance = 48f;
 
