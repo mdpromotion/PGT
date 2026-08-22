@@ -15,7 +15,7 @@ MonoBehaviour:
   baseSpeed: 6
   sprintSpeedMultiplier: 4
   crouchSpeedMultiplier: 0.55
-  jumpVelocity: 7
+  jumpVelocity: 6
   _waterGravity: -3
   _swimVerticalSpeed: 10
   _waterAcceleration: 4
