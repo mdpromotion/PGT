@@ -4,7 +4,6 @@ using _Project.Features.Camera.Infrastructure;
 using _Project.Features.Core.Application;
 using _Project.Features.Core.Domain;
 using _Project.Features.Core.Infrastructure;
-using _Project.Features.Core.Presentation;
 using _Project.Features.Cursor.Presentation;
 using _Project.Features.GameTime.Application;
 using _Project.Features.GameTime.Domain;
@@ -20,7 +19,6 @@ using _Project.Features.ProceduralWorld.Application.Chunks.Generation;
 using _Project.Features.ProceduralWorld.Application.Interfaces;
 using _Project.Features.ProceduralWorld.Application.Landscape;
 using _Project.Features.ProceduralWorld.Application.World;
-using _Project.Features.ProceduralWorld.Domain;
 using _Project.Features.ProceduralWorld.Domain.Chunks;
 using _Project.Features.ProceduralWorld.Domain.Hydrology;
 using _Project.Features.ProceduralWorld.Domain.World;
@@ -30,7 +28,6 @@ using _Project.Features.ProceduralWorld.Infrastructure.Interfaces;
 using _Project.Features.ProceduralWorld.Infrastructure.Landscape;
 using _Project.Features.ProceduralWorld.Infrastructure.Vegetation;
 using _Project.Features.ProceduralWorld.Infrastructure.Vegetation.Configs;
-using _Project.Features.ProceduralWorld.Presentation;
 using _Project.Features.ProceduralWorld.Presentation.Vegetation;
 using _Project.Features.Shared.Application;
 using _Project.Features.Sound.Application;
@@ -53,7 +50,6 @@ namespace _Project.Features.Core.Bootstrap.Game
     {
         [Header("Procedural World")]
         [SerializeField] private Terrain chunkPrefab;
-        [SerializeField] private WorldSettings worldSettings;
         [SerializeField] private MacroGridSettings macroGridSettings;
         [SerializeField] private RiverCarvingSettings riverCarvingSettings;
         [SerializeField] private VegetationCatalog vegetationCatalog;
@@ -179,7 +175,6 @@ namespace _Project.Features.Core.Bootstrap.Game
 
         private void RegisterProceduralWorld(IContainerBuilder builder)
         {
-            builder.RegisterInstance(worldSettings);
             builder.RegisterInstance(macroGridSettings);
             builder.RegisterInstance(riverCarvingSettings);
             builder.RegisterInstance(worldRebaseSettings);

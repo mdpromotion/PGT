@@ -3,6 +3,7 @@ using _Project.Features.Core.Persistence;
 using _Project.Features.Core.Presentation;
 using _Project.Features.Graphics.Domain;
 using _Project.Features.Graphics.Infrastucture;
+using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.UI.Application;
 using _Project.Features.UI.Infrastructure;
 using _Project.Features.UI.Menus.LoadingScreen.View;
@@ -19,8 +20,10 @@ namespace _Project.Features.Core.Bootstrap
         [SerializeField] private LoadingScreenView loadingScreenView;
         [SerializeField] private SceneDatabase sceneDatabase;
         [SerializeField] private GraphicsQualityConfig qualityConfig;
+        [SerializeField] private WorldSettingsConfig worldSettingsConfig;
         [SerializeField] private GraphicsConfigResolver graphicsConfigResolver;
         [SerializeField] private FogConfig fogConfig;
+        
         protected override void Awake()
         {
             Instance = this;
@@ -36,12 +39,17 @@ namespace _Project.Features.Core.Bootstrap
 
             builder.Register<FogSettings>(Lifetime.Singleton)
                 .As<IFogSettings>()
-                .As<IInitializable>();    
+                .As<IInitializable>();
             
             builder.RegisterInstance(loadingScreenView);
             builder.RegisterInstance(sceneDatabase);
             builder.RegisterInstance(qualityConfig);
+            builder.RegisterInstance(worldSettingsConfig);
             builder.RegisterInstance(fogConfig);
+            
+            builder.Register<WorldSettings>(Lifetime.Singleton)
+                .As<IWorldSettings>()
+                .AsSelf();
             
             builder.Register<InputSystem_Actions>(Lifetime.Singleton);
 

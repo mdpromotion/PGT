@@ -9,12 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 838f247eb95b5ec4cac04e3c95f61077, type: 3}
-  m_Name: WorldSettings
-  m_EditorClassIdentifier: 
-  Seed: 1
+  m_Script: {fileID: 11500000, guid: 520ff47dea88f6647ae10a57b032d8b6, type: 3}
+  m_Name: New World Settings Config
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.ProceduralWorld.Domain.World.WorldSettingsConfig
   Octaves: 3
-  Scale: 6000
+  Scale: 4000
   Persistence: 1
   Lacunarity: 1.5
   RedistributionPower: 0.5
