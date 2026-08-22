@@ -2172,7 +2172,6 @@ MonoBehaviour:
   autoRun: 1
   autoInjectGameObjects: []
   chunkPrefab: {fileID: 5116074535957847417, guid: 2ff94efd95661ba7789a898e4249b4c1, type: 3}
-  worldSettings: {fileID: 11400000, guid: dbe12bdf8867feb4880810240955aec2, type: 2}
   macroGridSettings: {fileID: 11400000, guid: 5454c414ee7cf2d4c81d4bbc16424904, type: 2}
   riverCarvingSettings: {fileID: 11400000, guid: 6327c2419ce8bc54aa10a4128e82c04e, type: 2}
   vegetationCatalog: {fileID: 11400000, guid: ecb1596ae0496a143a87a75c2eb3d3d2, type: 2}
@@ -2421,10 +2420,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Features.Player.Presentation.FootstepController
   _soundSet: {fileID: 11400000, guid: ef028464fe9533140ba7ad22799f0dfb, type: 2}
-  _walkStepDistance: 2.2
-  _sprintStepDistance: 3
+  _walkStepDistance: 3
+  _sprintStepDistance: 6.5
   _crouchStepDistance: 1.4
-  _minSpeedForStep: 0.5
+  _minSpeedForStep: 0
 --- !u!1 &1652573605
 GameObject:
   m_ObjectHideFlags: 0
