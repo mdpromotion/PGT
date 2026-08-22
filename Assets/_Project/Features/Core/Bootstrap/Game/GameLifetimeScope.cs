@@ -321,6 +321,9 @@ namespace _Project.Features.Core.Bootstrap.Game
             builder.Register<FPSCounter>(Lifetime.Singleton)
                 .As<ITickable>()
                 .As<IFPSCounter>();
+
+            builder.Register<PlayerPositionService>(Lifetime.Singleton)
+                .As<IPlayerPositionService>();
             
             builder.RegisterComponentInHierarchy<DebugMenuPresenter>();
             builder.RegisterComponentInHierarchy<InGameMenuPresenter>();
