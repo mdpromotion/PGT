@@ -15,7 +15,7 @@ MonoBehaviour:
   CellSize: 512
   TileCells: 32
   PaddingCells: 24
-  RiverZoneMargin: 1
-  EdgeBiasStrength: 2
+  RiverZoneMargin: 2
+  EdgeBiasStrength: 0
   LocalAccumulationNormalizationRange: 10
   EmbankmentSmoothingRadius: 2
