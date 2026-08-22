@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using _Project.Features.ProceduralWorld.Domain.World;
 using _Project.Features.UI.Application;
 using _Project.Features.UI.Infrastructure;
 using _Project.Features.UI.Menus.MainMenu.View;
@@ -7,6 +8,7 @@ using _Project.Features.UI.Menus.SettingsMenu;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
+using Random = System.Random;
 
 namespace _Project.Features.UI.Menus.MainMenu
 {
@@ -30,19 +32,22 @@ namespace _Project.Features.UI.Menus.MainMenu
         [SerializeField] private MenuButton[] buttons;
         [SerializeField] private List<MenuEntry> menus;
         [SerializeField] private SettingsMenuView settingsMenuView;
+        [SerializeField] private SeedFieldView seedField;
         
         private LoadSceneController _loadSceneController;
         private SceneTransitionService _sceneTransitionService;
+        private IWorldSettings _worldSettings;
 
         private bool _isLoading;
         private bool _isWorldMenuVisible;
         private bool _isSettingsMenuVisible;
 
         [Inject]
-        public void Construct(LoadSceneController loadSceneController, SceneTransitionService sceneTransitionService)
+        public void Construct(LoadSceneController loadSceneController, SceneTransitionService sceneTransitionService, IWorldSettings worldSettings)
         {
             _loadSceneController = loadSceneController;
             _sceneTransitionService = sceneTransitionService;
+            _worldSettings = worldSettings;
         }
 
         public void Start()
@@ -87,10 +92,12 @@ namespace _Project.Features.UI.Menus.MainMenu
         private void HandleStartGame()
         {
             if (_isLoading)
-            {
-                print("here");
                 return;
-            }
+
+            if (!seedField.TryGetSeed(out var seed))
+                seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+            
+            _worldSettings.SetSeed(seed);
             
             _loadSceneController.LoadGameScene().Forget();
             _isLoading = true;
