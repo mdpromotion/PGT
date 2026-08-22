@@ -44,8 +44,6 @@ namespace _Project.Features.Graphics.Infrastucture
                 .GetShadowDistanceEntry(data.ShadowQualityMode.ShadowDistance)
                 .graphicsType;
 
-            Debug.Log(data.ViewDistance);
-            
             var viewDistanceType = _qualityConfig
                 .GetViewDistanceEntry(data.ViewDistance)
                 .graphicsType;

@@ -28,7 +28,6 @@ namespace _Project.Features.ProceduralWorld.Domain.World
 
         public void SetSeed(int seed)
         {
-            Debug.Log($"Setting seed {seed}");
             Seed = seed;
         }
     }
